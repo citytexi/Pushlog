@@ -326,3 +326,29 @@ private fun assertBrandContrast(c: PushlogColors) {
 
 - [ ] **Step 1:** `./gradlew ktlintFormat` 후 `./gradlew verifyStarter` Expected: BUILD SUCCESSFUL.
 - [ ] **Step 2:** `git-flow` skill Work flow 4~5단계: `git push -u origin feat/design-system-foundation`, `gh pr create --base develop`, 제목 `feat: add design system foundation tokens and theme`, 본문에 `Closes #18`. CI 통과 후 merge, #18 닫고 #17 체크리스트 갱신.
+
+---
+
+### Task 11: 파일당 타입 하나로 나누기와 최종 리뷰 수정
+
+develop에 #25(`FileStructureRulesTest`: production kt 파일은 최상위 class/interface/object/enum/annotation 최대 1개, 예외 없음)가 들어갔다. 이 브랜치는 그 위로 rebase했고, 이 작업에서 자기 파일을 규칙에 맞춘다. 최종 리뷰 지적(I1, M1~M6)도 함께 고친다. Task 10보다 먼저 한다.
+
+**Files:**
+- Split (파일 이름 = 타입 이름, 패키지·가시성·API 변경 없음, Light/Dark/Default 인스턴스는 자기 타입 파일에 둔다):
+  - `theme/color/PushlogColors.kt` → `PushlogColors.kt`(+`LightPushlogColors`, `DarkPushlogColors`), `PushlogBgColors.kt`, `PushlogFgColors.kt`, `PushlogStrokeColors.kt`
+  - `theme/color/PushlogPalette.kt` → `LightPalette.kt`, `DarkPalette.kt`
+  - `theme/dimension/PushlogDimension.kt` → `PushlogDimension.kt`(+Default), `PushlogSpacingX.kt`, `PushlogSpacingY.kt`, `PushlogRadius.kt`(+Default)
+  - `theme/motion/PushlogMotion.kt` → `PushlogMotion.kt`(+Default), `PushlogDuration.kt`, `PushlogTimingFunction.kt`
+  - `theme/shadow/PushlogShadow.kt` → `PushlogShadowToken.kt`, `PushlogShadows.kt`(+Light/Dark), `PushlogShadowModifier.kt`(`Modifier.pushlogShadow`)
+- Modify: `app/src/main/res/values/colors.xml`, `app/src/main/res/values-night/colors.xml`, `theme/MaterialMapping.kt`, `theme/PushlogTheme.kt`, `feature/sample/.../SampleScreen.kt`, `konsist/.../DesignTokenRulesTest.kt`, catalog test, `BrandContrastTest.kt`, `docs/architecture/design-system.md`, 스펙 §4, `wiki/pages/concepts/brand-color.md`
+
+- [ ] **Step 1: 규칙 실패 확인** — `./gradlew :konsist:test --tests '*FileStructureRulesTest*'` Expected: FAIL, 위 5개 파일.
+- [ ] **Step 2: 나누기** — 위 목록대로. `./gradlew :konsist:test :core:designsystem:testDebugUnitTest` PASS. 커밋 `refactor: 디자인 시스템 토큰 파일을 타입마다 나눔`.
+- [ ] **Step 3: I1 스플래시** — `splash_background`를 라이트 `#FFFFFF`, 다크 `#16171B`(`bg.layerDefault`)로. 런처·스플래시 아이콘 색은 그대로 두고, 디자인 시스템과 같다고 주장하는 주석은 사실대로 고친다(아이콘 교체 전까지 남긴 옛 색).
+- [ ] **Step 4: M1 Snackbar 액션 색** — 테스트 먼저: `BrandContrastTest`에 `MaterialTheme` 매핑의 `inversePrimary` on `inverseSurface` ≥ 4.5(라이트·다크) 추가 → 지금 값으로 실패 확인. 브랜드로 읽히는 forest 단계로 바꾼다(팔레트는 모듈 internal이라 `MaterialMapping`에서 직접 써도 된다). 카탈로그 Snackbar에 `action = { TextButton … }` 추가.
+- [ ] **Step 5: M2** — `toColorScheme()`/`toMaterialTypography()`/`toMaterialShapes()` 결과를 `internal val`(라이트/다크 ColorScheme, Typography, Shapes)로 미리 만들고 `PushlogTheme`은 고르기만 한다.
+- [ ] **Step 6: M4 Konsist** — `DesignTokenRulesTest`에 파일 본문 텍스트 검사 `material3.MaterialTheme` 추가(전체 이름 사용 차단). 기존 테스트 이름·검사는 유지.
+- [ ] **Step 7: M5** — `SampleScreen`의 `16.dp`/`12.dp`를 `PushlogTheme.dimension.x4`/`x3`로.
+- [ ] **Step 8: M6** — `Modifier.pushlogShadow`에 KDoc 한 줄 + `design-system.md` 포인터(CSS blur보다 약간 퍼지는 점).
+- [ ] **Step 9: M3 문서** — 다크 버튼과 배경 대비 "약 4:1" → "약 3.7:1"(스펙 §4, `design-system.md`, 위키). 위키 `brand-color.md`의 "기준(4.5)을 넘는 후보 중 가장 밝고"를 "차분하면서 가장 밝고"로. `design-system.md`의 파일 경로·`inversePrimary` 연결 갱신. `python3 docs/script/check_links.py docs`, `python3 wiki/script/lint.py` 0건.
+- [ ] **Step 10:** `./gradlew ktlintFormat` 후 `./gradlew verifyStarter` PASS. 커밋은 단계 성격별(`fix:`, `refactor:`, `docs:`).
