@@ -5,9 +5,10 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,8 @@ private class ChipMetrics(
 
 /**
  * 필터·선택에 쓰는 알약 모양 칩. [selected]가 null이면 버튼이고, 아니면 켜고 끄는 체크 상태를 가진다.
+
+ * [onClick]은 탭할 때 불리고, [selected]를 뒤집는 일은 호출하는 쪽이 맡는다.
  * 뒤 아이콘은 그림일 뿐이고 칩 전체가 탭 하나다. 라벨은 한 줄이며 넘치면 말줄임이 된다.
  */
 @Composable
@@ -84,7 +87,8 @@ fun PushlogChip(
                 .alpha(if (enabled) 1f else DISABLED_ALPHA)
                 .then(surface)
                 .then(if (variant == PushlogChipVariant.OUTLINE_WEAK) Modifier.border(BorderWidth, borderColor, shape) else Modifier)
-                .defaultMinSize(minWidth = metrics.minWidth, minHeight = metrics.minHeight)
+                .widthIn(min = metrics.minWidth)
+                .heightIn(min = metrics.minHeight)
                 .padding(horizontal = metrics.paddingX),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -103,7 +107,7 @@ fun PushlogChip(
             color = contentColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = labelPadding),
+            modifier = Modifier.weight(1f, fill = false).padding(horizontal = labelPadding),
         )
         if (suffixIcon != null) {
             Icon(

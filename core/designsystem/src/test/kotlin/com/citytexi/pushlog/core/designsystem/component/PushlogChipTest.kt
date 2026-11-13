@@ -1,20 +1,29 @@
 package com.citytexi.pushlog.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import org.junit.Assert.assertEquals
@@ -101,5 +110,34 @@ class PushlogChipTest {
         }
         composeRule.waitForIdle()
         assertTrue("height $heightPx <= ${36f * density}", heightPx > 36f * density)
+    }
+
+    @Test
+    fun longLabelKeepsSuffixIcon() {
+        var iconWidth = 0f
+        var textLines = 0
+        val probe =
+            object : Painter() {
+                override val intrinsicSize = Size(16f, 16f)
+
+                override fun DrawScope.onDraw() {
+                    iconWidth = size.width
+                }
+            }
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                Box(Modifier.width(120.dp)) {
+                    PushlogChip(text = "아주 긴 라벨이 들어가는 칩입니다 정말 깁니다", onClick = {}, suffixIcon = probe)
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        composeRule.onRoot().captureToImage()
+        val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        composeRule.onNodeWithText("아주 긴 라벨이 들어가는 칩입니다 정말 깁니다").performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        textLines = results.first().lineCount
+        assertTrue("suffix icon width $iconWidth", iconWidth > 0f)
+        assertEquals(1, textLines)
+        assertTrue(results.first().hasVisualOverflow)
     }
 }

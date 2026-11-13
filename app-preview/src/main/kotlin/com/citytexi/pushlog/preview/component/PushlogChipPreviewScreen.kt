@@ -59,6 +59,7 @@ fun PushlogChipPreviewContent() {
         }
         PreviewSectionTitle("long label")
         PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp))
+        PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp), suffixIcon = down)
     }
 }
 
