@@ -1,8 +1,6 @@
 package com.citytexi.pushlog.core.designsystem.theme.dimension
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -30,36 +28,6 @@ data class PushlogDimension(
     val x16: Dp,
     val spacingX: PushlogSpacingX,
     val spacingY: PushlogSpacingY,
-)
-
-@Immutable
-data class PushlogSpacingX(
-    val globalGutter: Dp,
-    val betweenChips: Dp,
-)
-
-@Immutable
-data class PushlogSpacingY(
-    val betweenText: Dp,
-    val componentDefault: Dp,
-    val navToTitle: Dp,
-    val screenBottom: Dp,
-)
-
-/** 모서리 토큰. `rNHalf`는 SEED의 `rN_5`. */
-@Immutable
-data class PushlogRadius(
-    val r0Half: Dp,
-    val r1: Dp,
-    val r1Half: Dp,
-    val r2: Dp,
-    val r2Half: Dp,
-    val r3: Dp,
-    val r3Half: Dp,
-    val r4: Dp,
-    val r5: Dp,
-    val r6: Dp,
-    val full: Shape,
 )
 
 internal val DefaultPushlogDimension =
@@ -95,19 +63,4 @@ internal val DefaultPushlogDimension =
                 navToTitle = 20.dp,
                 screenBottom = 56.dp,
             ),
-    )
-
-internal val DefaultPushlogRadius =
-    PushlogRadius(
-        r0Half = 2.dp,
-        r1 = 4.dp,
-        r1Half = 6.dp,
-        r2 = 8.dp,
-        r2Half = 10.dp,
-        r3 = 12.dp,
-        r3Half = 14.dp,
-        r4 = 16.dp,
-        r5 = 20.dp,
-        r6 = 24.dp,
-        full = RoundedCornerShape(percent = 50),
     )

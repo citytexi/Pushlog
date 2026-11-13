@@ -1,7 +1,6 @@
 package com.citytexi.pushlog.core.designsystem.theme.motion
 
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.Easing
 import androidx.compose.runtime.Immutable
 
 /** 모션 토큰. 시간은 밀리초. 값은 `docs/architecture/design-system.md`. */
@@ -9,29 +8,6 @@ import androidx.compose.runtime.Immutable
 data class PushlogMotion(
     val duration: PushlogDuration,
     val timingFunction: PushlogTimingFunction,
-)
-
-@Immutable
-data class PushlogDuration(
-    val d1: Int,
-    val d2: Int,
-    val d3: Int,
-    val d4: Int,
-    val d5: Int,
-    val d6: Int,
-    val colorTransition: Int,
-    val pressedScale: Int,
-)
-
-@Immutable
-data class PushlogTimingFunction(
-    val linear: Easing,
-    val easing: Easing,
-    val enter: Easing,
-    val exit: Easing,
-    val enterExpressive: Easing,
-    val exitExpressive: Easing,
-    val pressedScale: Easing,
 )
 
 internal val DefaultPushlogMotion =
