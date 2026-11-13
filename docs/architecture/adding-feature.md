@@ -8,7 +8,7 @@ verified: 2026-11-13
 related_spec:
 related_adr:
 related_architecture:
-related_code: [SampleViewModel, PushlogNavHost, PushlogNavKeys]
+related_code: [SampleViewModel, PushlogNavHost, SampleKey]
 tags: [architecture, feature]
 ---
 
@@ -17,6 +17,7 @@ tags: [architecture, feature]
 1. `feature/sample`을 `feature/<name>`으로 복사한다. `sample`을 `<name>`으로 바꾼다(디렉터리, 패키지 `com.citytexi.pushlog.feature.<name>`, `namespace`, 클래스 이름).
    - `build.gradle.kts`는 플러그인 `starter.android.feature`(library + compose + hilt)와 `starter.android.screenshot`을 쓰고 `namespace = "com.citytexi.pushlog.feature.<name>"`로 둔다.
    - 이름을 바꾸면 `domain`에 없는 `Sample*` 타입을 참조하는 파일이 깨진다: `SampleViewModel`, `SampleUiState`, `SampleScreen`, `SampleViewModelTest`, `SampleScreenScreenshotTest`(`domain.model.SampleItem`, `Observe/Refresh/...SampleUseCase`, `FakeSampleRepository` 등). 규칙: `domain.*Sample*` import를 모두 새 feature의 타입으로 다시 쓰거나 지운다. 데이터가 필요 없으면 해당 파일과 의존(`domain`)을 비운다.
+   - MVI 타입은 파일 하나에 하나씩 둔다: `<Name>UiState.kt`, `<Name>Intent.kt`, `<Name>SideEffect.kt`, 오류 타입이 있으면 `<Name>Error.kt`. 복사한 파일 이름도 함께 바꾼다.
 2. `settings.gradle.kts`에 `include(":feature:<name>")`을 추가한다. `app/build.gradle.kts`에도 `implementation(project(":feature:<name>"))`을 추가한다.
 3. 데이터가 필요하면 아래 순서로 만든다.
    - `domain`: 모델, `<Name>Repository` 인터페이스(실패 시 예외), `<Action><Name>UseCase`(`operator fun invoke`. suspend면 `Result<T>` 반환, `runSuspendCatching`으로 감쌈)
@@ -28,12 +29,12 @@ tags: [architecture, feature]
    - 시작 화면은 nav2는 `PushlogNavHost`의 `startDestination = ...`, nav3는 `rememberNavBackStack(...)`에서 정한다.
 
    **nav2**
-   - `core/navigation/.../PushlogRoutes.kt`에 `@Serializable data object <Name>NavRoute`를 추가한다.
+   - `core/navigation/.../<Name>NavRoute.kt`를 새로 만들어 `@Serializable data object <Name>NavRoute`를 둔다. 라우트마다 파일 하나다.
    - `feature/<name>/.../navigation/<Name>Navigation.kt`에 `fun NavGraphBuilder.<name>Screen() { composable<<Name>NavRoute> { <Name>Route() } }`를 만든다.
    - `app/.../navigation/PushlogNavHost.kt`의 `NavHost { }` 블록에서 `<name>Screen()`을 호출한다.
 
    **nav3**
-   - `core/navigation/.../PushlogNavKeys.kt`에 `@Serializable data object <Name>Key : NavKey`를 추가한다.
+   - `core/navigation/.../<Name>Key.kt`를 새로 만들어 `@Serializable data object <Name>Key : NavKey`를 둔다. 키마다 파일 하나다.
    - `feature/<name>/.../navigation/<Name>Navigation.kt`에 `fun EntryProviderScope<NavKey>.<name>Entry() { entry<<Name>Key> { <Name>Route() } }`를 만든다.
    - `app/.../navigation/PushlogNavHost.kt`의 `entryProvider { }` 블록에서 `<name>Entry()`를 호출한다.
 

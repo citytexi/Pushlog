@@ -19,8 +19,15 @@ tags: [architecture, mvi]
 ```kotlin
 // <Name>UiState.kt
 data class <Name>UiState(...) : UiState
+
+// <Name>Intent.kt
 sealed interface <Name>Intent : UiIntent { data object Refresh : <Name>Intent }
+
+// <Name>SideEffect.kt
 sealed interface <Name>SideEffect : UiSideEffect { data class ShowError(val error: <Name>Error) : <Name>SideEffect }
+
+// <Name>Error.kt
+sealed interface <Name>Error { data object Network : <Name>Error }
 
 // <Name>ViewModel.kt
 private val _container = MutableMviContainer<<Name>UiState, <Name>SideEffect>(viewModelScope, <Name>UiState())
@@ -33,6 +40,7 @@ viewModel.container.collectSideEffect { effect -> ... }
 <Name>Screen(state = state, onIntent = viewModel::onIntent)
 ```
 
+- 최상위 타입 하나에 파일 하나다. State, Intent, SideEffect, Error를 한 파일에 모으지 않는다(Konsist가 강제, [module-structure.md](module-structure.md)).
 - 사용자 동작은 `onIntent(<Name>Intent)` 하나로 받는다. 화면(`*Screen`)은 `state`와 `onIntent`만 받는 stateless composable이다.
 - 상태 변경은 `_container.updateState { copy(...) }`로만 한다.
 - 한 번만 처리할 일(스낵바, 화면 이동)은 `UiSideEffect`로 보낸다(`_container.postSideEffect(...)`). 화면에 계속 보여야 하는 것은 state에 둔다. `sideEffect`는 Route 한 곳에서만 `collectSideEffect`로 수집한다(채널이라 두 곳에서 받으면 나뉜다).
