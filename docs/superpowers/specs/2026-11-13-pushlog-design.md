@@ -15,6 +15,8 @@ Pushlog는 서버 없이 기기 안에서 푸시 알림을 수집·저장·분�
 
 ### 시장 근거 (2026-11-13 Play 스토어 최신 리뷰 기준)
 
+제품 판단과 시장 근거의 정본은 위키다 — [`wiki/pages/overview.md`](../../../wiki/pages/overview.md), 경쟁 앱 리뷰 원문은 [`wiki/raw/research/competitor-play-reviews-2026-11-13.md`](../../../wiki/raw/research/competitor-play-reviews-2026-11-13.md). 아래 표는 요약이다.
+
 | 앱 | 규모 | 반복되는 불만 |
 |---|---|---|
 | 노티세이브 | 1,000만+ | 진입 광고 강제, 주간 구독(약 2만 원), 강제 다크모드, 첫 로딩 지연, 저장 알림 눌러도 앱 안 열림, 단톡방 대화가 개인별로 쪼개짐, 리스너가 꺼지고 설정이 풀림 |
