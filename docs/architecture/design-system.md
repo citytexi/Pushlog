@@ -139,7 +139,7 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 ./gradlew :app-preview:installDebug
 ```
 
-화면 위쪽 조작 바(`PreviewApp`)에서 테마(라이트/다크/시스템)와 글자 크기(1×/1.3×/2×)를 바꾼다. 글자 크기는 시스템 설정과 무관한 절대 배율이다.
+화면 아래쪽 조작 바(`PreviewControlBar`, `PreviewApp`이 모든 화면 아래에 둔다)에서 테마(라이트/다크/시스템)와 글자 크기(1×/1.3×/2×)를 바꾼다. 글자 크기는 시스템 설정과 무관한 절대 배율이다.
 
 ### 컴포넌트를 추가할 때
 
