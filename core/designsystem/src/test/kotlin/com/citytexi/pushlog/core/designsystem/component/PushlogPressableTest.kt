@@ -2,11 +2,14 @@ package com.citytexi.pushlog.core.designsystem.component
 
 import android.content.Context
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -110,10 +113,17 @@ class PushlogPressableTest {
 
     @Test
     fun pressedSwapsBackgroundOnly() {
-        setBox(enabled = true)
+        setBox(enabled = true) {
+            Box(Modifier.align(Alignment.Center).size(20.dp).background(CONTENT))
+        }
         press()
         val image = composeRule.onRoot().captureToImage().toPixelMap()
-        assertEquals(PRESSED.toArgb(), image[image.width / 2, image.height / 2].toArgb())
+        val cx = image.width / 2
+        val cy = image.height / 2
+        // 루트는 140dp라 30dp 아래는 눌려 줄어든 표면 안이고 20dp 내용 밖이다.
+        val offset = (image.height * 30 / 140)
+        assertEquals("background swaps", PRESSED.toArgb(), image[cx, cy + offset].toArgb())
+        assertEquals("content keeps its color", CONTENT.toArgb(), image[cx, cy].toArgb())
     }
 
     @Test
@@ -143,6 +153,7 @@ class PushlogPressableTest {
         loading: Boolean = false,
         size: Dp = 100.dp,
         onClick: () -> Unit = {},
+        content: @Composable BoxScope.() -> Unit = {},
     ) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
@@ -159,6 +170,7 @@ class PushlogPressableTest {
                                 loading = loading,
                                 onClick = onClick,
                             ),
+                        content = content,
                     )
                 }
             }
@@ -196,6 +208,7 @@ class PushlogPressableTest {
         val BASE = Color(0xFF00FF00)
         val PRESSED = Color(0xFFFF0000)
         val OTHER = Color(0xFF0000FF)
+        val CONTENT = Color(0xFFFFFF00)
         val SURFACE_COLORS = setOf(BASE.toArgb(), PRESSED.toArgb())
     }
 }

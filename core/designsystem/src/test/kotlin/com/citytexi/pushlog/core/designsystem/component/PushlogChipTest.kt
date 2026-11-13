@@ -22,6 +22,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -115,7 +116,6 @@ class PushlogChipTest {
     @Test
     fun longLabelKeepsSuffixIcon() {
         var iconWidth = 0f
-        var textLines = 0
         val probe =
             object : Painter() {
                 override val intrinsicSize = Size(16f, 16f)
@@ -133,11 +133,10 @@ class PushlogChipTest {
         }
         composeRule.waitForIdle()
         composeRule.onRoot().captureToImage()
-        val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+        val results = mutableListOf<TextLayoutResult>()
         composeRule.onNodeWithText("아주 긴 라벨이 들어가는 칩입니다 정말 깁니다").performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
-        textLines = results.first().lineCount
         assertTrue("suffix icon width $iconWidth", iconWidth > 0f)
-        assertEquals(1, textLines)
+        assertEquals(1, results.first().lineCount)
         assertTrue(results.first().hasVisualOverflow)
     }
 }

@@ -44,7 +44,7 @@ private class ChipMetrics(
 
 /**
  * 필터·선택에 쓰는 알약 모양 칩. [selected]가 null이면 버튼이고, 아니면 켜고 끄는 체크 상태를 가진다.
-
+ *
  * [onClick]은 탭할 때 불리고, [selected]를 뒤집는 일은 호출하는 쪽이 맡는다.
  * 뒤 아이콘은 그림일 뿐이고 칩 전체가 탭 하나다. 라벨은 한 줄이며 넘치면 말줄임이 된다.
  */
@@ -79,7 +79,7 @@ fun PushlogChip(
         if (selected == null) {
             Modifier.pushlogPressable(source, color, pressedColor, shape, enabled, loading = false, onClick = onClick)
         } else {
-            Modifier.pushlogToggleablePressable(source, selected, color, pressedColor, shape, enabled, loading = false, onClick = onClick)
+            Modifier.pushlogToggleablePressable(source, selected, color, pressedColor, shape, enabled, onClick = onClick)
         }
     Row(
         modifier =

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -17,10 +17,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -70,6 +72,19 @@ class PushlogContextualFloatingButtonTest {
     }
 
     @Test
+    fun clickableNodeCarriesNameRoleAndState() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogContextualFloatingButton(text = "저장", onClick = {}, loading = true)
+            }
+        }
+        val config = composeRule.onNode(hasClickAction()).fetchSemanticsNode().config
+        assertEquals(listOf("저장"), config[SemanticsProperties.Text].map { it.text })
+        assertEquals(Role.Button, config[SemanticsProperties.Role])
+        assertEquals("불러오는 중", config[SemanticsProperties.StateDescription])
+    }
+
+    @Test
     fun labelIsSingleLine() {
         val label = "A very long floating button label that cannot fit in one hundred twenty dp"
         composeRule.setContent {
@@ -111,14 +126,14 @@ class PushlogContextualFloatingButtonTest {
 
     @Test
     fun loadingBlocksClickKeepsName() {
-        var loading by mutableIntStateOf(0)
+        var loading by mutableStateOf(false)
         var clicks = 0
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
-                PushlogContextualFloatingButton(text = "맨 위로", onClick = { clicks++ }, loading = loading == 1)
+                PushlogContextualFloatingButton(text = "맨 위로", onClick = { clicks++ }, loading = loading)
             }
         }
-        loading = 1
+        loading = true
         composeRule.waitForIdle()
         composeRule.onNodeWithText("맨 위로").performClick()
         assertEquals(0, clicks)
@@ -129,7 +144,7 @@ class PushlogContextualFloatingButtonTest {
 
     @Test
     fun iconOnlyExposesNameAndBlocksClickWhileLoading() {
-        var loading by mutableIntStateOf(0)
+        var loading by mutableStateOf(false)
         var clicks = 0
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
@@ -137,13 +152,13 @@ class PushlogContextualFloatingButtonTest {
                     icon = rememberVectorPainter(PreviewSampleIcons.ArrowUp),
                     contentDescription = "맨 위로",
                     onClick = { clicks++ },
-                    loading = loading == 1,
+                    loading = loading,
                 )
             }
         }
         composeRule.onNodeWithContentDescription("맨 위로").assertHasClickAction().performClick()
         assertEquals(1, clicks)
-        loading = 1
+        loading = true
         composeRule.waitForIdle()
         composeRule.onNodeWithContentDescription("맨 위로").performClick()
         assertEquals(1, clicks)

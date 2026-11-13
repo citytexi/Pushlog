@@ -57,7 +57,7 @@ fun PushlogContextualFloatingButton(
         interactionSource = interactionSource,
         contentColor = contentColor,
         modifier = modifier.defaultMinSize(minHeight = dimension.x9),
-        semanticsModifier = Modifier.semantics(mergeDescendants = true) {},
+        semanticsModifier = Modifier,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = dimension.x3Half, vertical = dimension.x2),

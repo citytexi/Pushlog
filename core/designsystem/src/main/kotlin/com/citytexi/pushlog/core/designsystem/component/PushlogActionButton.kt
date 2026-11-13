@@ -61,7 +61,7 @@ fun PushlogActionButton(
         contentColor = contentColor,
         minWidth = 0.dp,
         modifier = modifier,
-        semanticsModifier = Modifier.semantics(mergeDescendants = true) {},
+        semanticsModifier = Modifier,
     ) {
         Row(
             modifier =

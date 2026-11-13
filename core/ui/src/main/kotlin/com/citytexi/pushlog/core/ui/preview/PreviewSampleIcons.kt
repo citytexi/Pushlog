@@ -3,6 +3,7 @@ package com.citytexi.pushlog.core.ui.preview
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
@@ -72,7 +73,7 @@ object PreviewSampleIcons {
 
     private fun icon(
         name: String,
-        pathBuilder: androidx.compose.ui.graphics.vector.PathBuilder.() -> Unit,
+        pathBuilder: PathBuilder.() -> Unit,
     ): ImageVector =
         ImageVector
             .Builder(name, 24.dp, 24.dp, viewportWidth = 24f, viewportHeight = 24f)

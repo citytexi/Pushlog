@@ -2,15 +2,17 @@ package com.citytexi.pushlog.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -45,19 +47,19 @@ class PushlogActionButtonTest {
 
     @Test
     fun loadingKeepsWidthAndBlocksClick() {
-        var loading by mutableIntStateOf(0)
+        var loading by mutableStateOf(false)
         var widthPx = 0
         var clicks = 0
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
                 Box(Modifier.onSizeChanged { widthPx = it.width }) {
-                    PushlogActionButton(text = "저장", onClick = { clicks++ }, loading = loading == 1)
+                    PushlogActionButton(text = "저장", onClick = { clicks++ }, loading = loading)
                 }
             }
         }
         composeRule.waitForIdle()
         val idleWidth = widthPx
-        loading = 1
+        loading = true
         composeRule.waitForIdle()
         assertEquals(idleWidth, widthPx)
         composeRule.onNodeWithText("저장").performClick()
@@ -65,6 +67,19 @@ class PushlogActionButtonTest {
         val config = composeRule.onNodeWithText("저장").fetchSemanticsNode().config
         assertEquals("불러오는 중", config[SemanticsProperties.StateDescription])
         assertFalse(config.contains(SemanticsProperties.Disabled))
+    }
+
+    @Test
+    fun clickableNodeCarriesNameRoleAndState() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogActionButton(text = "저장", onClick = {}, loading = true)
+            }
+        }
+        val config = composeRule.onNode(hasClickAction()).fetchSemanticsNode().config
+        assertEquals(listOf("저장"), config[SemanticsProperties.Text].map { it.text })
+        assertEquals(Role.Button, config[SemanticsProperties.Role])
+        assertEquals("불러오는 중", config[SemanticsProperties.StateDescription])
     }
 
     @Test

@@ -53,7 +53,7 @@ internal fun Modifier.pushlogPressable(
             onClick = { if (!loading) onClick() },
         )
 
-/** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. */
+/** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. 로딩 상태는 없다. */
 internal fun Modifier.pushlogToggleablePressable(
     interactionSource: MutableInteractionSource,
     selected: Boolean,
@@ -61,17 +61,16 @@ internal fun Modifier.pushlogToggleablePressable(
     pressedColor: Color,
     shape: Shape,
     enabled: Boolean,
-    loading: Boolean,
     onClick: () -> Unit,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow = Modifier)
+    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = Modifier)
         .toggleable(
             value = selected,
             interactionSource = interactionSource,
             indication = null,
             enabled = enabled,
             role = Role.Checkbox,
-            onValueChange = { if (!loading) onClick() },
+            onValueChange = { onClick() },
         )
 
 // 축소 층을 맨 앞에 둬서 그림자, clip, 배경, 눌림 영역이 모두 같이 줄어든다.
