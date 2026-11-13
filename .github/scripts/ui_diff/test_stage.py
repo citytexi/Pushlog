@@ -54,7 +54,7 @@ class StageTest(unittest.TestCase):
 
         expected = [f"core/ui/{OUT}/A.png", f"feature/groups/list/impl/{OUT}/B.png"]
         self.assertEqual(listing.read_text().splitlines(), expected)
-        self.assertEqual(report.read_base_list(listing), set(expected))
+        self.assertEqual(report.read_base_list(listing), (set(expected), set()))
 
         fresh = self.tmp / "fresh"
         fresh.mkdir()

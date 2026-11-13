@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import report  # noqa: E402
-from report import CaptureResult, Meta, classify, is_safe_path, render_comment, validate_meta  # noqa: E402
+from report import CaptureResult, Meta, Report, classify, is_safe_path, render_comment, validate_meta  # noqa: E402
 
 SCRIPT = Path(__file__).resolve().parent / "report.py"
 HEAD = "1" * 40
@@ -324,6 +324,53 @@ class CapImagesTest(unittest.TestCase):
             self.assertEqual(rep.images_before_cap, 0)
             body = render_comment(rep, validate_meta(meta()), "o/r", IMAGE_SHA)
             self.assertNotIn("올렸습니다", body)
+
+
+class UnsafeNamesTest(unittest.TestCase):
+    def test_collect_counts_unsafe_names_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "results"
+            module = "feature/x"
+            out_dir = root / module / OUT
+            res_dir = root / module / "build/test-results/roborazzi/debug/results"
+            out_dir.mkdir(parents=True)
+            res_dir.mkdir(parents=True)
+            runner = "/home/runner/work/x/x/" + module + "/" + OUT
+            for name in ("A", "B_200%"):
+                entry = {
+                    "type": "added",
+                    "golden_file_path": f"{runner}/{name}.png",
+                    "actual_file_path": f"{runner}/{name}_actual.png",
+                    "timestamp": 1,
+                }
+                (res_dir / f"1_{len(name)}.json").write_text(json.dumps(entry))
+            (res_dir / "2_broken.json").write_text("{not json")
+            (out_dir / "A_actual.png").write_bytes(PNG)
+            base_lines = [key(module, "A"), key(module, "B_200%"), key(module, "C(x)")]
+            out = run_collect(root, meta(), base_lines)
+            entries = json.loads(out["entries"])
+            self.assertEqual(entries["unsafe_names"], 2)
+            self.assertEqual([e["name"] for e in entries["added"]], ["A"])
+            self.assertEqual(entries["removed"], [])
+
+    def test_render_warns_unsafe_names_without_listing_them(self):
+        rep = Report([], [], [], [], unsafe_names=2)
+        text = render_comment(rep, Meta(7, HEAD, BASE, "ok"), "o/r", IMAGE_SHA)
+        self.assertIn("2개", text)
+        self.assertIn("바뀐 화면 없음", text)
+        self.assertNotIn("%", text)
+
+    def test_render_without_unsafe_names_has_no_warning(self):
+        text = render_comment(Report([], [], [], []), Meta(7, HEAD, BASE, "ok"), "o/r", IMAGE_SHA)
+        self.assertNotIn("안전하지 않은", text)
+
+    def test_report_dict_round_trip_and_validation(self):
+        rep = Report([], [], [], [], unsafe_names=3)
+        self.assertEqual(report.report_from_dict(report.report_to_dict(rep)).unsafe_names, 3)
+        self.assertEqual(report.report_from_dict({}).unsafe_names, 0)
+        for bad in (-1, "3", True, 1.5):
+            with self.assertRaises(ValueError):
+                report.report_from_dict({"unsafe_names": bad})
 
 
 def run_collect(root, raw_meta, base_lines):

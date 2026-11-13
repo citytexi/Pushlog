@@ -72,6 +72,8 @@ class Report:
     failed_modules: list
     # 상한에 걸려 이미지를 빼기 전의 이미지 수. 0 이면 빠진 이미지가 없다
     images_before_cap: int = 0
+    # 파일 이름이 is_safe_path 를 통과하지 못해 비교에서 뺀 캡처 수(base·head 합집합)
+    unsafe_names: int = 0
 
     @property
     def total(self) -> int:
@@ -200,7 +202,8 @@ def find_result_files(root: Path):
                     yield module_dir, Path(dirpath) / filename
 
 
-def load_capture(root: Path, module_dir: str, path: Path) -> tuple[CaptureResult, int] | None:
+def load_capture(root: Path, module_dir: str, path: Path) -> tuple[CaptureResult, int] | str | None:
+    """정상 캡처면 (결과, 순서), 결과는 정상인데 이름이 안전하지 않으면 그 golden 경로 문자열, 그 밖에는 None."""
     try:
         st = os.lstat(path)
         if not stat.S_ISREG(st.st_mode) or st.st_size > MAX_JSON_BYTES:
@@ -218,9 +221,11 @@ def load_capture(root: Path, module_dir: str, path: Path) -> tuple[CaptureResult
         return PurePosixPath(module_dir, *OUTPUTS, PurePosixPath(value).name)
 
     golden = outputs_rel("golden_file_path")
-    parsed = split_golden(golden) if golden else None
-    if parsed is None:
+    if golden is None:
         return None
+    parsed = split_golden(golden)
+    if parsed is None:
+        return golden.as_posix()
     image = None
     image_field = {"changed": "compare_file_path", "added": "actual_file_path"}.get(data["type"])
     if image_field:
@@ -232,26 +237,36 @@ def load_capture(root: Path, module_dir: str, path: Path) -> tuple[CaptureResult
     return CaptureResult(module_dir=parsed[0], name=parsed[1], type=data["type"], image=image), order
 
 
-def collect_results(root: Path) -> list[CaptureResult]:
+def collect_results(root: Path) -> tuple[list[CaptureResult], set[str]]:
+    """두 번째 값은 이름이 안전하지 않아 뺀 캡처의 golden 경로 집합이다."""
     latest = {}
+    unsafe = set()
     for module_dir, path in find_result_files(root):
         loaded = load_capture(root, module_dir, path)
         if loaded is None:
+            continue
+        if isinstance(loaded, str):
+            unsafe.add(loaded)
             continue
         capture, order = loaded
         # 같은 캡처의 JSON이 여러 실행분 남아 있으면 가장 최근 것만 쓴다.
         if capture.key not in latest or order >= latest[capture.key][1]:
             latest[capture.key] = (capture, order)
-    return [capture for capture, _ in latest.values()]
+    return [capture for capture, _ in latest.values()], unsafe
 
 
-def read_base_list(path: Path) -> set[str]:
-    names = set()
+def read_base_list(path: Path) -> tuple[set[str], set[str]]:
+    """두 번째 값은 이름이 안전하지 않아 뺀 줄의 집합이다."""
+    names, unsafe = set(), set()
     for line in path.read_text(encoding="utf-8").split("\n"):
         line = line.rstrip("\r")
-        if line and split_golden(PurePosixPath(line)) is not None:
+        if not line:
+            continue
+        if split_golden(PurePosixPath(line)) is None:
+            unsafe.add(line)
+        else:
             names.add(line)
-    return names
+    return names, unsafe
 
 
 def report_to_dict(rep: Report) -> dict:
@@ -261,6 +276,7 @@ def report_to_dict(rep: Report) -> dict:
         "removed": [asdict(r) for r in rep.removed],
         "failed_modules": rep.failed_modules,
         "images_before_cap": rep.images_before_cap,
+        "unsafe_names": rep.unsafe_names,
     }
 
 
@@ -282,7 +298,10 @@ def report_from_dict(raw: dict) -> Report:
     before_cap = raw.get("images_before_cap", 0)
     if type(before_cap) is not int or before_cap < 0:
         raise ValueError("invalid images_before_cap")
-    return Report(rows("changed"), rows("added"), rows("removed"), list(modules), before_cap)
+    unsafe_names = raw.get("unsafe_names", 0)
+    if type(unsafe_names) is not int or unsafe_names < 0:
+        raise ValueError("invalid unsafe_names")
+    return Report(rows("changed"), rows("added"), rows("removed"), list(modules), before_cap, unsafe_names)
 
 
 def cell(text: str) -> str:
@@ -310,6 +329,12 @@ def render_comment(report: Report, meta: Meta, repo: str, image_sha: str, max_ro
     if report.failed_modules:
         modules = ", ".join(f"`{m}`" for m in report.failed_modules)
         lines += [f"렌더에 실패해 비교에서 뺀 모듈: {modules}", ""]
+    if report.unsafe_names:
+        lines += [
+            "안전하지 않은 파일 이름(영문·숫자·`_`·`-`·`.` 외 문자) 때문에 비교에서 뺀 이미지: "
+            f"{report.unsafe_names}개. 프리뷰 이름을 바꾸세요.",
+            "",
+        ]
     if report.total == 0:
         lines.append("바뀐 화면 없음")
         return "\n".join(lines) + "\n"
@@ -355,8 +380,11 @@ def cmd_collect(args) -> int:
     meta = load_meta(args.meta)
     if meta.status == "ok":
         root = Path(args.results_root)
-        rep = classify(collect_results(root), read_base_list(Path(args.base_list)), set(meta.failed_modules))
+        results, head_unsafe = collect_results(root)
+        base_names, base_unsafe = read_base_list(Path(args.base_list))
+        rep = classify(results, base_names, set(meta.failed_modules))
         rep = cap_images(rep, root)
+        rep.unsafe_names = len(head_unsafe | base_unsafe)
     else:
         rep = Report([], [], [], list(meta.failed_modules))
     Path(args.out_entries).write_text(json.dumps(report_to_dict(rep), ensure_ascii=False, indent=2), encoding="utf-8")
