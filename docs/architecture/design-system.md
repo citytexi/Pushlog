@@ -116,10 +116,10 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다. Pretendard 한글 글리프는 굵기가 달라도 advance width가 같다. 그래서 굵기 테스트는 라틴 문자로 하고, 한글 굵기는 카탈로그 스크린샷으로 눈으로 확인한다.
 
 ```bash
-./gradlew :core:designsystem:recordRoborazziDebug
+./gradlew :app-preview:recordRoborazziDebug
 ```
 
-결과는 `core/designsystem/build/outputs/roborazzi/catalog_*.png`다(`FoundationCatalogScreenshotTest`). 기준 스크린샷은 커밋하지 않는다.
+결과는 `app-preview/build/outputs/roborazzi/catalog_*.png`다(`FoundationCatalogScreenshotTest`). 기준 스크린샷은 커밋하지 않는다.
 
 ## Konsist 규칙
 
@@ -130,3 +130,36 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 - `Color(0x…)`, `Color(red = …)` 직접 생성
 
 화면은 `PushlogTheme`의 토큰만 쓴다. 규칙이 막으면 토큰을 추가한다.
+
+## 미리보기 앱
+
+`:app-preview`는 디버그 전용 앱이다. 개발자가 실기기에서 토큰과 컴포넌트를 확인하고, 디자이너가 같은 화면을 검수하는 데 쓴다. release 변형은 꺼져 있다. CI는 APK를 올리지 않으니 직접 설치한다.
+
+```bash
+./gradlew :app-preview:installDebug
+```
+
+화면 아래쪽 조작 바(`PreviewControlBar`, `PreviewApp`이 모든 화면 아래에 둔다)에서 테마(라이트/다크/시스템)와 글자 크기(1×/1.3×/2×)를 바꾼다. 글자 크기는 시스템 설정과 무관한 절대 배율이다.
+
+### 컴포넌트를 추가할 때
+
+`core:designsystem`의 `component` 패키지에 공개 composable을 추가하면 `app-preview`에 화면을 함께 만들어야 한다. 네 단계다. `PushlogButton`이 예시다.
+
+1. 키: `component/PushlogButtonPreviewKey.kt`에 `NavKey` 구현체를 둔다.
+2. 화면: `component/PushlogButtonPreviewScreen.kt`에 본문 `PushlogButtonPreviewContent`와 entry 함수 `pushlogButtonPreviewEntry(onBack)`를 둔다. entry는 `PreviewScaffold` 안에 본문을 그린다.
+3. 등록: `navigation/PreviewEntryProvider.kt`의 `previewEntryProvider`에 entry 함수를 호출한다.
+4. 목록: `catalog/PreviewCatalog.kt`의 `previewCatalog`에 `PreviewCatalogItem(카테고리, 제목, 키)` 행을 더한다.
+
+이름은 `<컴포넌트 함수 이름>PreviewKey`, `<컴포넌트 함수 이름>PreviewScreen.kt`, `<함수 이름 첫 글자 소문자>PreviewEntry`로 짓는다. 파일 이름과 키 선언은 아래 규칙 1이 검사한다. 본문은 배경을 직접 그리지 않고 `PushlogTheme.*` 토큰만 쓴다.
+
+### 누락 방지 테스트
+
+세 가지가 빌드에서 실패한다.
+
+| 잡는 것 | 테스트 |
+|---|---|
+| 1. 컴포넌트에 `<함수 이름>PreviewScreen.kt` 또는 `<함수 이름>PreviewKey` 선언이 없음 | Konsist `PreviewCoverageRulesTest`(`konsist`) |
+| 2. `previewCatalog`의 키가 `previewEntryProvider`에 등록되지 않음 | `PreviewEntryProviderTest`(`app-preview` 단위 테스트) |
+| 3. `NavKey` 구현체가 `previewCatalog`에서 참조되지 않음(고아 키) | Konsist `PreviewCoverageRulesTest` |
+
+규칙 1의 대상은 `component` 패키지(하위 패키지 제외)의 공개 최상위 `@Composable` 함수다. 컴포넌트의 보조 부품(슬롯, 하위 부품)은 `internal`로 두거나 하위 패키지 `component.<name>`에 둬서 화면을 요구받지 않게 한다.

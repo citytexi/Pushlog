@@ -12,6 +12,7 @@ on:
       - 'core/navigation/**'
       - 'core/designsystem/**'
       - 'core/ui/**'
+      - 'app-preview/**'
       - 'core/testing/android/**'
       - 'gradle/libs.versions.toml'
       - 'build-logic/**'
