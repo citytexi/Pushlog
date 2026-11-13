@@ -15,19 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.citytexi.pushlog.core.designsystem.R
-import com.citytexi.pushlog.core.designsystem.theme.LocalPushlogDarkTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.designsystem.theme.color.DarkPalette
 import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette
@@ -178,17 +173,9 @@ private fun ActionButtonSurface(
     val corner = if (size == PushlogActionButtonSize.LARGE) radius.r3 else radius.r2
     val progressSize = progressSize(size)
     val disabledSurface = if (variant == PushlogActionButtonVariant.GHOST) bg.transparent else bg.disabled
-    val pressedColor = if (enabled) surfaceColor(variant, pressed = true) else disabledSurface
-    val color =
-        if (!enabled) {
-            disabledSurface
-        } else if (loading) {
-            pressedColor
-        } else {
-            surfaceColor(variant, pressed = false)
-        }
+    val pressedColor = buttonPressedColor(enabled, surfaceColor(variant, pressed = true), disabledSurface)
+    val color = buttonSurfaceColor(enabled, loading, surfaceColor(variant, pressed = false), pressedColor, disabledSurface)
     val source = interactionSource ?: remember { MutableInteractionSource() }
-    val loadingDescription = stringResource(R.string.designsystem_loading)
     Box(
         modifier =
             modifier
@@ -202,13 +189,10 @@ private fun ActionButtonSurface(
                     onClick = onClick,
                 ).defaultMinSize(minWidth = minWidth, minHeight = minHeight)
                 .then(semanticsModifier)
-                .semantics { if (loading) stateDescription = loadingDescription },
+                .pushlogLoadingState(loading),
         contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.alpha(if (loading) 0f else 1f)) { content() }
-        if (loading) {
-            PushlogProgressCircle(size = progressSize, trackColor = trackColor(variant), rangeColor = contentColor)
-        }
+        PushlogLoadingContent(loading, progressSize, trackColor(variant), contentColor, content)
     }
 }
 
@@ -268,14 +252,14 @@ private fun contentColor(
 
 @Composable
 private fun trackColor(variant: PushlogActionButtonVariant): Color {
-    val dark = LocalPushlogDarkTheme.current
     val onSolid =
         variant == PushlogActionButtonVariant.BRAND_SOLID ||
             variant == PushlogActionButtonVariant.NEUTRAL_SOLID ||
             variant == PushlogActionButtonVariant.CRITICAL_SOLID
-    return when {
-        onSolid -> if (dark) DarkPalette.staticWhiteAlpha300 else LightPalette.staticWhiteAlpha300
-        else -> if (dark) DarkPalette.gray500 else LightPalette.gray500
+    return if (onSolid) {
+        pushlogThemedColor(LightPalette.staticWhiteAlpha300, DarkPalette.staticWhiteAlpha300)
+    } else {
+        pushlogThemedColor(LightPalette.gray500, DarkPalette.gray500)
     }
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -81,5 +82,29 @@ class PushlogContextualFloatingButtonTest {
         val config = composeRule.onNodeWithText("맨 위로").fetchSemanticsNode().config
         assertEquals("불러오는 중", config[SemanticsProperties.StateDescription])
         assertFalse(config.contains(SemanticsProperties.Disabled))
+    }
+
+    @Test
+    fun iconOnlyExposesNameAndBlocksClickWhileLoading() {
+        var loading by mutableIntStateOf(0)
+        var clicks = 0
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogContextualFloatingButton(
+                    icon = rememberVectorPainter(PreviewSampleIcons.ArrowUp),
+                    contentDescription = "맨 위로",
+                    onClick = { clicks++ },
+                    loading = loading == 1,
+                )
+            }
+        }
+        composeRule.onNodeWithContentDescription("맨 위로").assertHasClickAction().performClick()
+        assertEquals(1, clicks)
+        loading = 1
+        composeRule.waitForIdle()
+        composeRule.onNodeWithContentDescription("맨 위로").performClick()
+        assertEquals(1, clicks)
+        val config = composeRule.onNodeWithContentDescription("맨 위로").fetchSemanticsNode().config
+        assertEquals("불러오는 중", config[SemanticsProperties.StateDescription])
     }
 }
