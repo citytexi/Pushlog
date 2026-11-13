@@ -24,5 +24,5 @@
 
 ### [2026-11-13] M3 NavigationBar 선택 표시가 라이트에서 거의 안 보임
 
-- `secondaryContainer`(`bg.neutralWeak`, gray200)와 NavigationBar 컨테이너 `surfaceContainer`(`bg.neutralMuted`, gray100)가 RGB로 4단계쯤밖에 차이 나지 않는다. 설계: [`design-system.md`](../architecture/design-system.md)
+- `secondaryContainer`(`bg.neutralWeak`, gray200 `#F3F4F5`)와 NavigationBar 컨테이너 `surfaceContainer`(`bg.neutralMuted`, gray100 `#F7F8F9`)가 거의 구분되지 않는다. 설계: [`design-system.md`](../architecture/design-system.md)
 - 남은 것: 내비게이션 컴포넌트(#22)를 만들 때 정한다.
