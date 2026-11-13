@@ -76,4 +76,4 @@ Konsist가 강제하는 규칙이다. 어기면 `testStarter`가 실패한다.
 | `*RepositoryImpl` | `data`. `domain`의 Repository를 구현해야 함 |
 | `*UseCase` | `domain`. `operator fun invoke`를 가져야 함 |
 
-관례(검사하지 않음): nav 파일 이름은 `PushlogRoutes`/`PushlogNavKeys`처럼 접두사를 쓰고, feature의 화면 composable은 `*Route`, `*Screen`으로 짓는다.
+관례(검사하지 않음): nav 키는 `<Name>Key.kt`처럼 키 이름을 파일 이름으로 쓰고, feature의 화면 composable은 `*Route`, `*Screen`으로 짓는다.

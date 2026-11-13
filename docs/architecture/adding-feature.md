@@ -8,7 +8,7 @@ verified: 2026-11-13
 related_spec:
 related_adr:
 related_architecture:
-related_code: [SampleViewModel, PushlogNavHost, PushlogNavKeys]
+related_code: [SampleViewModel, PushlogNavHost, SampleKey]
 tags: [architecture, feature]
 ---
 
@@ -29,12 +29,12 @@ tags: [architecture, feature]
    - 시작 화면은 nav2는 `PushlogNavHost`의 `startDestination = ...`, nav3는 `rememberNavBackStack(...)`에서 정한다.
 
    **nav2**
-   - `core/navigation/.../PushlogRoutes.kt`에 `@Serializable data object <Name>NavRoute`를 추가한다.
+   - `core/navigation/.../<Name>NavRoute.kt`를 새로 만들어 `@Serializable data object <Name>NavRoute`를 둔다. 라우트마다 파일 하나다.
    - `feature/<name>/.../navigation/<Name>Navigation.kt`에 `fun NavGraphBuilder.<name>Screen() { composable<<Name>NavRoute> { <Name>Route() } }`를 만든다.
    - `app/.../navigation/PushlogNavHost.kt`의 `NavHost { }` 블록에서 `<name>Screen()`을 호출한다.
 
    **nav3**
-   - `core/navigation/.../PushlogNavKeys.kt`에 `@Serializable data object <Name>Key : NavKey`를 추가한다.
+   - `core/navigation/.../<Name>Key.kt`를 새로 만들어 `@Serializable data object <Name>Key : NavKey`를 둔다. 키마다 파일 하나다.
    - `feature/<name>/.../navigation/<Name>Navigation.kt`에 `fun EntryProviderScope<NavKey>.<name>Entry() { entry<<Name>Key> { <Name>Route() } }`를 만든다.
    - `app/.../navigation/PushlogNavHost.kt`의 `entryProvider { }` 블록에서 `<name>Entry()`를 호출한다.
 
