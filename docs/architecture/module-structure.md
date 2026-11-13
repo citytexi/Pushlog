@@ -22,8 +22,8 @@ tags: [architecture, modules]
 | `:feature:sample` | Android | 예시 화면. Route, Screen, ViewModel, UiState/Intent/SideEffect. 새 feature의 복사 원본 |
 | `:domain` | JVM | 모델, `*Repository` 인터페이스, `*UseCase`. Android 의존 금지 |
 | `:data` | Android | `*RepositoryImpl`, Hilt 바인딩(`DataModule`) |
-| `:core:designsystem` | Android | 테마, 공용 컴포넌트 |
-| `:core:ui` | Android | feature 공용 UI 유틸, MVI 컨테이너(`core.ui.mvi`) |
+| `:core:designsystem` | Android | 테마, 공용 컴포넌트(로딩 표시 포함). core:ui에 의존 |
+| `:core:ui` | Android | 화면에 그려지지 않는 UI 기반: MVI 컨테이너(`core.ui.mvi`), 미리보기 어노테이션(`PushlogPreview`). designsystem·material3에 의존하지 않음 |
 | `:core:navigation` | Android | route/key 정의. nav 라이브러리를 `api`로 노출 |
 | `:core:network` | Android | Retrofit, OkHttp, `SampleApi`, `BuildConfig.BASE_URL` |
 | `:core:database` | Android | Room. 스키마를 바꿀 때는 `PushlogDatabase` KDoc(버전, AutoMigration)과 `PushlogDatabaseMigrationTest`를 따른다 |
@@ -55,6 +55,7 @@ Konsist(`konsist/src/test`)가 import도 검사한다.
 
 - `feature`는 `com.citytexi.pushlog.data`, `core.network`, `core.database`, `core.datastore` 패키지를 import하지 않는다(와일드카드 포함).
 - `domain`은 `android`, `androidx`를 import하지 않는다.
+- `core.ui` 패키지의 production 소스는 `core.designsystem`, `androidx.compose.material3`를 import하지 않는다. 의존 방향은 designsystem → ui다.
 - production 소스의 kt 파일은 최상위 `class`/`interface`/`object`/`enum`/`annotation class`를 최대 1개만 선언한다. 파일 이름은 타입 이름으로 짓는다. 중첩 선언과 최상위 함수·값은 세지 않고, 예외는 없다.
 - ViewModel의 `MutableMviContainer` 프로퍼티는 `private`이어야 한다([state-management.md](state-management.md) 참고).
 
