@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.LoadingContent
 import com.citytexi.pushlog.core.designsystem.component.PushlogButton
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -39,8 +38,8 @@ fun SampleScreen(
 ) {
     Scaffold(modifier = modifier, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize().padding(padding).padding(PushlogTheme.dimension.x4),
+            verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3),
         ) {
             Text(
                 text = stringResource(R.string.sample_title),
@@ -96,7 +95,7 @@ private fun SampleItems(items: List<SampleItem>) {
     }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = items, key = { it.id }) { item ->
-            Text(text = item.title, modifier = Modifier.padding(vertical = 12.dp))
+            Text(text = item.title, modifier = Modifier.padding(vertical = PushlogTheme.dimension.x3))
             HorizontalDivider()
         }
     }

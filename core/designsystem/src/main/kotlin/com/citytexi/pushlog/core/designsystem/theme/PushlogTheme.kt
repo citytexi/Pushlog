@@ -46,9 +46,9 @@ fun PushlogTheme(
         LocalPushlogMotion provides DefaultPushlogMotion,
     ) {
         MaterialTheme(
-            colorScheme = colors.toColorScheme(),
-            typography = DefaultPushlogTypography.toMaterialTypography(),
-            shapes = DefaultPushlogRadius.toMaterialShapes(),
+            colorScheme = if (darkTheme) DarkMaterialColorScheme else LightMaterialColorScheme,
+            typography = DefaultMaterialTypography,
+            shapes = DefaultMaterialShapes,
             content = content,
         )
     }

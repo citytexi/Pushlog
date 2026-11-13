@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -280,7 +281,7 @@ private fun MaterialCatalog() {
     Card(modifier = Modifier.fillMaxWidth()) {
         Text("Card", modifier = Modifier.padding(PushlogTheme.dimension.x4))
     }
-    Snackbar { Text("Snackbar") }
+    Snackbar(action = { TextButton(onClick = {}) { Text("Action") } }) { Text("Snackbar") }
     OutlinedTextField(value = "OutlinedTextField", onValueChange = {})
 }
 

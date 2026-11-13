@@ -1,6 +1,9 @@
 package com.citytexi.pushlog.core.designsystem.theme.color
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
+import com.citytexi.pushlog.core.designsystem.theme.DarkMaterialColorScheme
+import com.citytexi.pushlog.core.designsystem.theme.LightMaterialColorScheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,6 +18,24 @@ class BrandContrastTest {
 
     @Test
     fun lightBrandSolidIsExactBrand() = assertEquals(Color(0xFF20874A), LightPushlogColors.bg.brandSolid)
+
+    @Test
+    fun lightSnackbarActionReadsOnInverseSurface() = assertSnackbarAction(LightMaterialColorScheme)
+
+    @Test
+    fun darkSnackbarActionReadsOnInverseSurface() = assertSnackbarAction(DarkMaterialColorScheme)
+
+    private fun assertSnackbarAction(scheme: ColorScheme) {
+        assertAtLeast(TEXT_MIN, scheme.inversePrimary, scheme.inverseSurface)
+        val action = scheme.inversePrimary
+        val saturation =
+            (maxOf(action.red, action.green, action.blue) - minOf(action.red, action.green, action.blue)) /
+                maxOf(action.red, action.green, action.blue)
+        assertTrue(
+            "inversePrimary is near-gray, not brand green (saturation $saturation)",
+            saturation >= MIN_BRAND_SATURATION && action.green > action.red,
+        )
+    }
 
     private fun assertBrandContrast(c: PushlogColors) {
         assertAtLeast(TEXT_MIN, c.fg.onBrandSolid, c.bg.brandSolid)
@@ -53,5 +74,6 @@ class BrandContrastTest {
     private companion object {
         const val TEXT_MIN = 4.5
         const val NON_TEXT_MIN = 3.0
+        const val MIN_BRAND_SATURATION = 0.5f
     }
 }
