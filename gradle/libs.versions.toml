@@ -9,6 +9,9 @@
 compileSdk = "37"
 # Robolectric 4.17 renders up to API 36, so targetSdk (and Robolectric sdk) stay at 36.
 targetSdk = "36"
+# App version. versionName follows yyyy.MM.ddvNN (release date + same-day build number).
+versionCode = "1"
+versionName = "2026.11.13v01"
 
 # Android & Kotlin
 agp = "9.3.1"

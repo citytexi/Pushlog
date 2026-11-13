@@ -14,8 +14,8 @@ internal fun Project.configureAndroidApplication(extension: ApplicationExtension
     extension.apply {
         defaultConfig {
             targetSdk = libs.versions.targetSdk.get().toInt()
-            versionCode = 1
-            versionName = "1.0.0"
+            versionCode = libs.versions.versionCode.get().toInt()
+            versionName = libs.versions.versionName.get()
         }
         buildTypes {
             release {
