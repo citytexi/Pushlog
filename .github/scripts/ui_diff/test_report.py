@@ -359,6 +359,7 @@ class UnsafeNamesTest(unittest.TestCase):
         rep = Report([], [], [], [], unsafe_names=2)
         text = render_comment(rep, Meta(7, HEAD, BASE, "ok"), "o/r", IMAGE_SHA)
         self.assertIn("2개", text)
+        self.assertIn("외의 기호", text)
         self.assertIn("바뀐 화면 없음", text)
         self.assertNotIn("%", text)
 

@@ -331,7 +331,7 @@ def render_comment(report: Report, meta: Meta, repo: str, image_sha: str, max_ro
         lines += [f"렌더에 실패해 비교에서 뺀 모듈: {modules}", ""]
     if report.unsafe_names:
         lines += [
-            "안전하지 않은 파일 이름(영문·숫자·`_`·`-`·`.` 외 문자) 때문에 비교에서 뺀 이미지: "
+            "파일 이름에 글자·숫자·`_`·`-`·`.` 외의 기호가 있어 비교에서 뺀 이미지: "
             f"{report.unsafe_names}개. 프리뷰 이름을 바꾸세요.",
             "",
         ]

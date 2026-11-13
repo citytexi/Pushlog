@@ -35,6 +35,7 @@ task는 두 개다. 모듈에 없는 task는 건너뛴다.
 
 - 이유: 프리뷰 수에 비례해 느려지는 렌더를 빠른 검사에서 빼고, 렌더 오류는 완료 게이트에서 잡는다.
 - 명령줄 태스크 이름이 아니라 실행 그래프로 판정한다. `verifyStarter`는 `recordRoborazziDebug`를 이름 없이 끌어오기 때문이다.
+- 생성 테스트(`RoborazziPreviewParameterizedTests`)를 `testDebugUnitTest --tests`나 IDE에서 단독으로 돌리면 필터에 걸려 0건으로 통과한다. 프리뷰 렌더를 확인하려면 `./gradlew :<module>:recordRoborazziDebug`를 쓴다.
 - Roborazzi 실행에서도 일반 단위 테스트는 함께 돈다. `verifyStarter`가 둘을 한 실행에 부르므로 어느 쪽도 뺄 수 없다. 그래서 UI diff CI에서 단위 테스트가 실패하면 그 모듈은 렌더 실패로 보고된다.
 
 포맷 오류는 `./gradlew ktlintFormat`으로 고친다. 기준 스크린샷은 커밋하지 않는다.
