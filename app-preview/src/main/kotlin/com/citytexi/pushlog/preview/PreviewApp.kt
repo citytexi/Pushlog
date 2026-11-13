@@ -8,9 +8,13 @@ import androidx.activity.compose.LocalActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -57,8 +61,10 @@ fun PreviewApp() {
     }
 
     val backStack = rememberNavBackStack(PreviewHomeKey)
+    // Pop only: the exiting detail stays composed during the pop transition, so a second tap on its
+    // back button must not fall through to finish().
     val onBack: () -> Unit = {
-        if (backStack.size > 1) backStack.removeLastOrNull() else activity?.finish()
+        if (backStack.size > 1) backStack.removeLastOrNull()
     }
     // NavDisplay disables its own back handler on a single entry; without this, back on the home
     // would only move the task to the background (Android 12+) instead of closing the app.
@@ -72,7 +78,11 @@ fun PreviewApp() {
                 color = PushlogTheme.color.bg.layerDefault,
                 contentColor = PushlogTheme.color.fg.neutral,
             ) {
-                Column(Modifier.fillMaxSize().safeDrawingPadding()) {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.safeDrawing.exclude(WindowInsets.navigationBars)),
+                ) {
                     NavDisplay(
                         backStack = backStack,
                         modifier = Modifier.fillMaxWidth().weight(1f),
