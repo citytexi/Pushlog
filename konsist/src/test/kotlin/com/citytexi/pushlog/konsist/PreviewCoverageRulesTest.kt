@@ -33,6 +33,8 @@ class PreviewCoverageRulesTest {
             catalog
                 .single()
                 .text
+                .replace(Regex("/\\*[\\s\\S]*?\\*/"), "")
+                .replace(Regex("//[^\\n]*"), "")
                 .lines()
                 .filterNot { it.trimStart().startsWith("import ") }
                 .joinToString("\n")
