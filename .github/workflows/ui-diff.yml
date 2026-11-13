@@ -4,7 +4,7 @@ name: UI diff
 # 코멘트는 이 런의 아티팩트를 받아 별도 워크플로가 남긴다.
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
     paths:
       - 'feature/**'
       - 'domain/**'
