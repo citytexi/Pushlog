@@ -150,7 +150,7 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 3. 등록: `navigation/PreviewEntryProvider.kt`의 `previewEntryProvider`에 entry 함수를 호출한다.
 4. 목록: `catalog/PreviewCatalog.kt`의 `previewCatalog`에 `PreviewCatalogItem(카테고리, 제목, 키)` 행을 더한다.
 
-이름은 `<컴포넌트 함수 이름>PreviewKey`, `<컴포넌트 함수 이름>PreviewScreen.kt`, `<함수 이름 첫 글자 소문자>PreviewEntry`로 짓는다. 파일 이름은 아래 규칙 1이 검사한다. 본문은 배경을 직접 그리지 않고 `PushlogTheme.*` 토큰만 쓴다.
+이름은 `<컴포넌트 함수 이름>PreviewKey`, `<컴포넌트 함수 이름>PreviewScreen.kt`, `<함수 이름 첫 글자 소문자>PreviewEntry`로 짓는다. 파일 이름과 키 선언은 아래 규칙 1이 검사한다. 본문은 배경을 직접 그리지 않고 `PushlogTheme.*` 토큰만 쓴다.
 
 ### 누락 방지 테스트
 
@@ -158,7 +158,7 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 
 | 잡는 것 | 테스트 |
 |---|---|
-| 1. 컴포넌트에 `<함수 이름>PreviewScreen.kt`가 없음 | Konsist `PreviewCoverageRulesTest`(`konsist`) |
+| 1. 컴포넌트에 `<함수 이름>PreviewScreen.kt` 또는 `<함수 이름>PreviewKey` 선언이 없음 | Konsist `PreviewCoverageRulesTest`(`konsist`) |
 | 2. `previewCatalog`의 키가 `previewEntryProvider`에 등록되지 않음 | `PreviewEntryProviderTest`(`app-preview` 단위 테스트) |
 | 3. `NavKey` 구현체가 `previewCatalog`에서 참조되지 않음(고아 키) | Konsist `PreviewCoverageRulesTest` |
 
