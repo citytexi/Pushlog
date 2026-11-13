@@ -111,7 +111,7 @@ private fun SampleScreenEmptyPreview() {
 @Composable
 private fun SampleScreenItemsPreview() {
     SampleScreenPreviewContent(
-        SampleUiState(items = listOf(SampleItem(1, "First"), SampleItem(2, "Second"), SampleItem(3, "Third"))),
+        SampleUiState(items = listOf("First", "Second", "Third").mapIndexed { index, title -> SampleItem(index + 1L, title) }),
     )
 }
 
