@@ -24,10 +24,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w1200dp-h1200dp")
 class PushlogContextualFloatingButtonScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
@@ -52,16 +54,19 @@ class PushlogContextualFloatingButtonScreenshotTest {
     @Test
     fun font2xDark() = captureStates("contextual_floating_button_font2x_dark", darkTheme = true, fontScale = 2f)
 
-    /** 눌림 열은 Press를 주입한 뒤 한 번만 찍는다. 같은 파일을 두 번 쓰면 기본 상태가 덮인다. */
+    /**
+     * 눌림 열은 Press를 주입한 뒤 한 번만 찍는다. 같은 파일을 두 번 쓰면 기본 상태가 덮인다.
+     * 로딩 호는 무한 전환이라 시계를 멈추고 직접 흘려야 보인다. 화면을 넓혀 2배 글자에서도 열이 잘리지 않게 한다.
+     */
     private fun captureStates(
         name: String,
         darkTheme: Boolean,
         fontScale: Float = 1f,
     ) {
+        composeRule.mainClock.autoAdvance = false
         composeRule.setContent { Themed(darkTheme, fontScale) { States() } }
         composeRule.runOnIdle { pressSources.values.forEach { it.tryEmit(PressInteraction.Press(Offset.Zero)) } }
-        composeRule.mainClock.advanceTimeBy(300)
-        composeRule.waitForIdle()
+        composeRule.mainClock.advanceTimeBy(800)
         composeRule.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
     }
 

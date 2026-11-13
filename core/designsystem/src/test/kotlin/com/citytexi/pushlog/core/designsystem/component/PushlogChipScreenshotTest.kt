@@ -24,10 +24,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w1200dp-h1200dp")
 class PushlogChipScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
@@ -55,36 +57,46 @@ class PushlogChipScreenshotTest {
     @Test
     fun font2xDark() = captureStates("chip_font2x_dark", darkTheme = true, fontScale = 2f)
 
+    /**
+     * 눌림 열은 Press를 주입한 뒤 한 번만 찍는다. 같은 파일을 두 번 쓰면 기본 상태가 덮인다.
+     * 로딩 호는 무한 전환이라 시계를 멈추고 직접 흘려야 보인다. 화면을 넓혀 2배 글자에서도 열이 잘리지 않게 한다.
+     */
     private fun captureStates(
         name: String,
         darkTheme: Boolean,
         fontScale: Float = 1f,
     ) {
-        capture(name, darkTheme, fontScale) { States() }
+        composeRule.mainClock.autoAdvance = false
+        composeRule.setContent { Themed(darkTheme, fontScale) { States() } }
         composeRule.runOnIdle { pressSources.values.forEach { it.tryEmit(PressInteraction.Press(Offset.Zero)) } }
-        composeRule.mainClock.advanceTimeBy(300)
-        composeRule.waitForIdle()
+        composeRule.mainClock.advanceTimeBy(800)
         composeRule.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
     }
 
     private fun capture(
         name: String,
         darkTheme: Boolean,
-        fontScale: Float = 1f,
         content: @Composable () -> Unit,
     ) {
-        composeRule.setContent {
-            val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
-                PushlogTheme(darkTheme = darkTheme) {
-                    Column(Modifier.background(PushlogTheme.color.bg.layerDefault).padding(8.dp)) { content() }
-                }
-            }
-        }
+        composeRule.setContent { Themed(darkTheme, 1f, content) }
         composeRule.onRoot().captureRoboImage("build/outputs/roborazzi/$name.png")
     }
 
-    /** variant마다 세 줄: 기본·눌림 / selected·selected+눌림 / 비활성·selected+비활성. 눌림 열은 캡처 뒤 Press를 주입해 다시 찍는다. */
+    @Composable
+    private fun Themed(
+        darkTheme: Boolean,
+        fontScale: Float,
+        content: @Composable () -> Unit,
+    ) {
+        val density = LocalDensity.current
+        CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale)) {
+            PushlogTheme(darkTheme = darkTheme) {
+                Column(Modifier.background(PushlogTheme.color.bg.layerDefault).padding(8.dp)) { content() }
+            }
+        }
+    }
+
+    /** variant마다 세 줄: 기본·눌림 / selected·selected+눌림 / 비활성·selected+비활성. 눌림 열은 Press를 주입해 찍는다. */
     @Composable
     private fun States() {
         val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
