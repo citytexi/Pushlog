@@ -4,6 +4,7 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import com.citytexi.pushlog.preview.component.loadingContentPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogActionButtonPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogButtonPreviewEntry
 import com.citytexi.pushlog.preview.foundation.colorPreviewEntry
 import com.citytexi.pushlog.preview.foundation.materialPreviewEntry
@@ -26,5 +27,6 @@ fun previewEntryProvider(
         shapePreviewEntry(onBack)
         materialPreviewEntry(onBack)
         pushlogButtonPreviewEntry(onBack)
+        pushlogActionButtonPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }
