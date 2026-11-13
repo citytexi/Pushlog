@@ -21,6 +21,13 @@ class PreviewCoverageRulesTest {
         val screenNames = screens.map { it.name }.toSet()
         val missing = components.filter { "${it}PreviewScreen" !in screenNames }
         assertTrue(missing.isEmpty(), "components without a preview screen:\n${missing.joinToString("\n")}")
+        val keyNames =
+            screens
+                .flatMap { it.objects(includeNested = true) + it.classes(includeNested = true) }
+                .map { it.name }
+                .toSet()
+        val keyless = components.filter { "${it}PreviewKey" !in keyNames }
+        assertTrue(keyless.isEmpty(), "components without a preview key declaration:\n${keyless.joinToString("\n")}")
     }
 
     @Test
