@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Density
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.preview.foundation.BRAND_SOLID_SWATCH_TAG
 import com.citytexi.pushlog.preview.scaffold.PREVIEW_SCAFFOLD_TAG
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -26,6 +27,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -59,14 +61,20 @@ class PreviewAppTest {
     fun `choosing dark in the control bar paints a detail screen with the dark layerDefault`() {
         var light = Color.Unspecified
         var dark = Color.Unspecified
+        var lightBrand = Color.Unspecified
+        var darkBrand = Color.Unspecified
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
                 val color = PushlogTheme.color.bg.layerDefault
                 SideEffect { light = color }
+                val brand = PushlogTheme.color.bg.brandSolid
+                SideEffect { lightBrand = brand }
             }
             PushlogTheme(darkTheme = true) {
                 val color = PushlogTheme.color.bg.layerDefault
                 SideEffect { dark = color }
+                val brand = PushlogTheme.color.bg.brandSolid
+                SideEffect { darkBrand = brand }
             }
             PreviewApp()
         }
@@ -74,10 +82,15 @@ class PreviewAppTest {
         composeRule.onNodeWithText("Color").performClick()
         composeRule.onNodeWithText("뒤로").assertExists()
         assertEquals(light, detailBackground())
+        val lightSwatch = brandSolidSwatch()
+        assertEquals(lightBrand, lightSwatch)
 
         composeRule.onNodeWithText("다크").performClick()
         composeRule.onNodeWithText("뒤로").assertExists()
         assertEquals(dark, detailBackground())
+        val darkSwatch = brandSolidSwatch()
+        assertEquals(darkBrand, darkSwatch)
+        assertNotEquals(lightSwatch, darkSwatch)
     }
 
     @Test
@@ -126,6 +139,13 @@ class PreviewAppTest {
     private fun detailBackground(): Color {
         composeRule.waitForIdle()
         return composeRule.onNodeWithTag(PREVIEW_SCAFFOLD_TAG).captureToImage().toPixelMap()[1, 1]
+    }
+
+    // The swatch box is drawn by the Color screen itself, so its center pixel shows the theme the detail content got.
+    private fun brandSolidSwatch(): Color {
+        composeRule.waitForIdle()
+        val image = composeRule.onNodeWithTag(BRAND_SOLID_SWATCH_TAG).captureToImage().toPixelMap()
+        return image[image.width / 2, image.height / 2]
     }
 
     // Home and detail screens draw no own surface above PreviewApp's root, so the top-left pixel is its background.

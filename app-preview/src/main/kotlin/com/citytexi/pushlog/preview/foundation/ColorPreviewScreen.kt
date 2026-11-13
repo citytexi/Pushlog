@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -19,6 +20,9 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
 
 private val SWATCH_BORDER_WIDTH = 1.dp
+
+/** Test tag on the bg.brandSolid swatch, so tests can read the color the screen itself draws. */
+const val BRAND_SOLID_SWATCH_TAG = "swatch_bg_brandSolid"
 
 /** Registers the color screen for [ColorPreviewKey]. */
 fun EntryProviderScope<NavKey>.colorPreviewEntry(onBack: () -> Unit) {
@@ -30,7 +34,9 @@ fun EntryProviderScope<NavKey>.colorPreviewEntry(onBack: () -> Unit) {
 fun ColorPreviewContent() {
     PreviewBody {
         PreviewSectionTitle("bg")
-        bgSwatches().forEach { (name, color) -> Swatch(name, color) }
+        bgSwatches().forEach { (name, color) ->
+            Swatch(name, color, tag = if (name == "brandSolid") BRAND_SOLID_SWATCH_TAG else null)
+        }
         PreviewSectionTitle("fg")
         fgSwatches().forEach { (name, color) -> Swatch(name, color) }
         PreviewSectionTitle("stroke")
@@ -42,6 +48,7 @@ fun ColorPreviewContent() {
 private fun Swatch(
     name: String,
     color: Color,
+    tag: String? = null,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -49,6 +56,7 @@ private fun Swatch(
     ) {
         Box(
             Modifier
+                .then(if (tag != null) Modifier.testTag(tag) else Modifier)
                 .size(width = PushlogTheme.dimension.x12, height = PushlogTheme.dimension.x6)
                 .background(color)
                 .border(SWATCH_BORDER_WIDTH, PushlogTheme.color.stroke.neutralMuted),
