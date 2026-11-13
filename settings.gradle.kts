@@ -25,6 +25,7 @@ dependencyResolutionManagement {
 rootProject.name = "Pushlog"
 
 include(":app")
+include(":app-preview")
 include(":feature:sample")
 include(":domain")
 include(":data")
