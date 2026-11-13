@@ -67,7 +67,7 @@
 wiki/
   CLAUDE.md  conventions.md  routing.json  log.md
   open-questions.md  routing-misses.md
-  references/  templates/  script/  raw/  graphify-out/
+  references/  templates/  script/  raw/
   pages/
     purpose.md  overview.md  index.md
     sources/  concepts/  entities/  queries/  synthesis/
@@ -84,14 +84,6 @@ wiki/
 흘린 파일은 어느 검사에도 걸리지 않으면서 인바운드 링크 1건만으로 합법이 된다.
 배치가 곧 검사 대상 선정이라, 배치를 강제하지 않으면 나머지 규칙 전체가 우회
 가능해진다.
-
-`wiki/graphify-out/`은 수집 대상이 아니고 파일명 유일성 검사에도 들어가지 않는다.
-graphify가 쓰는 산출물(`graph.json`·`manifest.json`·`GRAPH_REPORT.md` 등)이 위키
-페이지와 이름이 겹치는 것은 위키의 문제가 아니라 생성물의 문제이며, 여기서 위반으로
-띄우면 사람이 고칠 수 없는 경고가 영구히 남는다. 같은 이유로 `wiki/graphify-out/`은
-graphify의 스캔 루트(`graph_signals.SCAN_ROOT` = `wiki/pages`) **밖에** 있어야 한다 —
-산출물이 스캔 루트 안에 있으면 그래프를 다시 만들 때마다 산출물 자신이 콘텐츠로
-스캔되어 순환이 생긴다.
 
 ## 6. frontmatter 필수 필드
 

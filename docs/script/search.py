@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""자연어 쿼리로 구현 문서를 찾는다 — 스펙·계획·ADR·아키텍처·synthesis.
+"""자연어 쿼리로 문서를 찾는다 — 구현 문서(스펙·계획·ADR·아키텍처·synthesis)와 위키 페이지.
 
 용법:
-    python3 docs/script/search.py "<자연어 쿼리>" [--top N]
+    python3 docs/script/search.py "<자연어 쿼리>" [--top N] [--scope all|docs|wiki]
 
-graphify 의 스캔 루트는 `wiki/pages/` 라서 `docs/` 아래 문서는 그 바깥이다.
-이 스크립트가 그 구멍을 메운다.
+코드 그래프·개념 그래프 대신 쓰는 가벼운 키워드 검색이다. 색인을 미리 만들지 않고
+실행할 때마다 frontmatter와 헤딩을 읽는다 — 문서가 바뀌어도 다시 만들 것이 없다.
 
 규약: stdlib 전용. repo 루트 = Path(__file__).resolve().parents[2].
 """
@@ -21,6 +21,10 @@ DOC_ROOTS = [
     REPO_ROOT / "docs" / "adr",
     REPO_ROOT / "docs" / "architecture",
     REPO_ROOT / "docs" / "synthesis",
+]
+
+WIKI_ROOTS = [
+    REPO_ROOT / "wiki" / "pages",
 ]
 
 FRONTMATTER = re.compile(r"^---\n(.*?)\n---", re.S)
@@ -50,6 +54,11 @@ def _field(block, key):
     return " ".join(p for p in parts if p).strip("[]").strip("\"'")
 
 
+def _first_h1(text):
+    m = re.search(r"^#\s+(.+)$", text, re.M)
+    return m.group(1).strip() if m else ""
+
+
 def parse_doc(md_path, archived):
     text = md_path.read_text(encoding="utf-8", errors="ignore")
     m = FRONTMATTER.search(text)
@@ -60,7 +69,8 @@ def parse_doc(md_path, archived):
     )
     return {
         "id": doc_id,
-        "title": _field(block, "title"),
+        # 위키 페이지는 frontmatter에 title이 없다 — 첫 H1을 제목으로 쓴다.
+        "title": _field(block, "title") or _first_h1(text),
         "tags": _field(block, "tags"),
         "code": related,
         "headings": " ".join(re.findall(r"^#{1,3}\s+(.+)$", text, re.M)),
@@ -92,9 +102,10 @@ def score(query, doc):
     return total
 
 
-def collect():
+def collect(scope="all"):
+    roots = {"docs": DOC_ROOTS, "wiki": WIKI_ROOTS}.get(scope, DOC_ROOTS + WIKI_ROOTS)
     docs = []
-    for root in DOC_ROOTS:
+    for root in roots:
         if not root.is_dir():
             continue
         for md in sorted(root.rglob("*.md")):
@@ -102,18 +113,19 @@ def collect():
     return docs
 
 
-def search(query, top=8):
-    ranked = sorted(((score(query, d), d) for d in collect()), key=lambda x: -x[0])
+def search(query, top=8, scope="all"):
+    ranked = sorted(((score(query, d), d) for d in collect(scope)), key=lambda x: -x[0])
     return [(sc, d) for sc, d in ranked if sc > 0][:top]
 
 
 def main():
-    ap = argparse.ArgumentParser(description="구현 문서 검색")
+    ap = argparse.ArgumentParser(description="구현 문서·위키 검색")
     ap.add_argument("query", nargs="+")
     ap.add_argument("--top", type=int, default=8)
+    ap.add_argument("--scope", choices=("all", "docs", "wiki"), default="all")
     a = ap.parse_args()
     q = " ".join(a.query)
-    res = search(q, a.top)
+    res = search(q, a.top, a.scope)
     if not res:
         print(f"매칭 문서 없음: {q}")
         return

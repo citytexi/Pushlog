@@ -11,7 +11,7 @@ Check the wiki without changing content, then fix only what the rules allow.
 
 1. Run `python3 wiki/script/route.py --intent lint` and read the `required` files. Stop on exit code 3 or 4.
 2. Run the machine checks. Do not write ad-hoc scripts.
-   - `python3 wiki/script/lint.py` — sensitive patterns, frontmatter, links, layout, orphans, raw consistency, provenance, graph signals.
+   - `python3 wiki/script/lint.py` — sensitive patterns, frontmatter, links, layout, orphans, raw consistency, provenance.
    - `python3 wiki/script/check_status.py` — source edition `status` integrity and index projection.
    Per-code handling is in `wiki/references/lint-rules.md`.
 3. Read for what scripts cannot judge:

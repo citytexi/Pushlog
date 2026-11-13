@@ -67,7 +67,7 @@ class CollectTest(unittest.TestCase):
             p.write_text("# 안내\n본문\n", encoding="utf-8")
             doc = search.parse_doc(p, archived=False)
             self.assertEqual(doc["id"], "README")
-            self.assertEqual(doc["title"], "")
+            self.assertEqual(doc["title"], "안내")
 
     def test_field_reads_whole_block_list(self):
         with tempfile.TemporaryDirectory() as t:
@@ -105,6 +105,9 @@ class SearchTest(unittest.TestCase):
         # 실행되는 것에 기대면 테스트 파일이 하나 더 생기는 순간 깨진다.
         saved = search.DOC_ROOTS
         self.addCleanup(lambda: setattr(search, "DOC_ROOTS", saved))
+        saved_wiki = search.WIKI_ROOTS
+        self.addCleanup(lambda: setattr(search, "WIKI_ROOTS", saved_wiki))
+        search.WIKI_ROOTS = []
 
     def test_ranks_relevant_first(self):
         with tempfile.TemporaryDirectory() as t:
@@ -123,6 +126,16 @@ class SearchTest(unittest.TestCase):
             res = search.search("태그", top=5)
             self.assertEqual(len(res), 1)
             self.assertTrue(res[0][1]["archived"])
+
+
+class WikiTitleTest(unittest.TestCase):
+    def test_wiki_page_without_title_uses_first_h1(self):
+        with tempfile.TemporaryDirectory() as d:
+            md = Path(d) / "tag-classification.md"
+            md.write_text("---\ntags: [feature]\n---\n\n# 태그 분류\n\n## 정의\n", encoding="utf-8")
+            doc = search.parse_doc(md, archived=False)
+            self.assertEqual(doc["title"], "태그 분류")
+            self.assertEqual(doc["id"], "tag-classification")
 
 
 if __name__ == "__main__":

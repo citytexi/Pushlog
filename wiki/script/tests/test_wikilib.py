@@ -181,18 +181,6 @@ def test_all_markdown_is_scoped_to_wiki(make_repo):
     assert rels == {"wiki/pages/concepts/개념.md"}
 
 
-def test_graphify_output_is_not_collected(make_repo):
-    """생성물이 위키 페이지로 수집되면 파일명중복·고아 검사에 자기가 걸린다."""
-    root = make_repo({
-        "wiki/graphify-out/GRAPH_REPORT.md": "# report",
-        "wiki/pages/concepts/개념.md": page(sources="[]"),
-    })
-    assert [pg.rel for pg in wikilib.load_pages(root)] == [
-        "wiki/pages/concepts/개념.md"]
-    assert wikilib.all_markdown(root) == [
-        root / "wiki/pages/concepts/개념.md"]
-
-
 def test_wiki_entry_files_are_not_collected(make_repo):
     root = make_repo({
         "wiki/CLAUDE.md": "# ops",

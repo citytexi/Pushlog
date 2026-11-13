@@ -10,9 +10,10 @@ Answer from `wiki/pages/` without changing pages unless the result is worth savi
 ## Steps
 
 1. Run `python3 wiki/script/route.py --intent query` from the repo root and read the `required` files (`wiki/pages/index.md`, `wiki/open-questions.md`). Stop on exit code 3 or 4.
-2. Read related pages in evidence order from `wiki/conventions.md` §1: `concepts/`·`entities/` first, then `wiki/open-questions.md` (always), then `sources/` only when needed.
+2. If `required` is not enough to find the relevant pages, run `python3 docs/script/search.py "<keywords>" --scope wiki`.
+3. Read related pages in evidence order from `wiki/conventions.md` §1: `concepts/`·`entities/` first, then `wiki/open-questions.md` (always), then `sources/` only when needed.
    - Do not cite a superseded source (`🔁` in the index, `status: superseded`) as current.
    - Any open question not marked resolved is still open.
-3. Answer with `[[page]]` links as citations. Pick the format the question needs: prose, a comparison table, or slides.
-4. If the analysis is reusable, save it under `wiki/pages/synthesis/` (register it in `index.md` and link it from a related concept/entity page), or under `wiki/pages/queries/` for a plain Q&A record. Then append a line to `wiki/log.md` and run `python3 wiki/script/lint.py` to 0 violations.
-5. If the wiki cannot answer, say so and name the gap. Do not fill it from general knowledge; offer the research intent instead (`wiki/references/research.md`).
+4. Answer with `[[page]]` links as citations. Pick the format the question needs: prose, a comparison table, or slides.
+5. If the analysis is reusable, save it under `wiki/pages/synthesis/` (register it in `index.md` and link it from a related concept/entity page), or under `wiki/pages/queries/` for a plain Q&A record. Then append a line to `wiki/log.md` and run `python3 wiki/script/lint.py` to 0 violations.
+6. If the wiki cannot answer, say so and name the gap. Do not fill it from general knowledge; offer the research intent instead (`wiki/references/research.md`).

@@ -364,11 +364,6 @@ def run_all(repo_root: pathlib.Path, pages: list[Page] | None = None) -> list[Fi
         pages = wikilib.load_pages(repo_root)
     index = wikilib.build_name_index(pages)
     link_findings, inbound = check_links(pages, index)
-    # 함수 안에서 import한다 — graph_signals는 wiki/graphify-out/graph.json이라는
-    # 산출물만 읽는 독립 모듈이라 항상 존재하지만, 모듈 로드를 호출 시점까지
-    # 늦춰 두면 이 파일 상단의 import 목록이 "항상 필요한 것"과 "검사 하나가
-    # 쓰는 것"으로 갈리지 않는다.
-    import graph_signals
     return [
         *check_unique_names(repo_root),
         *link_findings,
@@ -380,7 +375,6 @@ def run_all(repo_root: pathlib.Path, pages: list[Page] | None = None) -> list[Fi
         *check_manifest(repo_root),
         *check_sensitive(pages, repo_root),
         *check_action_enum(repo_root),
-        *graph_signals.check_graph_signals(repo_root, pages),
     ]
 
 

@@ -1,6 +1,6 @@
 # research 절차 (Deep Research)
 
-lint와 그래프 신호는 무엇이 비어 있는지 찾아낼 뿐이다. 이 문서 없이 끝나면 그
+lint는 무엇이 비어 있는지 찾아낼 뿐이다. 이 문서 없이 끝나면 그
 탐지는 보고서 한 줄로 죽는다. 이 절차는 공백 → 검색 → 원본 저장 → 일반
 ingest → 미결 갱신까지 이어서, 탐지가 실제로 위키에 되먹여지게 한다.
 
@@ -16,14 +16,12 @@ ingest → 미결 갱신까지 이어서, 탐지가 실제로 위키에 되먹�
 
 ## 1. 입력
 
-아래 세 신호를 모은다. 하나만 보고 시작하지 않는다.
+아래 두 신호를 모은다. 하나만 보고 시작하지 않는다.
 
 - `python3 wiki/script/lint.py` 출력의 "데이터 공백" 판단. lint.py 자신이
   밝히듯 데이터 공백은 기계 검사 밖이라 코드로 나오지 않는다 — `wiki/pages/index.md`·
   `wiki/pages/overview.md`를 `wiki/pages/purpose.md`의 핵심 질문과 대조해서
   사람/LLM이 읽어야 한다.
-- `wiki/script/graph_signals.py`가 내는 `그래프고립`·`희소커뮤니티` 경고. 코드
-  판정 기준은 `wiki/references/lint-rules.md`를 본다.
 - `wiki/open-questions.md`에서 `action: research`로 표시된 항목.
   `action` 허용값의 정의는 `wiki/conventions.md` §3이 정본이다.
 
@@ -90,6 +88,4 @@ python3 wiki/script/ingest_cache.py --record <wiki/raw 상대경로>
 - `wiki/conventions.md` §3(미결 항목), §10(raw/ 규칙)
 - `wiki/references/ingest-checklist.md`, `wiki/references/lint-rules.md`
 - `wiki/pages/purpose.md`, `wiki/pages/overview.md`, `wiki/open-questions.md`
-- `wiki/script/lint.py`, `wiki/script/graph_signals.py`,
-  `wiki/script/ingest_cache.py`
-- `wiki/graphify-out/GRAPH_REPORT.md`
+- `wiki/script/lint.py`, `wiki/script/ingest_cache.py`

@@ -17,16 +17,8 @@
    python3 wiki/script/route.py --intent <의도> [--seed <저장소상대경로> ...] [--json]
    ```
 
-3. graphify가 설치돼 있으면 `graphify query "<노드명>"`으로 관계를 보완한다.
-   요청 표현을 그대로 검색어로 쓰지 않는다 — `graph.json`에 실재하는 노드명만
-   골라 쓰고, 비슷한 말을 지어내지 않는다. 매칭되는 노드가 없으면 "관련
-   어휘를 찾지 못했다"고 밝히고 그래프 검색을 멈춘 뒤 라우팅 맵 결과만으로
-   진행한다. 매칭된 결과 페이지는 seed 후보에 더한다. **노드명은 경로가
-   아니다** — `--seed`로 넘기기 전에 저장소 상대 경로로 바꾼다. 변환은
-   출력 줄의 `src=` 값(스캔 루트 `wiki/pages` 기준 상대경로) 앞에
-   `wiki/pages/`를 붙이는 것이다: `src=concepts/개념.md` →
-   `wiki/pages/concepts/개념.md`. `src=`가 없으면 그 후보를 버린다. 경로가
-   아닌 값을 넘기면 `route.py`가 종료 코드 4로 막는다.
+3. 키워드로 관련 페이지를 더 찾아야 하면 `python3 docs/script/search.py "<검색어>" --scope wiki`로
+   후보를 받는다. 결과의 경로(`wiki/pages/...`)를 그대로 seed 후보에 더한다.
 4. seed(`required` 페이지, `--seed`로 넘긴 페이지, 3번 결과)가 정해지면
    `--seed <저장소상대경로>`를 붙여 같은 명령을 다시 돌려 출처 중복 확장을
    받는다.
@@ -60,9 +52,9 @@
 - **4** — 라우팅 입력이 잘못됐다. 표준 출력이 아니라 표준 오류의 메시지를 읽고
   원인을 가린다.
   - 의도를 모른다 → 오타면 정정하고, 허용된 7종 중에서 다시 고른다.
-  - `--seed`가 수집된 페이지가 아니다 → 저장소 상대 경로로 고친다. graphify
-    노드명은 경로가 아니므로 그대로 넘기지 않는다(3단계). 의도가 `unclear`라도
-    이 검사는 건너뛰지 않는다.
+  - `--seed`가 수집된 페이지가 아니다 → 저장소 상대 경로로 고친다. `[[이름]]`은
+    경로가 아니므로 그대로 넘기지 않는다. 의도가 `unclear`라도 이 검사는 건너뛰지
+    않는다.
   - `routing.json`이 실재하지 않는 경로를 가리키거나 `expansion` 블록이
     불완전하다 → 맵을 고친다.
   - `routing.json` 자체가 없거나 JSON 문법이 깨졌다 → 파일 경로와 문법을
@@ -81,41 +73,9 @@
 
 `python3 wiki/script/lint.py`로 위반 0건을 확인한다.
 
-PR을 올리기 전 로컬에서 graphify를 1회 수동 실행하고 `wiki/graphify-out/`
-산출물까지 함께 커밋한다.
-
-    graphify extract ./wiki/pages --out ./wiki
-
-`--out ./wiki`를 빠뜨리면 산출물이 `wiki/pages/graphify-out/`에 떨어진다 —
-스캔 루트 안이라 `conventions.md` §5가 금지하는 배치다.
-
-백엔드는 실행하는 환경에 맞춰 고른다. 넷 중 하나다 — Claude Code 구독 인증을
-그대로 쓰는 `claude-cli`(`--backend claude-cli`), 로컬 `ollama`
-(`--backend ollama`), `OPENAI_BASE_URL`을 로컬 서버로 돌린 `openai` 백엔드,
-또는 API 키를 쓰는 원격 백엔드. 앞의 셋은 API 키가 필요 없다.
-`graphify update`와 `--code-only`는 코드 전용이라 이 위키에는 쓰지 않는다.
-
-`graph.json`이 아직 없으면 `lint.py`의 그래프 신호 4종은 아예 뜨지 않는다.
-백엔드가 없는 환경에서도 lint는 정상 동작한다.
-
-### 추출 뒤 — 스캔 루트 밖을 가리키는 노드를 지운다
-
-추출이 끝나면 `graph.json`의 노드 중 `source_file`이 `wiki/pages/` 아래 실재
-파일로 풀리지 않는 것을 지운다. 그 엣지와 하이퍼엣지 항목도 같이 지운 뒤
-`graphify cluster-only ./wiki`로 다시 묶는다.
-
-위키 페이지들이 `[[open-questions]]`처럼 스캔 루트 밖 문서를 링크하기 때문에
-생기는 일이다. 추출이 그 링크를 노드로 만들면서 `source_file`을
-`open-questions.md`로 적고, 스캔 루트 기준으로 풀면
-`wiki/pages/open-questions.md`가 되어 실물(`wiki/open-questions.md`)과
-어긋난다. `lint.py`는 이를 `그래프stale`로 읽고 그래프 신호 4종 판정을 통째로
-생략한다 — 그래프는 멀쩡한데 신호만 죽는다.
-
-커뮤니티 수가 바뀌면 `cluster-only`가 저장된 이름을 재사용하며 경고를 낸다.
-이름을 다시 붙이려면 `graphify label ./wiki`를 돌린다.
-
-`lint.py`가 남기는 `브리지` 경고는 고칠 것이 아니다 — 여러 지식 영역을 잇는
-페이지를 알려주는 신호이고, 위반이 아니라 읽을 거리다.
+개념 그래프 도구(graphify)는 쓰지 않는다. 이 위키는 작고, 관계는 `[[링크]]`와
+`route.py`의 출처 중복 확장, `docs/script/search.py`의 키워드 검색으로 충분하다.
+그래프를 쓰면 페이지가 바뀔 때마다 다시 만들어야 하고, 그 비용이 검색 이득보다 크다.
 
 ## 라우팅 실패 기록
 

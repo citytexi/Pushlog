@@ -28,12 +28,8 @@ UNCOLLECTED_FILES = (
     "wiki/conventions.md",
     "wiki/routing-misses.md",
 )
-# graphify 산출물. 수집도 안 하고 파일명 유일성 검사에도 넣지 않는다 — graphify가
-# 쓰는 GRAPH_REPORT.md가 위키 페이지와 이름이 겹치는 것은 위키의 문제가 아니라
-# 생성물의 문제이고, 여기서 위반으로 띄우면 사람이 고칠 수 없는 경고가 남는다.
-# 스캔 루트(wiki/pages/) 밖에 두는 것과 별개로 이 마개가 필요하다 — 산출물이
-# wiki/ 안에 있기 때문이다.
-GENERATED_DIRS = ("wiki/graphify-out",)
+# 생성물 디렉토리. 수집도 안 하고 파일명 유일성 검사에도 넣지 않는다. 지금은 없다.
+GENERATED_DIRS: tuple[str, ...] = ()
 # 스캔에서 제외할 디렉토리.
 # .pytest_cache·.superpowers는 추적되지 않는 작업 부산물이다. 포함하면 lint 결과가
 # 로컬 작업 사본과 새 클론에서 달라진다 — 검사는 커밋된 트리만 봐야 한다.

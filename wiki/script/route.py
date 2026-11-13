@@ -158,8 +158,7 @@ def resolve_seeds(pages, seeds: list[str]) -> list[str]:
     """seed를 수집된 페이지의 저장소 상대 경로로 확정한다. 못 찾으면 RoutingError.
 
     해석되지 않는 seed를 조용히 건너뛰면 "확장 후보 없음"이 출력된다 — 확장이 돌았고
-    아무것도 못 찾았다는 뜻인데, 실제로는 돌지도 않았다. 3단계는 graphify 노드명을
-    `--seed`로 넘기므로(노드명은 경로가 아니다) 이 침묵은 반드시 밟게 된다.
+    아무것도 못 찾았다는 뜻인데, 실제로는 돌지도 않았다.
     """
     canon = {wikilib.nfc(pg.rel): pg.rel for pg in pages}
     out = []
@@ -168,8 +167,8 @@ def resolve_seeds(pages, seeds: list[str]) -> list[str]:
         if hit is None:
             raise RoutingError(
                 f"--seed '{seed}' 가 수집된 페이지가 아니다. 저장소 상대 경로로 쓴다 "
-                f"(예: wiki/pages/concepts/<페이지>.md). graphify 노드명은 "
-                f"경로가 아니므로 그대로 넘기지 않는다")
+                f"(예: wiki/pages/concepts/<페이지>.md). [[이름]]이 아니라 "
+                f"경로를 넘긴다")
         out.append(hit)
     return out
 
