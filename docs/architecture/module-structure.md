@@ -31,6 +31,7 @@ tags: [architecture, modules]
 | `:core:common` | JVM | 공용 타입과 함수(`runSuspendCatching`, `HttpStatusException` 등), dispatcher qualifier와 Hilt 바인딩(`DispatcherModule`, JVM용 `hilt-core`) |
 | `:core:testing:jvm` | JVM | JVM 테스트 도구 |
 | `:core:testing:android` | Android | 계측/Robolectric 테스트 도구 |
+| `:app-preview` | Android | 디버그 전용 디자인 시스템 미리보기 앱(release 변형 없음). 사용법은 [design-system.md](design-system.md#미리보기-앱) |
 | `:konsist` | JVM | 아키텍처 규칙 테스트(소스 경로만 읽음) |
 
 JVM 모듈은 `domain`, `core:common`, `core:testing:jvm`, `konsist`이고 나머지는 Android다.
@@ -46,6 +47,7 @@ Gradle `build-logic`의 `ModuleRules`가 모든 모듈의 프로젝트 의존을
 | `data` | `domain`, `core:network`, `core:database`, `core:datastore`, `core:common` |
 | `core:designsystem`, `core:ui`, `core:navigation` | 이 셋과 `core:common`만(UI core는 `network`, `database`, `datastore`에 의존하지 못함) |
 | 그 밖의 `core:*` | 다른 `core:*`만. `core:testing:*`은 test/androidTest 구성에서만 쓰고, 자신은 아무 `core:*`에나 의존할 수 있음 |
+| `app-preview` | `core:designsystem`, `core:ui`, `core:navigation`, `core:common`만 |
 | `app` | 전부 |
 | `konsist` | 없음 |
 
@@ -57,6 +59,7 @@ Konsist(`konsist/src/test`)가 import도 검사한다.
 - `domain`은 `android`, `androidx`를 import하지 않는다.
 - `core.ui` 패키지의 production 소스는 `core.designsystem`, `androidx.compose.material3`를 import하지 않는다. 의존 방향은 designsystem → ui다.
 - production 소스의 kt 파일은 최상위 `class`/`interface`/`object`/`enum`/`annotation class`를 최대 1개만 선언한다. 파일 이름은 타입 이름으로 짓는다. 중첩 선언과 최상위 함수·값은 세지 않고, 예외는 없다.
+- `PreviewCoverageRulesTest`: `core:designsystem`의 공개 컴포넌트마다 `app-preview`에 `<이름>PreviewScreen.kt`가 있어야 하고, `NavKey` 구현체는 `PreviewCatalog`에서 참조돼야 한다([design-system.md](design-system.md#미리보기-앱)).
 - ViewModel의 `MutableMviContainer` 프로퍼티는 `private`이어야 한다([state-management.md](state-management.md) 참고).
 
 데이터는 항상 **Repository → UseCase → ViewModel** 순서로 흐른다. Konsist가 강제한다.

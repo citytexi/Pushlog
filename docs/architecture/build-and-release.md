@@ -29,7 +29,7 @@ task는 두 개다. 모듈에 없는 task는 건너뛴다.
   - JVM: `test` (`:konsist` 포함, 아키텍처 규칙)
   - `build-logic`: `:convention:test` (`ModuleRulesTest`)
   - 전체: `detekt`, `ktlintCheck`
-- `verifyStarter`: 끝내기 전의 완료 게이트. `testStarter` 전부에 더해 Android 모듈의 `assembleDebug`, `assembleRelease`, `recordRoborazziDebug`를 실행한다.
+- `verifyStarter`: 끝내기 전의 완료 게이트. `testStarter` 전부에 더해 Android 모듈의 `assembleDebug`, `assembleRelease`, `recordRoborazziDebug`를 실행한다. `:app-preview`는 debug 전용이라 release 변형이 없어 `assembleRelease`에서 빠진다.
 
 포맷 오류는 `./gradlew ktlintFormat`으로 고친다. 기준 스크린샷은 커밋하지 않는다.
 

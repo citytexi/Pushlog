@@ -24,7 +24,7 @@ LLM 도구(Claude Code, Cursor, Codex)와 팀원이 이 프로젝트에서 지�
 | 화면(ViewModel·Route·Screen) | [`docs/architecture/state-management.md`](docs/architecture/state-management.md), [`docs/architecture/adding-feature.md`](docs/architecture/adding-feature.md) |
 | Room, DataStore, `SecureStore` | [`docs/architecture/data-layer.md`](docs/architecture/data-layer.md) |
 | 빌드, 검증, 버전, 배포, 서명 | [`docs/architecture/build-and-release.md`](docs/architecture/build-and-release.md) |
-| 디자인 시스템 토큰·컴포넌트 | [`docs/architecture/design-system.md`](docs/architecture/design-system.md) |
+| 디자인 시스템 토큰·컴포넌트, 미리보기 앱 | [`docs/architecture/design-system.md`](docs/architecture/design-system.md), [미리보기 앱 절](docs/architecture/design-system.md#미리보기-앱) |
 | Kotlin 주석·KDoc | [`docs/code-conventions.md`](docs/code-conventions.md) |
 | 제품 스펙·기획 판단 | [`wiki/CLAUDE.md`](wiki/CLAUDE.md)를 먼저 읽고 `python3 wiki/script/route.py --intent <의도>`로 시작 |
 | 앱 전체 설계 | [`docs/superpowers/specs/2026-11-13-pushlog-design.md`](docs/superpowers/specs/2026-11-13-pushlog-design.md) |
