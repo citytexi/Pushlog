@@ -158,7 +158,7 @@ class RenderTest(unittest.TestCase):
         self.assertIn("바뀐 화면 없음", body)
         with tempfile.TemporaryDirectory() as tmp:
             out = run_collect(Path(tmp), meta(), [])
-            self.assertEqual(out["github_output"], "total=0\n")
+            self.assertEqual(out["github_output"], "total=0\nunsafe=0\n")
             self.assertEqual(out["files"], b"")
 
     def test_render_status_messages(self):
@@ -233,7 +233,7 @@ class CliTest(unittest.TestCase):
             self.assertEqual([e["name"] for e in entries["changed"]], ["A"])
             self.assertEqual([e["name"] for e in entries["added"]], ["B"])
             self.assertEqual([e["name"] for e in entries["removed"]], ["D"])
-            self.assertEqual(out["github_output"], "total=3\n")
+            self.assertEqual(out["github_output"], "total=3\nunsafe=0\n")
             self.assertEqual(
                 out["files"].split(b"\0")[:-1],
                 [f"{module}/{OUT}/A_compare.png".encode(), f"{module}/{OUT}/B_actual.png".encode()],
@@ -260,7 +260,7 @@ class CliTest(unittest.TestCase):
             out = run_collect(root, meta(), [])
             entries = json.loads(out["entries"])
             self.assertEqual([(e["name"], e["image"] is not None) for e in entries["added"]], [("Big", False), ("NotPng", False), ("Ok", True)])
-            self.assertEqual(out["github_output"], "total=3\n")
+            self.assertEqual(out["github_output"], "total=3\nunsafe=0\n")
             self.assertEqual(out["files"], f"{module}/{OUT}/Ok_actual.png".encode() + b"\0")
 
     def test_collect_keeps_changed_row_when_compare_image_is_oversized(self):
@@ -278,7 +278,7 @@ class CliTest(unittest.TestCase):
             out = run_collect(root, meta(), [key(module, "A")])
             entries = json.loads(out["entries"])
             self.assertEqual([(e["name"], e["image"]) for e in entries["changed"]], [("A", None)])
-            self.assertEqual(out["github_output"], "total=1\n")
+            self.assertEqual(out["github_output"], "total=1\nunsafe=0\n")
             self.assertEqual(out["files"], b"")
             body = render_comment(report.report_from_dict(entries), validate_meta(meta()), "o/r", "")
             self.assertIn("이미지 없음", body)
@@ -352,6 +352,8 @@ class UnsafeNamesTest(unittest.TestCase):
             self.assertEqual(entries["unsafe_names"], 2)
             self.assertEqual([e["name"] for e in entries["added"]], ["A"])
             self.assertEqual(entries["removed"], [])
+            # 안전하지 않은 이름만 있는 PR 도 코멘트를 쓰도록 워크플로가 이 값을 본다
+            self.assertEqual(out["github_output"], "total=1\nunsafe=2\n")
 
     def test_render_warns_unsafe_names_without_listing_them(self):
         rep = Report([], [], [], [], unsafe_names=2)

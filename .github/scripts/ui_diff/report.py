@@ -390,7 +390,7 @@ def cmd_collect(args) -> int:
     Path(args.out_entries).write_text(json.dumps(report_to_dict(rep), ensure_ascii=False, indent=2), encoding="utf-8")
     Path(args.out_files).write_bytes(b"".join(f.encode("utf-8") + b"\0" for f in rep.images))
     with open(args.github_output, "a", encoding="utf-8") as out:
-        out.write(f"total={rep.total}\n")
+        out.write(f"total={rep.total}\nunsafe={rep.unsafe_names}\n")
     return 0
 
 
