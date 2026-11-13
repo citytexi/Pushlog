@@ -4,7 +4,7 @@ title: 빌드·검증·버전·release 서명
 category: architecture
 status: living
 platforms: android
-verified: 2026-11-13
+verified: 2026-11-14
 related_spec:
 related_adr:
 related_architecture:
@@ -30,6 +30,12 @@ task는 두 개다. 모듈에 없는 task는 건너뛴다.
   - `build-logic`: `:convention:test` (`ModuleRulesTest`)
   - 전체: `detekt`, `ktlintCheck`
 - `verifyStarter`: 끝내기 전의 완료 게이트. `testStarter` 전부에 더해 Android 모듈의 `assembleDebug`, `assembleRelease`, `recordRoborazziDebug`를 실행한다. `:app-preview`는 debug 전용이라 release 변형이 없어 `assembleRelease`에서 빠진다.
+
+`recordRoborazziDebug`는 직접 쓴 스크린샷 테스트와 함께 `@Preview` 자동 캡처(Roborazzi가 만드는 생성 테스트)도 돌린다. 생성 테스트는 실행 그래프에 Roborazzi 기록·비교 태스크(`record`/`compare`/`verify`/`verifyAndRecord` + `Roborazzi<Variant>`)가 있을 때만 돈다. 그래서 `verifyStarter`와 CI `ui-diff`에서는 돌고 `testStarter`와 CI `test`에서는 빠진다.
+
+- 이유: 프리뷰 수에 비례해 느려지는 렌더를 빠른 검사에서 빼고, 렌더 오류는 완료 게이트에서 잡는다.
+- 명령줄 태스크 이름이 아니라 실행 그래프로 판정한다. `verifyStarter`는 `recordRoborazziDebug`를 이름 없이 끌어오기 때문이다.
+- Roborazzi 실행에서도 일반 단위 테스트는 함께 돈다. `verifyStarter`가 둘을 한 실행에 부르므로 어느 쪽도 뺄 수 없다. 그래서 UI diff CI에서 단위 테스트가 실패하면 그 모듈은 렌더 실패로 보고된다.
 
 포맷 오류는 `./gradlew ktlintFormat`으로 고친다. 기준 스크린샷은 커밋하지 않는다.
 
