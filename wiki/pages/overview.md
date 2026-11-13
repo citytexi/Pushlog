@@ -5,7 +5,7 @@ updated: 2026-11-13
 
 # 개요
 
-통합된 원본은 두 건이다 — 초기 기획 결정 [[src-pushlog-planning-decisions-2026-11-13]]와 경쟁 앱 리뷰 조사 [[src-competitor-play-reviews-2026-11-13]].
+통합된 원본은 세 건이다 — 초기 기획 결정 [[src-pushlog-planning-decisions-2026-11-13]], 경쟁 앱 리뷰 조사 [[src-competitor-play-reviews-2026-11-13]], 브랜드 색 결정 [[src-pushlog-brand-color-decision-2026-11-13]].
 
 ## 논지
 
@@ -17,6 +17,8 @@ Pushlog가 사용자에게 내미는 이유는 두 가지다.
 2. **분류 기준을 사용자가 정한다** — [[tag-classification]]. NotiFold의 "자동 분류를 못 고친다" 불만을 겨냥한다.
 
 경쟁 앱이 1점을 받는 품질 문제는 차별점이 아니라 기본기로 다룬다 — [[collection-reliability]], [[conversation-grouping]].
+
+브랜드 색은 초록 계열(`#20874A`)이다. 안정감과 "안전하게 보관된다"는 약속을 상징하고, 경쟁 앱 아이콘 색과 겹치지 않게 골랐다 — [[brand-color]].
 
 ## 범위 밖으로 민 것
 

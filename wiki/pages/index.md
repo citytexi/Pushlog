@@ -14,6 +14,7 @@ updated: 2026-11-13
 
 - [[src-pushlog-planning-decisions-2026-11-13]] — **현행 정본**. 2026-11-13 초기 기획 결정. 차별점 두 가지(영구 기록, 커스텀 분류), 기본 기능, BM 제외
 - [[src-competitor-play-reviews-2026-11-13]] — **현행 정본**. 2026-11-13 경쟁 앱 3종 Play 스토어 정보와 최신 리뷰 조사
+- [[src-pushlog-brand-color-decision-2026-11-13]] — **현행 정본**. 2026-11-13 브랜드 색 결정. 초록 `#20874A`, 후보 비교, 다크 모드 버튼
 
 ## entities
 
@@ -32,6 +33,7 @@ updated: 2026-11-13
 - [[privacy-promise]] — 프라이버시 약속: 알림 내용은 폰 밖으로 나가지 않는다
 - [[collection-reliability]] — 수집 안정성: 경쟁 앱 1위 불만
 - [[business-model]] — 수익 모델: 이번 기획에서 제외
+- [[brand-color]] — 브랜드 색: 초록 `#20874A`, 경쟁 앱과 겹치지 않음, 다크 버튼은 짙은 초록+흰 글자
 
 ## synthesis
 

@@ -1,6 +1,6 @@
 ---
 tags: [competitor]
-sources: [src-competitor-play-reviews-2026-11-13, src-pushlog-planning-decisions-2026-11-13]
+sources: [src-competitor-play-reviews-2026-11-13, src-pushlog-planning-decisions-2026-11-13, src-pushlog-brand-color-decision-2026-11-13]
 updated: 2026-11-13
 ---
 
@@ -19,6 +19,10 @@ updated: 2026-11-13
 ## Pushlog가 볼 점
 
 기능 범위가 가장 넓은 선점자다. 리뷰에서 나온 빈자리는 자동 분류를 사용자가 고칠 수 없음, 모은 알림 일괄 삭제 불가, 다크모드 가독성이다 — [[tag-classification]], [[record-deletion]].
+
+## 브랜드 색 기준
+
+- 앱 아이콘은 파랑 바탕에 민트·청록 점(2026-11-13 Play 스토어 기준). Pushlog 브랜드 색을 고를 때 이 청록과 겹치지 않게 피했다 — [[brand-color]]
 
 ## 연관
 - [[src-competitor-play-reviews-2026-11-13]] · [[src-pushlog-planning-decisions-2026-11-13]]
