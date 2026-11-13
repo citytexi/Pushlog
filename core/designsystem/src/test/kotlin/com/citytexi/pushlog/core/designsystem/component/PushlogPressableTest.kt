@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
@@ -86,6 +88,33 @@ class PushlogPressableTest {
         setAnimatorScale(1f)
         press()
         assertTrue("shrinks again once animations are back", paintedWidth() < idle)
+    }
+
+    @Test
+    fun manyPressablesShareOneObserver() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                Column {
+                    repeat(20) {
+                        Box(
+                            Modifier.size(20.dp).pushlogPressable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                color = BASE,
+                                pressedColor = PRESSED,
+                                shape = RoundedCornerShape(0.dp),
+                                enabled = true,
+                                loading = false,
+                                onClick = {},
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        val resolver = ApplicationProvider.getApplicationContext<Context>().contentResolver
+        val uri = Settings.Global.getUriFor(Settings.Global.ANIMATOR_DURATION_SCALE)
+        assertEquals(1, shadowOf(resolver).getContentObservers(uri).size)
     }
 
     @Test
