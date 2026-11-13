@@ -53,8 +53,7 @@
     `wiki/conventions.md`, `wiki/routing-misses.md`)은 **서로 간에만** 같은
     stem을 허용한다. 이들은 수집 대상이 아니라 경로로만 참조된다.
   - 검사 범위는 `wiki/` 안으로 한정한다. 저장소의 안드로이드 쪽 마크다운
-    (`README.md`가 `/`·`http/`·`tools/build-cache-bench/` 세 곳에 있다)은
-    `[[이름]]` 링크 대상이 아니다.
+    (`README.md`, `AGENTS.md`, `docs/` 등)은 `[[이름]]` 링크 대상이 아니다.
 - 구조 파일: `wiki/pages/purpose.md`, `wiki/pages/index.md`, `wiki/pages/overview.md` 셋뿐이다(§5 참조).
 - 소스 요약 페이지: `src-<원본stem>.md`. 원본과 이름이 겹치지 않게 하는 접두사다.
 - 파일명은 영문 kebab-case가 기본. 한국 인물·장소 등 고유명사는 한글 파일명을 허용한다.
@@ -160,7 +159,7 @@ graphify의 스캔 루트(`graph_signals.SCAN_ROOT` = `wiki/pages`) **밖에** �
 
 ## 9. 민감 데이터 등급
 
-이 저장소는 private이다. 그래도 자격증명은 유출 시 피해가 저장소 밖으로 나간다.
+이 저장소는 **public**이다. 커밋한 내용은 누구나 읽는다. 자격증명은 물론이고, 알림 원문·대화 내용 같은 실사용 데이터도 원본에 넣기 전에 가린다.
 
 | 패턴 | 등급 | 처리 |
 |---|---|---|
