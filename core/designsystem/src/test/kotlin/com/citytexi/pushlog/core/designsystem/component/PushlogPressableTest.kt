@@ -1,5 +1,7 @@
 package com.citytexi.pushlog.core.designsystem.component
 
+import android.content.Context
+import android.provider.Settings
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
@@ -24,6 +26,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.test.core.app.ApplicationProvider
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -41,6 +44,7 @@ class PushlogPressableTest {
     val composeRule = createComposeRule()
 
     private val source = MutableInteractionSource()
+    private var lastPress: PressInteraction.Press? = null
 
     @Test
     fun scaleUsesHeightWhenTallest() =
@@ -66,6 +70,19 @@ class PushlogPressableTest {
         val before = paintedWidth()
         press()
         assertEquals(before, paintedWidth())
+    }
+
+    @Test
+    fun reduceMotionToggledWhileShownTakesEffect() {
+        setBox(enabled = true)
+        val idle = paintedWidth()
+        setAnimatorScale(0f)
+        press()
+        assertEquals("no shrink while animations are removed", idle, paintedWidth())
+        release()
+        setAnimatorScale(1f)
+        press()
+        assertTrue("shrinks again once animations are back", paintedWidth() < idle)
     }
 
     @Test
@@ -158,8 +175,20 @@ class PushlogPressableTest {
 
     /** disabled·loading은 clickable이 Press를 내보내지 않으므로 상호작용을 직접 주입해 modifier 자체의 방어를 본다. */
     private fun press() {
-        composeRule.runOnIdle { source.tryEmit(PressInteraction.Press(Offset.Zero)) }
+        composeRule.runOnIdle { lastPress = PressInteraction.Press(Offset.Zero).also { source.tryEmit(it) } }
         composeRule.mainClock.advanceTimeBy(300)
+        composeRule.waitForIdle()
+    }
+
+    private fun release() {
+        composeRule.runOnIdle { lastPress?.let { source.tryEmit(PressInteraction.Release(it)) } }
+        composeRule.mainClock.advanceTimeBy(300)
+        composeRule.waitForIdle()
+    }
+
+    private fun setAnimatorScale(scale: Float) {
+        val resolver = ApplicationProvider.getApplicationContext<Context>().contentResolver
+        Settings.Global.putFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, scale)
         composeRule.waitForIdle()
     }
 
