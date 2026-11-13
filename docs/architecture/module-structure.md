@@ -55,6 +55,7 @@ Konsist(`konsist/src/test`)가 import도 검사한다.
 
 - `feature`는 `com.citytexi.pushlog.data`, `core.network`, `core.database`, `core.datastore` 패키지를 import하지 않는다(와일드카드 포함).
 - `domain`은 `android`, `androidx`를 import하지 않는다.
+- production 소스의 kt 파일은 최상위 `class`/`interface`/`object`/`enum`/`annotation class`를 최대 1개만 선언한다. 파일 이름은 타입 이름으로 짓는다. 중첩 선언과 최상위 함수·값은 세지 않고, 예외는 없다.
 - ViewModel의 `MutableMviContainer` 프로퍼티는 `private`이어야 한다([state-management.md](state-management.md) 참고).
 
 데이터는 항상 **Repository → UseCase → ViewModel** 순서로 흐른다. Konsist가 강제한다.

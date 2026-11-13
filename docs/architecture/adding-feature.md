@@ -17,6 +17,7 @@ tags: [architecture, feature]
 1. `feature/sample`을 `feature/<name>`으로 복사한다. `sample`을 `<name>`으로 바꾼다(디렉터리, 패키지 `com.citytexi.pushlog.feature.<name>`, `namespace`, 클래스 이름).
    - `build.gradle.kts`는 플러그인 `starter.android.feature`(library + compose + hilt)와 `starter.android.screenshot`을 쓰고 `namespace = "com.citytexi.pushlog.feature.<name>"`로 둔다.
    - 이름을 바꾸면 `domain`에 없는 `Sample*` 타입을 참조하는 파일이 깨진다: `SampleViewModel`, `SampleUiState`, `SampleScreen`, `SampleViewModelTest`, `SampleScreenScreenshotTest`(`domain.model.SampleItem`, `Observe/Refresh/...SampleUseCase`, `FakeSampleRepository` 등). 규칙: `domain.*Sample*` import를 모두 새 feature의 타입으로 다시 쓰거나 지운다. 데이터가 필요 없으면 해당 파일과 의존(`domain`)을 비운다.
+   - MVI 타입은 파일 하나에 하나씩 둔다: `<Name>UiState.kt`, `<Name>Intent.kt`, `<Name>SideEffect.kt`, 오류 타입이 있으면 `<Name>Error.kt`. 복사한 파일 이름도 함께 바꾼다.
 2. `settings.gradle.kts`에 `include(":feature:<name>")`을 추가한다. `app/build.gradle.kts`에도 `implementation(project(":feature:<name>"))`을 추가한다.
 3. 데이터가 필요하면 아래 순서로 만든다.
    - `domain`: 모델, `<Name>Repository` 인터페이스(실패 시 예외), `<Action><Name>UseCase`(`operator fun invoke`. suspend면 `Result<T>` 반환, `runSuspendCatching`으로 감쌈)
