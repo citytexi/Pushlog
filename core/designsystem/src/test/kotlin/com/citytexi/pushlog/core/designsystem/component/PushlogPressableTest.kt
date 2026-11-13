@@ -5,7 +5,10 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -96,6 +99,28 @@ class PushlogPressableTest {
         assertEquals(PRESSED.toArgb(), image[image.width / 2, image.height / 2].toArgb())
     }
 
+    @Test
+    fun colorChangeReappliesWithoutPress() {
+        var color by mutableStateOf(BASE)
+        composeRule.setContent {
+            Box(
+                Modifier.size(100.dp).pushlogPressable(
+                    interactionSource = remember { source },
+                    color = color,
+                    pressedColor = PRESSED,
+                    shape = RoundedCornerShape(0.dp),
+                    enabled = true,
+                    loading = false,
+                    onClick = {},
+                ),
+            )
+        }
+        color = OTHER
+        composeRule.mainClock.advanceTimeBy(300)
+        val image = composeRule.onRoot().captureToImage().toPixelMap()
+        assertEquals(OTHER.toArgb(), image[image.width / 2, image.height / 2].toArgb())
+    }
+
     private fun setBox(
         enabled: Boolean,
         loading: Boolean = false,
@@ -141,6 +166,7 @@ class PushlogPressableTest {
     private companion object {
         val BASE = Color(0xFF00FF00)
         val PRESSED = Color(0xFFFF0000)
+        val OTHER = Color(0xFF0000FF)
         val SURFACE_COLORS = setOf(BASE.toArgb(), PRESSED.toArgb())
     }
 }

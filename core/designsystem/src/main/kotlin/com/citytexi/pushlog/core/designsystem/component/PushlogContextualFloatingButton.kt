@@ -133,7 +133,6 @@ private fun FloatingButtonSurface(
     Box(
         modifier =
             modifier
-                .pushlogShadow(PushlogTheme.shadow.s3, shape)
                 .pushlogPressable(
                     interactionSource = source,
                     color = color,
@@ -142,6 +141,7 @@ private fun FloatingButtonSurface(
                     enabled = enabled,
                     loading = loading,
                     onClick = onClick,
+                    shadow = Modifier.pushlogShadow(PushlogTheme.shadow.s3, shape),
                 ).then(semanticsModifier)
                 .pushlogLoadingState(loading),
         contentAlignment = Alignment.Center,

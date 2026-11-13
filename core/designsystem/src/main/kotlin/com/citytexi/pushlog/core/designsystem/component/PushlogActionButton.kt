@@ -171,6 +171,7 @@ private fun ActionButtonSurface(
     val bg = PushlogTheme.color.bg
     val minHeight = minHeight(size)
     val corner = if (size == PushlogActionButtonSize.LARGE) radius.r3 else radius.r2
+    val shape = remember(corner) { RoundedCornerShape(corner) }
     val progressSize = progressSize(size)
     val disabledSurface = if (variant == PushlogActionButtonVariant.GHOST) bg.transparent else bg.disabled
     val pressedColor = buttonPressedColor(enabled, surfaceColor(variant, pressed = true), disabledSurface)
@@ -183,7 +184,7 @@ private fun ActionButtonSurface(
                     interactionSource = source,
                     color = color,
                     pressedColor = pressedColor,
-                    shape = RoundedCornerShape(corner),
+                    shape = shape,
                     enabled = enabled,
                     loading = loading,
                     onClick = onClick,

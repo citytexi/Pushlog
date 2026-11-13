@@ -1,22 +1,18 @@
 package com.citytexi.pushlog.core.designsystem.component
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 private const val PRESSED_SHRINK_DP = 2f
@@ -33,7 +29,10 @@ internal fun pressedScaleFactor(
     return (reference - PRESSED_SHRINK_DP * density) / reference
 }
 
-/** 눌리면 배경이 [pressedColor]로 바뀌고 [pressedScaleFactor]만큼 줄어든다. ripple은 쓰지 않는다. */
+/**
+ * 눌리면 배경이 [pressedColor]로 바뀌고 [pressedScaleFactor]만큼 줄어든다. ripple은 쓰지 않는다.
+ * [shadow]는 clip 바깥에 그려지되 표면과 함께 줄어들 그림자다. 이 modifier 앞에 두면 줄지 않는다.
+ */
 internal fun Modifier.pushlogPressable(
     interactionSource: MutableInteractionSource,
     color: Color,
@@ -43,16 +42,16 @@ internal fun Modifier.pushlogPressable(
     loading: Boolean,
     onClick: () -> Unit,
     role: Role = Role.Button,
+    shadow: Modifier = Modifier,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading) {
-        clickable(
+    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow)
+        .clickable(
             interactionSource = interactionSource,
             indication = null,
             enabled = enabled,
             role = role,
             onClick = { if (!loading) onClick() },
         )
-    }
 
 /** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. */
 internal fun Modifier.pushlogToggleablePressable(
@@ -65,8 +64,8 @@ internal fun Modifier.pushlogToggleablePressable(
     loading: Boolean,
     onClick: () -> Unit,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading) {
-        toggleable(
+    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow = Modifier)
+        .toggleable(
             value = selected,
             interactionSource = interactionSource,
             indication = null,
@@ -74,10 +73,8 @@ internal fun Modifier.pushlogToggleablePressable(
             role = Role.Checkbox,
             onValueChange = { if (!loading) onClick() },
         )
-    }
 
-// graphicsLayer는 clickable 앞에 둬서 눌림 영역도 같이 줄어든다.
-// composed는 모션 토큰과 눌림 상태를 읽는 Composable 컨텍스트가 필요해서 쓴다.
+// 축소 층을 맨 앞에 둬서 그림자, clip, 배경, 눌림 영역이 모두 같이 줄어든다.
 private fun Modifier.pressableSurface(
     interactionSource: MutableInteractionSource,
     color: Color,
@@ -85,31 +82,27 @@ private fun Modifier.pressableSurface(
     shape: Shape,
     enabled: Boolean,
     loading: Boolean,
-    gesture: Modifier.() -> Modifier,
+    shadow: Modifier,
 ): Modifier =
-    composed {
-        val motion = PushlogTheme.motion
-        val pressed by interactionSource.collectIsPressedAsState()
-        val reduceMotion = rememberReduceMotion()
-        val showPressedColor = loading || (enabled && pressed)
-        val shrinks = enabled && !loading && !reduceMotion && pressed
-        val background by animateColorAsState(
-            targetValue = if (showPressedColor) pressedColor else color,
-            animationSpec = tween(motion.duration.colorTransition, easing = motion.timingFunction.easing),
-            label = "pushlogPressableColor",
-        )
-        val shrink by animateFloatAsState(
-            targetValue = if (shrinks) 1f else 0f,
-            animationSpec = tween(motion.duration.pressedScale, easing = motion.timingFunction.pressedScale),
-            label = "pushlogPressableScale",
-        )
-        Modifier
-            .graphicsLayer {
-                val target = pressedScaleFactor(size.width, size.height, density)
-                val scale = 1f + (target - 1f) * shrink
-                scaleX = scale
-                scaleY = scale
-            }.clip(shape)
-            .background(background)
-            .gesture()
+    this
+        .then(PressScaleNode.Element(interactionSource, enabled, loading))
+        .then(shadow)
+        .clip(shape)
+        .then(PressColorNode.Element(interactionSource, color, pressedColor, enabled, loading))
+
+/** [source]의 눌림 여부가 바뀔 때마다 [onChange]를 부른다. `collectIsPressedAsState`와 같은 규칙이다. */
+internal fun CoroutineScope.launchPressTracking(
+    source: InteractionSource,
+    onChange: (Boolean) -> Unit,
+): Job =
+    launch {
+        val presses = mutableListOf<PressInteraction.Press>()
+        source.interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> presses.add(interaction)
+                is PressInteraction.Release -> presses.remove(interaction.press)
+                is PressInteraction.Cancel -> presses.remove(interaction.press)
+            }
+            onChange(presses.isNotEmpty())
+        }
     }
