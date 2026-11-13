@@ -32,3 +32,13 @@ local.properties
 *.aab
 output.json
 *.hprof
+
+# Python (wiki/docs scripts)
+__pycache__/
+.pytest_cache/
+
+# graphify outputs that differ per machine
+/wiki/graphify-out/cost.json
+/wiki/graphify-out/cache/
+/wiki/graphify-out/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+/wiki/pages/graphify-out/cache/
