@@ -30,6 +30,7 @@ tags: [architecture, design-system]
 | `PushlogTheme.motion` | `PushlogMotion` | 시간(ms)과 easing |
 
 - 기본값은 라이트다. `PushlogTheme`으로 감싸지 않은 Preview·테스트도 라이트 값으로 그려진다.
+- 파일은 타입마다 하나다(`FileStructureRulesTest`). 파일 이름이 타입 이름이고 라이트/다크/기본 인스턴스(`LightPushlogColors`, `DefaultPushlogDimension` 등)는 자기 타입 파일에 둔다. `theme/color`(`PushlogColors`, `PushlogBgColors`, `PushlogFgColors`, `PushlogStrokeColors`, `LightPalette`, `DarkPalette`), `theme/dimension`, `theme/motion`, `theme/shadow`(`PushlogShadowToken`, `PushlogShadows`, `PushlogShadowModifier.kt`의 `Modifier.pushlogShadow`)로 나뉜다.
 - 팔레트(`LightPalette`, `DarkPalette`, 단계별 원색)는 `internal`이다. 화면이 원색을 직접 집으면 다크 전환과 용도 분리가 깨지므로 용도별 색만 공개한다.
 
 ## 이름 규칙
@@ -57,6 +58,8 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 | `bg.brandSolid` | carrot-700 | `forest500` (`#218248`) | 4.83 (SEED 단계 따르면 forest700 `#39AA66` = 2.95) |
 | `bg.brandSolidPressed` | carrot-800 | `forest400` (`#245F3B`) | 7.57 (SEED 단계 따르면 forest800 `#61CA8C` = 2.03) |
 
+대가로 다크에서 버튼(`forest500`)과 배경(`bg.layerDefault`)의 대비는 약 3.7:1로 덜 튄다. UI 요소 기준 3:1은 넘는다.
+
 다크에서는 숫자가 클수록 밝다. SEED는 눌림(800)이 기본(700)보다 밝다. Pushlog 다크는 반대로 눌림(`forest400`)이 기본(`forest500`)보다 어둡다.
 
 이유: 초록 하나로 "버튼 위 흰 글씨"와 "어두운 배경 위 글씨"를 둘 다 만족시킬 수 없다. SEED의 다크 단계를 그대로 따르면 흰 글씨 대비가 4.5 밑(2.95, 2.03)으로 떨어진다. 그래서 솔리드를 SEED보다 두 단계 낮춘 `forest500`으로 잡았다.
@@ -69,13 +72,15 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 - SEED에는 M3 Fixed 톤이 없다. Fixed 칸에는 테마별 토큰(`brandWeak`, `neutralWeak` 등)을 넣었다.
 - 라이트 `surfaceContainer` 계단은 M3의 단조 순서가 아니라 SEED 의미를 따른다. `High`·`Low`에 `layerFloating`(흰색)을 쓴다.
 - `surfaceTint`는 투명이다. 기본값(primary)이면 tonal elevation이 초록으로 물든다.
+- M3 매핑 결과는 `LightMaterialColorScheme`, `DarkMaterialColorScheme`, `DefaultMaterialTypography`, `DefaultMaterialShapes`(`internal val`)로 한 번만 만든다. `PushlogTheme`은 고르기만 한다.
+- `inversePrimary`는 용도 토큰에 짝이 없어 팔레트 단계를 직접 받는다. 아래 표 참고.
 - 글자 15칸은 `toMaterialTypography()`, 모서리 5칸은 `toMaterialShapes()`가 채운다.
 
 | M3 칸 | 토큰 |
 |---|---|
 | `primary` / `onPrimary` | `bg.brandSolid` / `fg.onBrandSolid` |
 | `primaryContainer` / `onPrimaryContainer` | `bg.brandWeak` / `fg.brandContrast` |
-| `inversePrimary` | `bg.brandWeak` |
+| `inversePrimary` | 라이트 `LightPalette.forest500`(`#30C16A`, `inverseSurface` `#2A3038` 위 5.68:1), 다크 `DarkPalette.forest400`(`#245F3B`, `inverseSurface` `#F3F4F5` 위 6.87:1). Snackbar 액션이 브랜드 초록으로 읽히고 4.5를 넘는 단계다. 다크 `forest500`은 4.38이라 쓰지 않았다 |
 | `secondary` / `onSecondary` | `bg.neutralSolid` / `fg.onNeutralSolid` |
 | `secondaryContainer` / `onSecondaryContainer` | `bg.neutralWeak` / `fg.neutral` |
 | `tertiary` / `onTertiary` | `bg.informativeSolid` / `fg.onInformativeSolid` |
@@ -101,6 +106,10 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 | `tertiaryFixed` / `tertiaryFixedDim` | `bg.informativeWeak` / `bg.informativeWeakPressed` |
 | `onTertiaryFixed` / `onTertiaryFixedVariant` | `fg.informativeContrast` / `fg.informative` |
 
+## 그림자
+
+`Modifier.pushlogShadow(token, shape)`는 Compose `dropShadow`로 그린다. `BlurMaskFilter` 기반이라 SEED(CSS blur)보다 약간 퍼져 보이며, 이 차이는 허용했다.
+
 ## 글꼴
 
 Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다. Pretendard 한글 글리프는 굵기가 달라도 advance width가 같다. 그래서 굵기 테스트는 라틴 문자로 하고, 한글 굵기는 카탈로그 스크린샷으로 눈으로 확인한다.
@@ -113,9 +122,10 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 
 ## Konsist 규칙
 
-`DesignTokenRulesTest`가 `feature`와 `app`에서 두 가지를 막는다.
+`DesignTokenRulesTest`가 `feature`와 `app`에서 세 가지를 막는다.
 
 - `MaterialTheme` import
+- `material3.MaterialTheme` 전체 이름 사용(import 없이 쓰는 우회)
 - `Color(0x…)`, `Color(red = …)` 직접 생성
 
 화면은 `PushlogTheme`의 토큰만 쓴다. 규칙이 막으면 토큰을 추가한다.
