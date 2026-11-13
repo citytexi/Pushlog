@@ -34,12 +34,3 @@ jobs:
       - name: Assemble debug
         if: steps.changes.outputs.code != 'false'
         run: ./gradlew assembleDebug
-
-      - name: Upload debug APK
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        if: steps.changes.outputs.code != 'false'
-        with:
-          name: app-debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 7
-          if-no-files-found: error
