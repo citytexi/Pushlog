@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark window background = bg.layerDefault (dark). -->
-    <style name="Theme.PushlogPreview" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.PushlogPreview" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">#16171B</item>
     </style>
 </resources>
