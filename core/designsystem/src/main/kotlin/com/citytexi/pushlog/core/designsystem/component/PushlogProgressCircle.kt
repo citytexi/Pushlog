@@ -17,10 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 
-// SEED progress-circle.yaml indeterminate=true. 두께는 버튼·플로팅 버튼 정의의 2px.
-private val Thickness = 2.dp
+// SEED progress-circle.yaml indeterminate=true.
 private const val CYCLE_MILLIS = 1200
 private val HeadEasing = CubicBezierEasing(0.35f, 0f, 0.65f, 1f)
 private val TailEasing = CubicBezierEasing(0.35f, 0f, 0.65f, 0.6f)
@@ -38,12 +37,13 @@ internal fun PushlogProgressCircle(
     rangeColor: Color,
     modifier: Modifier = Modifier,
 ) {
+    val thickness = PushlogTheme.dimension.x0Half
     val transition = rememberInfiniteTransition(label = "pushlogProgressCircle")
     val head by transition.animateFloat(0f, 1f, cycle(HeadEasing), label = "head")
     val tail by transition.animateFloat(0f, 1f, cycle(TailEasing), label = "tail")
     val rotation by transition.animateFloat(0f, FULL_TURN, cycle(RotateEasing), label = "rotation")
     Canvas(modifier.size(size)) {
-        val stroke = Stroke(width = Thickness.toPx(), cap = StrokeCap.Round)
+        val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
         val inset = stroke.width / 2
         val arcSize = Size(this.size.width - stroke.width, this.size.height - stroke.width)
         drawArc(trackColor, 0f, FULL_TURN, false, Offset(inset, inset), arcSize, style = stroke)
