@@ -202,7 +202,7 @@ internal val LightPushlogColors =
                 positiveSolid = LightPalette.green700,
                 positiveWeak = LightPalette.green300,
                 warningSolid = LightPalette.yellow700,
-                warningWeak = Color(0xFFE82C45),
+                warningWeak = LightPalette.yellow300,
             ),
     )
 
@@ -299,6 +299,6 @@ internal val DarkPushlogColors =
                 positiveSolid = DarkPalette.green700,
                 positiveWeak = DarkPalette.green300,
                 warningSolid = DarkPalette.yellow700,
-                warningWeak = Color(0xFFFE6A5D),
+                warningWeak = DarkPalette.yellow300,
             ),
     )
