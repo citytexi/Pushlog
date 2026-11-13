@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -45,7 +44,7 @@ fun SampleScreen(
         ) {
             Text(
                 text = stringResource(R.string.sample_title),
-                style = MaterialTheme.typography.headlineSmall,
+                style = PushlogTheme.typography.t9Bold,
                 modifier = Modifier.semantics { heading() },
             )
             LastRefreshed(epochMillis = state.lastRefreshedAt)
@@ -85,14 +84,14 @@ private fun LastRefreshed(epochMillis: Long?) {
         text =
             epochMillis?.let { stringResource(R.string.sample_last_refreshed, dateFormat.format(Date(it))) }
                 ?: stringResource(R.string.sample_never_refreshed),
-        style = MaterialTheme.typography.bodyMedium,
+        style = PushlogTheme.typography.t4Regular,
     )
 }
 
 @Composable
 private fun SampleItems(items: List<SampleItem>) {
     if (items.isEmpty()) {
-        Text(text = stringResource(R.string.sample_empty), style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(R.string.sample_empty), style = PushlogTheme.typography.t4Regular)
         return
     }
     LazyColumn(modifier = Modifier.fillMaxSize()) {
