@@ -21,11 +21,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.LoadingContent
 import com.citytexi.pushlog.core.designsystem.component.PushlogButton
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
-import com.citytexi.pushlog.core.ui.LoadingContent
+import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.domain.model.SampleItem
 import java.text.DateFormat
 import java.util.Date
@@ -103,7 +103,7 @@ private fun SampleItems(items: List<SampleItem>) {
     }
 }
 
-@Preview
+@PushlogPreview
 @Composable
 private fun SampleScreenPreview() {
     PushlogTheme {

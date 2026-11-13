@@ -7,3 +7,7 @@ plugins {
 android {
     namespace = "com.citytexi.pushlog.core.designsystem"
 }
+
+dependencies {
+    implementation(project(":core:ui"))
+}

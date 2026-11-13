@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.ui
+package com.citytexi.pushlog.core.designsystem.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,7 +27,7 @@ fun LoadingContent(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val loadingLabel = stringResource(R.string.core_ui_loading)
+    val loadingLabel = stringResource(R.string.designsystem_loading)
     Box(modifier = modifier) {
         if (isLoading && !hasContent) {
             CircularProgressIndicator(
