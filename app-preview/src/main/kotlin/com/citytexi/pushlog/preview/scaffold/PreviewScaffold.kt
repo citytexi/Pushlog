@@ -58,7 +58,7 @@ fun PreviewScaffold(
 @Composable
 private fun PreviewScaffoldPreview() {
     PushlogTheme {
-        PreviewScaffold(title = "PushlogButton", onBack = {}) {
+        PreviewScaffold(title = "PushlogActionButton", onBack = {}) {
             Text(text = "Body", color = PushlogTheme.color.fg.neutral)
         }
     }

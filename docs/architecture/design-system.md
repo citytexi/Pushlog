@@ -8,7 +8,7 @@ verified: 2026-11-14
 related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md]
 related_adr:
 related_architecture: [module-structure]
-related_code: [PushlogTheme, PushlogColors, toColorScheme]
+related_code: [PushlogTheme, PushlogColors, toColorScheme, PushlogActionButton, PushlogChip, PushlogContextualFloatingButton]
 tags: [architecture, design-system]
 ---
 
@@ -64,6 +64,18 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 다크에서는 숫자가 클수록 밝다. SEED는 눌림(800)이 기본(700)보다 밝다. Pushlog 다크는 반대로 눌림(`forest400`)이 기본(`forest500`)보다 어둡다.
 
 이유: 초록 하나로 "버튼 위 흰 글씨"와 "어두운 배경 위 글씨"를 둘 다 만족시킬 수 없다. SEED의 다크 단계를 그대로 따르면 흰 글씨 대비가 4.5 밑(2.95, 2.03)으로 떨어진다. 그래서 솔리드를 SEED보다 두 단계 낮춘 `forest500`으로 잡았다.
+
+## 동작 컴포넌트
+
+`PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md).
+
+- 새 동작 컴포넌트는 눌림 처리를 새로 만들지 않고 `Modifier.pushlogPressable`(토글은 `pushlogToggleablePressable`)과 `PushlogButtonSupport.kt`의 로딩·색 도우미를 재사용한다.
+- ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2px 축소로만 보인다. 글자·아이콘 색은 그대로다.
+- 로딩은 비활성으로 읽히지 않는다. 의미 정보에는 `enabled`가 남고 클릭만 삼킨다. 스크린 리더가 "사용 불가"로 안내하면 곧 다시 쓸 수 있는 버튼이 막힌 것처럼 들린다.
+- 칩 높이는 최솟값이다. 글자 크기 200%에서도 Compose의 비선형 글자 확대 덕에 SEED 크기 그대로 잘리지 않는다.
+- SEED의 px 값은 같은 크기의 토큰으로 옮긴다(14→`x3Half`, 16→`x4`, 32→`x8` 등). 토큰이 없는 22dp, 44dp, 1dp, 2dp와 progress 애니메이션 값만 파일 안 `private` 상수로 두고 SEED 출처를 주석으로 단다.
+- 아이콘만 버튼은 같은 이름의 오버로드다. 한 이름에 미리보기 화면이 하나라서(`PreviewCoverageRulesTest`) 두 오버로드를 한 화면에 함께 보여 준다.
+- `PreviewSampleIcons`(`core:ui`)는 미리보기·테스트 전용이다. 제품 아이콘 세트가 아니다.
 
 ## M3 연결
 
@@ -152,10 +164,10 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 
 ### 컴포넌트를 추가할 때
 
-`core:designsystem`의 `component` 패키지에 공개 composable을 추가하면 `app-preview`에 화면을 함께 만들어야 한다. 네 단계다. `PushlogButton`이 예시다.
+`core:designsystem`의 `component` 패키지에 공개 composable을 추가하면 `app-preview`에 화면을 함께 만들어야 한다. 네 단계다. `PushlogActionButton`이 예시다.
 
-1. 키: `component/PushlogButtonPreviewKey.kt`에 `NavKey` 구현체를 둔다.
-2. 화면: `component/PushlogButtonPreviewScreen.kt`에 본문 `PushlogButtonPreviewContent`와 entry 함수 `pushlogButtonPreviewEntry(onBack)`를 둔다. entry는 `PreviewScaffold` 안에 본문을 그린다.
+1. 키: `component/PushlogActionButtonPreviewKey.kt`에 `NavKey` 구현체를 둔다.
+2. 화면: `component/PushlogActionButtonPreviewScreen.kt`에 본문 `PushlogActionButtonPreviewContent`와 entry 함수 `pushlogActionButtonPreviewEntry(onBack)`를 둔다. entry는 `PreviewScaffold` 안에 본문을 그린다.
 3. 등록: `navigation/PreviewEntryProvider.kt`의 `previewEntryProvider`에 entry 함수를 호출한다.
 4. 목록: `catalog/PreviewCatalog.kt`의 `previewCatalog`에 `PreviewCatalogItem(카테고리, 제목, 키)` 행을 더한다.
 

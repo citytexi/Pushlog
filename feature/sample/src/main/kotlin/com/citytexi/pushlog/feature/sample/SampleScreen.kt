@@ -21,7 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import com.citytexi.pushlog.core.designsystem.component.LoadingContent
-import com.citytexi.pushlog.core.designsystem.component.PushlogButton
+import com.citytexi.pushlog.core.designsystem.component.PushlogActionButton
+import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonVariant
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.domain.model.SampleItem
@@ -47,10 +48,11 @@ fun SampleScreen(
                 modifier = Modifier.semantics { heading() },
             )
             LastRefreshed(epochMillis = state.lastRefreshedAt)
-            PushlogButton(
+            PushlogActionButton(
                 text = stringResource(R.string.sample_refresh),
                 onClick = { onIntent(SampleIntent.Refresh) },
-                enabled = !state.isRefreshing,
+                variant = PushlogActionButtonVariant.BRAND_SOLID,
+                loading = state.isRefreshing,
             )
             // The list stays on screen while refreshing; the spinner only covers an empty first load.
             LoadingContent(
