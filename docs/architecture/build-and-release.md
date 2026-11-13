@@ -41,7 +41,9 @@ Gradle configuration cache가 켜져 있다(`gradle.properties`). 빌드 스크�
 
 - `versionName` 형식은 `yyyy.MM.ddvNN`이다. 배포 날짜 + 같은 날 몇 번째 빌드인지(01부터). 예: `2026.11.13v01`.
 - 배포할 때마다 `versionCode`를 1 올린다.
-- 릴리스는 `release/<versionName>` 브랜치를 `develop`에서 따서 `main`으로 PR을 올리고, 머지 전에 그 브랜치 끝에 `<versionName>` 태그를 단다.
+- 릴리스는 `release/<versionName>` 브랜치를 `develop`에서 따서 `main`으로 PR을 올리고 squash merge한다. `<versionName>` 태그는 merge 뒤 `main`의 squash 커밋에 단다. release 브랜치 끝 커밋은 squash merge로 `main`에 들어가지 않으므로 거기에 단 태그는 `main` 이력 밖을 가리킨다.
+- squash 커밋은 `develop`과 이력을 공유하지 않는다. 릴리스마다 `main`을 `develop`에 merge commit으로 합쳐야 다음 릴리스 PR이 충돌하지 않고, 올린 버전도 `develop`에 들어간다.
+- 명령 순서는 `.claude/skills/git-flow/SKILL.md`의 Release flow를 따른다.
 
 ## release 서명
 
