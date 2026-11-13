@@ -12,8 +12,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
+
+/** Test tag on the root of every detail screen. */
+const val PREVIEW_SCAFFOLD_TAG = "preview_scaffold"
 
 /** Shared frame of a detail screen: back button, title, then [content] in a vertical scroll. */
 @Composable
@@ -22,7 +26,7 @@ fun PreviewScaffold(
     onBack: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().testTag(PREVIEW_SCAFFOLD_TAG)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = PushlogTheme.dimension.x1),
             verticalAlignment = Alignment.CenterVertically,

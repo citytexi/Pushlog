@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -24,7 +25,7 @@ fun PreviewControlBar(
     onFontScaleChange: (PreviewFontScale) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.fillMaxWidth().background(PushlogTheme.color.bg.layerFloating)) {
+    Column(modifier.fillMaxWidth().background(PushlogTheme.color.bg.layerFloating).navigationBarsPadding()) {
         HorizontalDivider(color = PushlogTheme.color.stroke.neutralWeak)
         Column(
             modifier =
@@ -51,6 +52,8 @@ fun PreviewControlBar(
     }
 }
 
+private const val CHECK_MARK = "✓"
+
 @Composable
 private fun <T> ChoiceRow(
     label: String,
@@ -69,9 +72,17 @@ private fun <T> ChoiceRow(
             color = PushlogTheme.color.fg.neutralMuted,
         )
         options.forEach { option ->
+            val isSelected = option == selected
             FilterChip(
-                selected = option == selected,
+                selected = isSelected,
                 onClick = { onSelect(option) },
+                // A check mark so the selected chip reads in dark theme without relying on fill contrast alone.
+                leadingIcon =
+                    if (isSelected) {
+                        { Text(text = CHECK_MARK, style = PushlogTheme.typography.t4Bold) }
+                    } else {
+                        null
+                    },
                 label = { Text(text = optionLabel(option), style = PushlogTheme.typography.t4Medium) },
             )
         }
