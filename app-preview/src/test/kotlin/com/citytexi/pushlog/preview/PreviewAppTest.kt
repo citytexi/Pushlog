@@ -51,6 +51,31 @@ class PreviewAppTest {
     }
 
     @Test
+    fun `choosing dark in the control bar paints a detail screen with the dark layerDefault`() {
+        var light = Color.Unspecified
+        var dark = Color.Unspecified
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                val color = PushlogTheme.color.bg.layerDefault
+                SideEffect { light = color }
+            }
+            PushlogTheme(darkTheme = true) {
+                val color = PushlogTheme.color.bg.layerDefault
+                SideEffect { dark = color }
+            }
+            PreviewApp()
+        }
+        composeRule.onNodeWithText("라이트").performClick()
+        composeRule.onNodeWithText("Color").performClick()
+        composeRule.onNodeWithText("뒤로").assertExists()
+        assertEquals(light, homeBackground())
+
+        composeRule.onNodeWithText("다크").performClick()
+        composeRule.onNodeWithText("뒤로").assertExists()
+        assertEquals(dark, homeBackground())
+    }
+
+    @Test
     fun `control bar and home at font scale 2`() {
         composeRule.setContent { PreviewApp() }
         composeRule.onNodeWithText("라이트").performClick()
@@ -72,7 +97,7 @@ class PreviewAppTest {
         composeRule.onRoot().captureRoboImage("build/outputs/roborazzi/preview_scaffold_fontscale2_light.png")
     }
 
-    // The home draws no own surface above PreviewApp's root, so the top-left gutter pixel is its background.
+    // Home and detail screens draw no own surface above PreviewApp's root, so the top-left pixel is its background.
     private fun homeBackground(): Color {
         composeRule.waitForIdle()
         return composeRule.onRoot().captureToImage().toPixelMap()[1, 1]

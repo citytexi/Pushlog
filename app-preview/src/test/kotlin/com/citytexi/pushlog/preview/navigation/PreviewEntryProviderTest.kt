@@ -10,7 +10,7 @@ class PreviewEntryProviderTest {
 
     @Test
     fun `every catalog key and the home key have an entry`() {
-        val provider = previewEntryProvider(onOpen = {})
+        val provider = previewEntryProvider(onOpen = {}, onBack = {})
         // entryProvider's fallback throws for a key that was never registered.
         keys.forEach { key -> assertEquals(key.toString(), provider(key).contentKey) }
     }

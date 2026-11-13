@@ -77,7 +77,7 @@ fun PreviewApp() {
                         backStack = backStack,
                         modifier = Modifier.fillMaxWidth().weight(1f),
                         onBack = onBack,
-                        entryProvider = previewEntryProvider(onOpen = { key -> backStack.add(key) }),
+                        entryProvider = previewEntryProvider(onOpen = { key -> backStack.add(key) }, onBack = onBack),
                     )
                     PreviewControlBar(
                         themeMode = themeMode,
