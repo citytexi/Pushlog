@@ -11,6 +11,7 @@
 | 화면(ViewModel·Route·Screen)을 만든다 | [architecture/state-management.md](architecture/state-management.md), [architecture/adding-feature.md](architecture/adding-feature.md) |
 | Room·DataStore·SecureStore를 다룬다 | [architecture/data-layer.md](architecture/data-layer.md) |
 | 빌드·검증·버전·배포 | [architecture/build-and-release.md](architecture/build-and-release.md) |
+| 디자인 시스템 토큰·컴포넌트 | [architecture/design-system.md](architecture/design-system.md) |
 | Kotlin 주석·KDoc을 쓴다 | [code-conventions.md](code-conventions.md) |
 | 설계·계획 | [superpowers/specs/](superpowers/specs), [superpowers/plans/](superpowers/plans) |
 | 결정 이유 | [adr/README.md](adr/README.md) |

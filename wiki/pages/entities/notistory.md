@@ -1,6 +1,6 @@
 ---
 tags: [competitor]
-sources: [src-competitor-play-reviews-2026-11-13, src-pushlog-planning-decisions-2026-11-13]
+sources: [src-competitor-play-reviews-2026-11-13, src-pushlog-planning-decisions-2026-11-13, src-pushlog-brand-color-decision-2026-11-13]
 updated: 2026-11-13
 ---
 
@@ -19,6 +19,10 @@ whowhoLab의 알림 모아보기 앱(`com.whowhoncompany.lab.notistory`). 다운
 - 단톡방이 개인톡으로 보임 — [[conversation-grouping]].
 - 오래된 기록 자동 삭제 — [[notification-history]].
 - 그룹 편집·삭제, 전체 선택, 내보내기 없음 — [[tag-classification]], [[record-deletion]].
+
+## 브랜드 색 기준
+
+- 앱 아이콘은 분홍·코랄(2026-11-13 Play 스토어 기준). 브랜드 색이 겹치지 않아야 한다는 기준에 쓰였다 — [[brand-color]]
 
 ## 연관
 - [[src-competitor-play-reviews-2026-11-13]] · [[src-pushlog-planning-decisions-2026-11-13]]
