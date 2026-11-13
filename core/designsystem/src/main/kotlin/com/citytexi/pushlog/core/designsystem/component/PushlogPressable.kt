@@ -48,9 +48,9 @@ internal fun Modifier.pushlogPressable(
         clickable(
             interactionSource = interactionSource,
             indication = null,
-            enabled = enabled && !loading,
+            enabled = enabled,
             role = role,
-            onClick = onClick,
+            onClick = { if (!loading) onClick() },
         )
     }
 
@@ -70,9 +70,9 @@ internal fun Modifier.pushlogToggleablePressable(
             value = selected,
             interactionSource = interactionSource,
             indication = null,
-            enabled = enabled && !loading,
+            enabled = enabled,
             role = Role.Checkbox,
-            onValueChange = { onClick() },
+            onValueChange = { if (!loading) onClick() },
         )
     }
 

@@ -198,10 +198,8 @@ private fun ActionButtonSurface(
                     pressedColor = pressedColor,
                     shape = RoundedCornerShape(corner),
                     enabled = enabled,
-                    // loading을 넘기면 clickable이 enabled=false가 되어 접근성에 Disabled가 붙는다.
-                    // 로딩은 눌림 색을 직접 칠하고 클릭만 삼켜서 "클릭 불가지만 비활성은 아님"을 만든다.
-                    loading = false,
-                    onClick = { if (!loading) onClick() },
+                    loading = loading,
+                    onClick = onClick,
                 ).defaultMinSize(minWidth = minWidth, minHeight = minHeight)
                 .then(semanticsModifier)
                 .semantics { if (loading) stateDescription = loadingDescription },

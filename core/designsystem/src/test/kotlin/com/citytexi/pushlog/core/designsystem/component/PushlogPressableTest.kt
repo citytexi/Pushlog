@@ -12,13 +12,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -61,7 +66,22 @@ class PushlogPressableTest {
     }
 
     @Test
-    fun loadingDoesNotShrink() {
+    fun loadingIsNotDisabled() {
+        var clicks = 0
+        setBox(enabled = true, loading = true, onClick = { clicks++ })
+        composeRule.onNode(hasClickAction()).assertIsEnabled().performClick()
+        assertEquals(0, clicks)
+        assertFalse(
+            composeRule
+                .onNode(hasClickAction())
+                .fetchSemanticsNode()
+                .config
+                .contains(SemanticsProperties.Disabled),
+        )
+    }
+
+    @Test
+    fun loadingDoesNotShrinkOnPress() {
         setBox(enabled = true, loading = true)
         val before = paintedWidth()
         press()
@@ -80,6 +100,7 @@ class PushlogPressableTest {
         enabled: Boolean,
         loading: Boolean = false,
         size: Dp = 100.dp,
+        onClick: () -> Unit = {},
     ) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
@@ -94,7 +115,7 @@ class PushlogPressableTest {
                                 shape = RoundedCornerShape(0.dp),
                                 enabled = enabled,
                                 loading = loading,
-                                onClick = {},
+                                onClick = onClick,
                             ),
                     )
                 }
