@@ -27,34 +27,56 @@ fun EntryProviderScope<NavKey>.pushlogContextualFloatingButtonPreviewEntry(onBac
     }
 }
 
-/** PushlogContextualFloatingButton per variant and state, icon only, and with a long label; draws no background of its own. */
+/** PushlogContextualFloatingButton per variant and state, text only, icon only, and with a long label; draws no background of its own. */
 @Composable
 fun PushlogContextualFloatingButtonPreviewContent() {
-    val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)
     PreviewBody {
-        PushlogContextualFloatingButtonVariant.entries.forEach { variant ->
-            PreviewSectionTitle(variant.name)
-            Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
-                PushlogContextualFloatingButton(text = "To top", onClick = {}, variant = variant, prefixIcon = arrow)
-                PushlogContextualFloatingButton(text = "Disabled", onClick = {}, variant = variant, enabled = false)
-                PushlogContextualFloatingButton(text = "Loading", onClick = {}, variant = variant, loading = true)
-            }
-        }
-        PreviewSectionTitle("icon only")
+        FloatingButtonVariants()
+        FloatingButtonLayouts()
+    }
+}
+
+@Composable
+private fun FloatingButtonVariants() {
+    val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)
+    PushlogContextualFloatingButtonVariant.entries.forEach { variant ->
+        PreviewSectionTitle(variant.name)
         Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
-            PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {})
-            PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, enabled = false)
-            PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, loading = true)
+            PushlogContextualFloatingButton(text = "To top", onClick = {}, variant = variant, prefixIcon = arrow)
+            PushlogContextualFloatingButton(text = "Disabled", onClick = {}, variant = variant, enabled = false)
+            PushlogContextualFloatingButton(text = "Loading", onClick = {}, variant = variant, loading = true)
         }
-        PreviewSectionTitle("long label")
-        PushlogContextualFloatingButton(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp), prefixIcon = arrow)
+    }
+}
+
+@Composable
+private fun FloatingButtonLayouts() {
+    val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)
+    PreviewSectionTitle("text only")
+    PushlogContextualFloatingButton(text = "To top", onClick = {})
+    PreviewSectionTitle("icon only")
+    Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
+        PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {})
+        PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, enabled = false)
+        PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, loading = true)
+    }
+    PreviewSectionTitle("long label")
+    PushlogContextualFloatingButton(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp), prefixIcon = arrow)
+}
+
+// The preview canvas is 320x470 and clips, so each section gets its own preview.
+@PushlogPreview
+@Composable
+private fun PushlogContextualFloatingButtonVariantsPreview() {
+    PushlogTheme {
+        PreviewBody { FloatingButtonVariants() }
     }
 }
 
 @PushlogPreview
 @Composable
-private fun PushlogContextualFloatingButtonPreviewContentPreview() {
+private fun PushlogContextualFloatingButtonLayoutsPreview() {
     PushlogTheme {
-        PushlogContextualFloatingButtonPreviewContent()
+        PreviewBody { FloatingButtonLayouts() }
     }
 }

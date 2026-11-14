@@ -1,6 +1,7 @@
 package com.citytexi.pushlog.preview.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -28,33 +29,52 @@ fun EntryProviderScope<NavKey>.pushlogActionButtonPreviewEntry(onBack: () -> Uni
 /** PushlogActionButton per variant and state, per size and layout, and with a long label; draws no background of its own. */
 @Composable
 fun PushlogActionButtonPreviewContent() {
-    val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
     PreviewBody {
-        PushlogActionButtonVariant.entries.forEach { variant ->
-            PreviewSectionTitle(variant.name)
-            Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
-                PushlogActionButton(text = "Action", onClick = {}, variant = variant)
-                PushlogActionButton(text = "Disabled", onClick = {}, variant = variant, enabled = false)
-                PushlogActionButton(text = "Loading", onClick = {}, variant = variant, loading = true)
-            }
-        }
-        PushlogActionButtonSize.entries.forEach { size ->
-            PreviewSectionTitle("size ${size.name}")
-            Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
-                PushlogActionButton(text = "Action", onClick = {}, size = size)
-                PushlogActionButton(text = "Action", onClick = {}, size = size, prefixIcon = plus)
-                PushlogActionButton(icon = plus, contentDescription = "Add", onClick = {}, size = size)
-            }
-        }
+        ActionButtonVariants()
+        ActionButtonSizes()
         PreviewSectionTitle("long label")
         PushlogActionButton(text = LONG_LABEL, onClick = {})
     }
 }
 
+@Composable
+private fun ActionButtonVariants() {
+    PushlogActionButtonVariant.entries.forEach { variant ->
+        PreviewSectionTitle(variant.name)
+        Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
+            PushlogActionButton(text = "Action", onClick = {}, variant = variant)
+            PushlogActionButton(text = "Disabled", onClick = {}, variant = variant, enabled = false)
+            PushlogActionButton(text = "Loading", onClick = {}, variant = variant, loading = true)
+        }
+    }
+}
+
+@Composable
+private fun ActionButtonSizes() {
+    val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
+    PushlogActionButtonSize.entries.forEach { size ->
+        PreviewSectionTitle("size ${size.name}")
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
+            PushlogActionButton(text = "Action", onClick = {}, size = size)
+            PushlogActionButton(text = "Action", onClick = {}, size = size, prefixIcon = plus)
+            PushlogActionButton(icon = plus, contentDescription = "Add", onClick = {}, size = size)
+        }
+    }
+}
+
+// The preview canvas is 320x470 and clips, so each section gets its own preview.
 @PushlogPreview
 @Composable
-private fun PushlogActionButtonPreviewContentPreview() {
+private fun PushlogActionButtonVariantsPreview() {
     PushlogTheme {
-        PushlogActionButtonPreviewContent()
+        PreviewBody { ActionButtonVariants() }
+    }
+}
+
+@PushlogPreview
+@Composable
+private fun PushlogActionButtonSizesPreview() {
+    PushlogTheme {
+        PreviewBody { ActionButtonSizes() }
     }
 }

@@ -2,7 +2,6 @@ package com.citytexi.pushlog.preview.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,37 +35,64 @@ fun EntryProviderScope<NavKey>.pushlogChipPreviewEntry(onBack: () -> Unit) {
 /** PushlogChip per variant and state, per size and icon, and with a long label; draws no background of its own. */
 @Composable
 fun PushlogChipPreviewContent() {
+    PreviewBody {
+        ChipVariants()
+        ChipSizes()
+        ChipLongLabel()
+    }
+}
+
+@Composable
+private fun ChipVariants() {
     val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
     val down = rememberVectorPainter(PreviewSampleIcons.ChevronDown)
-    PreviewBody {
-        PushlogChipVariant.entries.forEach { variant ->
-            var selected by remember { mutableStateOf(false) }
-            PreviewSectionTitle(variant.name)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
-                PushlogChip(text = "Button", onClick = {}, variant = variant, suffixIcon = down)
-                PushlogChip(text = "Toggle", onClick = { selected = !selected }, variant = variant, selected = selected, prefixIcon = plus)
-                PushlogChip(text = "Disabled", onClick = {}, variant = variant, enabled = false)
-                PushlogChip(text = "Selected disabled", onClick = {}, variant = variant, selected = true, enabled = false)
-            }
+    PushlogChipVariant.entries.forEach { variant ->
+        var selected by remember { mutableStateOf(false) }
+        PreviewSectionTitle(variant.name)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
+            PushlogChip(text = "Button", onClick = {}, variant = variant, suffixIcon = down)
+            PushlogChip(text = "Toggle", onClick = { selected = !selected }, variant = variant, selected = selected, prefixIcon = plus)
+            PushlogChip(text = "Disabled", onClick = {}, variant = variant, enabled = false)
+            PushlogChip(text = "Selected disabled", onClick = {}, variant = variant, selected = true, enabled = false)
         }
-        PushlogChipSize.entries.forEach { size ->
-            PreviewSectionTitle("size ${size.name}")
-            Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
-                PushlogChip(text = "Chip", onClick = {}, size = size)
-                PushlogChip(text = "Chip", onClick = {}, size = size, prefixIcon = plus)
-                PushlogChip(text = "Chip", onClick = {}, size = size, suffixIcon = down)
-            }
+    }
+}
+
+@Composable
+private fun ChipSizes() {
+    val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
+    val down = rememberVectorPainter(PreviewSampleIcons.ChevronDown)
+    PushlogChipSize.entries.forEach { size ->
+        PreviewSectionTitle("size ${size.name}")
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
+            PushlogChip(text = "Chip", onClick = {}, size = size)
+            PushlogChip(text = "Chip", onClick = {}, size = size, prefixIcon = plus)
+            PushlogChip(text = "Chip", onClick = {}, size = size, suffixIcon = down)
         }
-        PreviewSectionTitle("long label")
-        PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp))
-        PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp), suffixIcon = down)
+    }
+}
+
+@Composable
+private fun ChipLongLabel() {
+    val down = rememberVectorPainter(PreviewSampleIcons.ChevronDown)
+    PreviewSectionTitle("long label")
+    PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp))
+    PushlogChip(text = LONG_LABEL, onClick = {}, modifier = Modifier.width(200.dp), suffixIcon = down)
+}
+
+// The preview canvas is 320x470 and clips, so each section gets its own preview.
+@PushlogPreview
+@Composable
+private fun PushlogChipVariantsPreview() {
+    PushlogTheme {
+        PreviewBody { ChipVariants() }
     }
 }
 
 @PushlogPreview
 @Composable
-private fun PushlogChipPreviewContentPreview() {
+private fun PushlogChipSizesPreview() {
     PushlogTheme {
-        PushlogChipPreviewContent()
+        PreviewBody { ChipSizes() }
     }
 }
