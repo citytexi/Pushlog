@@ -15,34 +15,16 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.GraphicsMode
 
-/** Screenshots of the stateless [SampleScreen] only. `SampleRoute` needs Hilt and is not captured. */
+/**
+ * Error snackbars on the stateless [SampleScreen]. A snackbar has to be shown from a `LaunchedEffect`,
+ * which a preview cannot do; the other states are previews in `SampleScreen.kt`, captured automatically.
+ * `SampleRoute` needs Hilt and is not captured.
+ */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SampleScreenScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
-
-    @Test
-    fun empty() = capture("sample_screen_empty", SampleUiState())
-
-    @Test
-    fun items() =
-        capture(
-            "sample_screen_items",
-            SampleUiState(items = listOf(SampleItem(1, "First"), SampleItem(2, "Second"), SampleItem(3, "Third"))),
-        )
-
-    // First load: nothing cached yet, so a centered spinner stands in for the list.
-    @Test
-    fun refreshing() = capture("sample_screen_refreshing", SampleUiState(isRefreshing = true))
-
-    // Refresh with cached items: the list stays and a bar shows on top.
-    @Test
-    fun refreshingWithItems() =
-        capture(
-            "sample_screen_refreshing_with_items",
-            SampleUiState(items = listOf(SampleItem(1, "First"), SampleItem(2, "Second")), isRefreshing = true),
-        )
 
     // Errors are SampleSideEffect.ShowError: the Route shows them in a snackbar, as here.
     @Test

@@ -4,7 +4,7 @@ title: 디자인 시스템 foundation 구조
 category: architecture
 status: living
 platforms: android
-verified: 2026-11-13
+verified: 2026-11-14
 related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md]
 related_adr:
 related_architecture: [module-structure]
@@ -120,6 +120,15 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 ```
 
 결과는 `app-preview/build/outputs/roborazzi/catalog_*.png`다(`FoundationCatalogScreenshotTest`). 기준 스크린샷은 커밋하지 않는다.
+
+## 프리뷰 스크린샷
+
+`starter.android.screenshot`을 적용한 모듈은 namespace 아래 `@Preview`(private 포함)를 자동으로 캡처한다(Roborazzi Compose Preview 스캔). 결과는 `<module>/build/outputs/roborazzi/com.citytexi.pushlog.<...>.png`이고 UI diff PR 코멘트에서 비교된다. 언제 도는지는 [빌드 문서](build-and-release.md#검증)에 있다.
+
+- 상태는 되도록 프리뷰로 표현한다. 직접 쓴 스크린샷 테스트는 프리뷰로 그릴 수 없는 상태(눌림, 애니메이션 진행 시점, 특수 화면 폭, `LaunchedEffect`로 띄우는 스낵바)에만 쓴다. 예: `SampleScreenScreenshotTest`(에러 스낵바), `FoundationCatalogScreenshotTest`(긴 화면, 412dp 폭).
+- Robolectric에서 그릴 수 없는 프리뷰(Hilt·ViewModel)나 실행마다 달라지는 프리뷰에는 `@ScreenshotExcluded`(`core:ui`)를 붙인다.
+- 프리뷰 이름은 파일명이 된다(공백은 `_`로 바뀐다). 글자·숫자·`_`·`-`·`.`·공백 외의 기호(`%`, 괄호, `+` 등)가 있으면 UI diff 스크립트가 경로 안전 검사(`report.py`의 `PART_RE`)에서 그 이미지를 빼고, 코멘트에 뺀 개수를 경고로 남긴다. `@PushlogPreview`의 200% 변형 이름이 `Light font 2x`인 이유다.
+- 기본 tester(`AndroidComposePreviewTester`)를 쓴다. 파라미터 프리뷰를 쓰면 값 이름이 파일명에 들어가므로 이름 있는 값을 준다.
 
 ## Konsist 규칙
 

@@ -103,10 +103,39 @@ private fun SampleItems(items: List<SampleItem>) {
 
 @PushlogPreview
 @Composable
-private fun SampleScreenPreview() {
+private fun SampleScreenEmptyPreview() {
+    SampleScreenPreviewContent(SampleUiState())
+}
+
+@PushlogPreview
+@Composable
+private fun SampleScreenItemsPreview() {
+    SampleScreenPreviewContent(
+        SampleUiState(items = listOf("First", "Second", "Third").mapIndexed { index, title -> SampleItem(index + 1L, title) }),
+    )
+}
+
+// First load: nothing cached yet, so a centered spinner stands in for the list.
+@PushlogPreview
+@Composable
+private fun SampleScreenRefreshingPreview() {
+    SampleScreenPreviewContent(SampleUiState(isRefreshing = true))
+}
+
+// Refresh with cached items: the list stays and a bar shows on top.
+@PushlogPreview
+@Composable
+private fun SampleScreenRefreshingWithItemsPreview() {
+    SampleScreenPreviewContent(
+        SampleUiState(items = listOf(SampleItem(1, "First"), SampleItem(2, "Second")), isRefreshing = true),
+    )
+}
+
+@Composable
+private fun SampleScreenPreviewContent(state: SampleUiState) {
     PushlogTheme {
         SampleScreen(
-            state = SampleUiState(items = listOf(SampleItem(1, "First"), SampleItem(2, "Second"))),
+            state = state,
             snackbarHostState = remember { SnackbarHostState() },
             onIntent = {},
         )

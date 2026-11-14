@@ -160,6 +160,7 @@ jobs:
           STATUS: ${{ steps.meta.outputs.status }}
           FAILED_MODULES: ${{ steps.meta.outputs.failed_modules }}
           TOTAL: ${{ steps.collect.outputs.total }}
+          UNSAFE: ${{ steps.collect.outputs.unsafe }}
         run: |
           current=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" --jq .head.sha)
           rc=0
@@ -177,7 +178,8 @@ jobs:
               echo "no base setup and no existing comment"
               exit 0
             fi
-            if [ "$TOTAL" = 0 ] && [ "$STATUS" = ok ] && [ "$FAILED_MODULES" = 0 ]; then
+            # 이름 때문에 뺀 이미지만 있는 PR 도 경고를 남긴다.
+            if [ "$TOTAL" = 0 ] && [ "$STATUS" = ok ] && [ "$FAILED_MODULES" = 0 ] && [ "${UNSAFE:-0}" = 0 ]; then
               echo "nothing to report"
               exit 0
             fi
