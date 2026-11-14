@@ -1,7 +1,7 @@
 package com.citytexi.pushlog.preview.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -41,7 +41,7 @@ private fun FloatingButtonVariants() {
     val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)
     PushlogContextualFloatingButtonVariant.entries.forEach { variant ->
         PreviewSectionTitle(variant.name)
-        Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
             PushlogContextualFloatingButton(text = "To top", onClick = {}, variant = variant, prefixIcon = arrow)
             PushlogContextualFloatingButton(text = "Disabled", onClick = {}, variant = variant, enabled = false)
             PushlogContextualFloatingButton(text = "Loading", onClick = {}, variant = variant, loading = true)
@@ -55,7 +55,7 @@ private fun FloatingButtonLayouts() {
     PreviewSectionTitle("text only")
     PushlogContextualFloatingButton(text = "To top", onClick = {})
     PreviewSectionTitle("icon only")
-    Row(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3)) {
         PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {})
         PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, enabled = false)
         PushlogContextualFloatingButton(icon = arrow, contentDescription = "To top", onClick = {}, loading = true)
