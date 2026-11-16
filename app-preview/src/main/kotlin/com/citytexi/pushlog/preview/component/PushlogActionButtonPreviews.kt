@@ -1,8 +1,8 @@
 package com.citytexi.pushlog.preview.component
 
 import androidx.compose.runtime.Composable
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonSize
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonVariant
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonSize
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonVariant
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody

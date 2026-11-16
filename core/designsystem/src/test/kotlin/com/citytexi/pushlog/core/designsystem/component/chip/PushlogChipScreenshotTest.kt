@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.chip
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,21 +27,24 @@ import org.robolectric.annotation.GraphicsMode
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w1200dp-h1200dp")
-class PushlogContextualFloatingButtonScreenshotTest {
+class PushlogChipScreenshotTest {
     @get:Rule
     val composeRule = createComposeRule()
 
-    private val pressSources = PushlogContextualFloatingButtonVariant.entries.associateWith { MutableInteractionSource() }
+    private val pressSources =
+        PushlogChipVariant.entries
+            .flatMap { variant -> listOf(false, true).map { selected -> variant to selected } }
+            .associateWith { MutableInteractionSource() }
 
     @Test
-    fun statesLight() = captureStates("contextual_floating_button_states_light", darkTheme = false)
+    fun statesLight() = captureStates("chip_states_light", darkTheme = false)
 
     @Test
-    fun statesDark() = captureStates("contextual_floating_button_states_dark", darkTheme = true)
+    fun statesDark() = captureStates("chip_states_dark", darkTheme = true)
 
     /**
      * 눌림 열은 Press를 주입한 뒤 한 번만 찍는다. 같은 파일을 두 번 쓰면 기본 상태가 덮인다.
-     * 로딩 호는 무한 전환이라 시계를 멈추고 직접 흘려야 보인다. 화면을 넓혀 열이 잘리지 않게 한다.
+     * 눌림 전환이 끝난 뒤 찍으려고 시계를 멈추고 직접 흘린다. 화면을 넓혀 열이 잘리지 않게 한다.
      */
     private fun captureStates(
         name: String,
@@ -60,25 +63,39 @@ class PushlogContextualFloatingButtonScreenshotTest {
         content: @Composable () -> Unit,
     ) {
         PushlogTheme(darkTheme = darkTheme) {
-            Column(Modifier.background(PushlogTheme.color.bg.layerDefault).padding(16.dp)) { content() }
+            Column(Modifier.background(PushlogTheme.color.bg.layerDefault).padding(8.dp)) { content() }
         }
     }
 
+    /** variant마다 세 줄: 기본·눌림 / selected·selected+눌림 / 비활성·selected+비활성. */
     @Composable
     private fun States() {
-        val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            PushlogContextualFloatingButtonVariant.entries.forEach { variant ->
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    PushlogContextualFloatingButton(text = "맨 위로", onClick = {}, variant = variant, prefixIcon = arrow)
-                    PushlogContextualFloatingButton(
+        val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
+        val down = rememberVectorPainter(PreviewSampleIcons.ChevronDown)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            PushlogChipVariant.entries.forEach { variant ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PushlogChip(text = "기본", onClick = {}, variant = variant, prefixIcon = plus, suffixIcon = down)
+                    PushlogChip(
                         text = "눌림",
                         onClick = {},
                         variant = variant,
-                        interactionSource = pressSources.getValue(variant),
+                        interactionSource = pressSources.getValue(variant to false),
                     )
-                    PushlogContextualFloatingButton(text = "비활성", onClick = {}, variant = variant, enabled = false)
-                    PushlogContextualFloatingButton(text = "로딩", onClick = {}, variant = variant, loading = true)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PushlogChip(text = "선택", onClick = {}, variant = variant, selected = true, prefixIcon = plus)
+                    PushlogChip(
+                        text = "선택눌림",
+                        onClick = {},
+                        variant = variant,
+                        selected = true,
+                        interactionSource = pressSources.getValue(variant to true),
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    PushlogChip(text = "비활성", onClick = {}, variant = variant, enabled = false)
+                    PushlogChip(text = "선택비활성", onClick = {}, variant = variant, selected = true, enabled = false)
                 }
             }
         }

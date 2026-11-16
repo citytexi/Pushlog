@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.pressable
 
 import android.content.ContentResolver
 import android.content.Context

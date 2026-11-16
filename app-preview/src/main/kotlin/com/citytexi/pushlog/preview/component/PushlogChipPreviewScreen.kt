@@ -13,9 +13,9 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.citytexi.pushlog.core.designsystem.component.PushlogChip
-import com.citytexi.pushlog.core.designsystem.component.PushlogChipSize
-import com.citytexi.pushlog.core.designsystem.component.PushlogChipVariant
+import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChip
+import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChipSize
+import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChipVariant
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview

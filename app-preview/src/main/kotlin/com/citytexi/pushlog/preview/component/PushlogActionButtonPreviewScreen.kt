@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButton
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonSize
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonVariant
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButton
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonSize
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonVariant
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.preview.foundation.PreviewBody

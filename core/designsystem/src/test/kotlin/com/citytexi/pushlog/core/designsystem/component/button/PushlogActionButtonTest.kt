@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.button
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.getValue

@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.button
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.designsystem.theme.color.DarkPalette
 import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette

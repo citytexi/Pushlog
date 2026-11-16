@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.pressable
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource

@@ -20,9 +20,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import com.citytexi.pushlog.core.designsystem.component.LoadingContent
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButton
-import com.citytexi.pushlog.core.designsystem.component.PushlogActionButtonVariant
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButton
+import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonVariant
+import com.citytexi.pushlog.core.designsystem.component.loading.LoadingContent
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.domain.model.SampleItem

@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.pressable
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween

@@ -1,4 +1,4 @@
-package com.citytexi.pushlog.core.designsystem.component
+package com.citytexi.pushlog.core.designsystem.component.button
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -11,6 +11,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import com.citytexi.pushlog.core.designsystem.R
+import com.citytexi.pushlog.core.designsystem.component.loading.PushlogProgressCircle
 import com.citytexi.pushlog.core.designsystem.theme.LocalPushlogDarkTheme
 
 /** 눌림 부품에 넘길 평상시 표면색. 비활성은 눌려도 같은 색이고, 로딩은 눌림 색을 쓴다. */

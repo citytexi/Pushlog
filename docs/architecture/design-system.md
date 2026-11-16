@@ -69,6 +69,7 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 
 `PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md).
 
+- 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다.
 - 새 동작 컴포넌트는 눌림 처리를 새로 만들지 않고 `Modifier.pushlogPressable`(토글은 `pushlogToggleablePressable`)과 `PushlogButtonSupport.kt`의 로딩·색 도우미를 재사용한다.
 - ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2dp 축소로만 보인다. 축소 기준 길이는 max(높이, 너비÷4, 24dp)다. 글자·아이콘 색은 그대로다.
 - 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `pushlogPressable`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier 앞에 따로 두면 표면만 줄고 그림자는 그대로 남는다.
@@ -166,7 +167,7 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 
 ### 컴포넌트를 추가할 때
 
-`core:designsystem`의 `component` 패키지에 공개 composable을 추가하면 `app-preview`에 화면을 함께 만들어야 한다. 네 단계다. `PushlogActionButton`이 예시다.
+`core:designsystem`의 `component` 패키지(하위 패키지 포함)에 공개 composable을 추가하면 `app-preview`에 화면을 함께 만들어야 한다. 네 단계다. `PushlogActionButton`이 예시다.
 
 1. 키: `component/PushlogActionButtonPreviewKey.kt`에 `NavKey` 구현체를 둔다.
 2. 화면: `component/PushlogActionButtonPreviewScreen.kt`에 본문 `PushlogActionButtonPreviewContent`와 entry 함수 `pushlogActionButtonPreviewEntry(onBack)`를 둔다. entry는 `PreviewScaffold` 안에 본문을 그린다.
@@ -185,4 +186,4 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 | 2. `previewCatalog`의 키가 `previewEntryProvider`에 등록되지 않음 | `PreviewEntryProviderTest`(`app-preview` 단위 테스트) |
 | 3. `NavKey` 구현체가 `previewCatalog`에서 참조되지 않음(고아 키) | Konsist `PreviewCoverageRulesTest` |
 
-규칙 1의 대상은 `component` 패키지(하위 패키지 제외)의 공개 최상위 `@Composable` 함수다. 컴포넌트의 보조 부품(슬롯, 하위 부품)은 `internal`로 두거나 하위 패키지 `component.<name>`에 둬서 화면을 요구받지 않게 한다.
+규칙 1의 대상은 `component` 패키지와 그 하위 패키지의 공개 최상위 `@Composable` 함수다. 컴포넌트의 보조 부품(슬롯, 하위 부품)은 `internal`로 둬서 화면을 요구받지 않게 한다.
