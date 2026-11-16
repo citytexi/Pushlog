@@ -44,14 +44,13 @@ internal fun Modifier.pushlogPressable(
     role: Role = Role.Button,
     shadow: Modifier = Modifier,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow)
-        .clickable(
-            interactionSource = interactionSource,
-            indication = null,
-            enabled = enabled,
-            role = role,
-            onClick = { if (!loading) onClick() },
-        )
+    clickable(
+        interactionSource = interactionSource,
+        indication = null,
+        enabled = enabled,
+        role = role,
+        onClick = { if (!loading) onClick() },
+    ).pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow)
 
 /** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. */
 internal fun Modifier.pushlogToggleablePressable(
@@ -64,17 +63,17 @@ internal fun Modifier.pushlogToggleablePressable(
     onClick: () -> Unit,
     shadow: Modifier = Modifier,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = shadow)
-        .toggleable(
-            value = selected,
-            interactionSource = interactionSource,
-            indication = null,
-            enabled = enabled,
-            role = Role.Checkbox,
-            onValueChange = { onClick() },
-        )
+    toggleable(
+        value = selected,
+        interactionSource = interactionSource,
+        indication = null,
+        enabled = enabled,
+        role = Role.Checkbox,
+        onValueChange = { onClick() },
+    ).pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = shadow)
 
-// 축소 층을 맨 앞에 둬서 그림자, clip, 배경, 눌림 영역이 모두 같이 줄어든다.
+// 탭 판정은 축소 층 바깥에 둔다. 판정 영역까지 줄면 가장자리를 누른 손가락이 줄어든 표면 밖으로 밀려나 탭이 취소된다.
+// 축소 층은 그 안에서 맨 앞이라 그림자, clip, 배경이 모두 같이 줄어든다.
 private fun Modifier.pressableSurface(
     interactionSource: MutableInteractionSource,
     color: Color,

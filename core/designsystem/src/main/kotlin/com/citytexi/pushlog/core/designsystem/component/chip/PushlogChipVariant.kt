@@ -35,16 +35,18 @@ enum class PushlogChipVariant {
     @Composable
     internal fun contentColor(selected: Boolean): Color {
         val fg = PushlogTheme.color.fg
-        return if (this == SOLID && selected) fg.onNeutralSolid else fg.neutral
+        return when (this) {
+            SOLID -> if (selected) fg.onNeutralSolid else fg.neutral
+            OUTLINE_WEAK -> fg.neutral
+        }
     }
 
     @Composable
     internal fun borderColor(selected: Boolean): Color {
         val stroke = PushlogTheme.color.stroke
-        return when {
-            this == SOLID -> Color.Transparent
-            selected -> stroke.neutralContrast
-            else -> stroke.neutralWeak
+        return when (this) {
+            SOLID -> Color.Transparent
+            OUTLINE_WEAK -> if (selected) stroke.neutralContrast else stroke.neutralWeak
         }
     }
 }

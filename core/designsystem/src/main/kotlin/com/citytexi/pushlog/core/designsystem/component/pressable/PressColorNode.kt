@@ -31,7 +31,7 @@ internal class PressColorNode(
     override fun onAttach() {
         pressed = false
         val initial = target()
-        if (background.value != initial) coroutineScope.launch { background.snapTo(initial) }
+        if (background.value != initial || background.targetValue != initial) coroutineScope.launch { background.snapTo(initial) }
         pressJob = coroutineScope.launchPressTracking(interactionSource, ::onPressedChange)
     }
 

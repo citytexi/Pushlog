@@ -27,6 +27,7 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 // SEED chip.yaml: OUTLINE_WEAK 테두리 두께.
 private val BorderWidth = 1.dp
 
+// SEED chip.yaml: disabled opacity. 칩은 비활성 색 토큰 대신 칩 전체를 흐리게 한다.
 private const val DISABLED_ALPHA = 0.5f
 
 /**

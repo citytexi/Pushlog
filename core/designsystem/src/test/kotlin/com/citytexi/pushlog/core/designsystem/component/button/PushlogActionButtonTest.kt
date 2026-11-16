@@ -84,12 +84,14 @@ class PushlogActionButtonTest {
 
     @Test
     fun disabledIsNotClickable() {
+        var clicks = 0
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
-                PushlogActionButton(text = "저장", onClick = {}, enabled = false)
+                PushlogActionButton(text = "저장", onClick = { clicks++ }, enabled = false)
             }
         }
-        composeRule.onNodeWithText("저장").assertIsNotEnabled()
+        composeRule.onNodeWithText("저장").assertIsNotEnabled().performClick()
+        assertEquals(0, clicks)
     }
 
     @Test

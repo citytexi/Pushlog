@@ -23,10 +23,10 @@ enum class PushlogContextualFloatingButtonVariant {
     @Composable
     internal fun contentColor(enabled: Boolean): Color {
         val fg = PushlogTheme.color.fg
-        return when {
-            !enabled -> fg.disabled
-            this == SOLID -> fg.onNeutralSolid
-            else -> fg.neutral
+        if (!enabled) return fg.disabled
+        return when (this) {
+            SOLID -> fg.onNeutralSolid
+            LAYER -> fg.neutral
         }
     }
 

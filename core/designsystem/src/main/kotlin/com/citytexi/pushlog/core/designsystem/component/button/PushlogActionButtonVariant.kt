@@ -29,28 +29,32 @@ enum class PushlogActionButtonVariant {
     @Composable
     internal fun disabledSurfaceColor(): Color {
         val bg = PushlogTheme.color.bg
-        return if (this == GHOST) bg.transparent else bg.disabled
+        return when (this) {
+            BRAND_SOLID, NEUTRAL_SOLID, NEUTRAL_WEAK, CRITICAL_SOLID -> bg.disabled
+            GHOST -> bg.transparent
+        }
     }
 
     @Composable
     internal fun contentColor(enabled: Boolean): Color {
         val fg = PushlogTheme.color.fg
-        return when {
-            !enabled -> fg.disabled
-            this == BRAND_SOLID -> fg.onBrandSolid
-            this == NEUTRAL_SOLID -> fg.onNeutralSolid
-            this == CRITICAL_SOLID -> fg.onCriticalSolid
-            else -> fg.neutral
+        if (!enabled) return fg.disabled
+        return when (this) {
+            BRAND_SOLID -> fg.onBrandSolid
+            NEUTRAL_SOLID -> fg.onNeutralSolid
+            CRITICAL_SOLID -> fg.onCriticalSolid
+            NEUTRAL_WEAK, GHOST -> fg.neutral
         }
     }
 
     @Composable
-    internal fun trackColor(): Color {
-        val onSolid = this == BRAND_SOLID || this == NEUTRAL_SOLID || this == CRITICAL_SOLID
-        return if (onSolid) {
-            pushlogThemedColor(LightPalette.staticWhiteAlpha300, DarkPalette.staticWhiteAlpha300)
-        } else {
-            pushlogThemedColor(LightPalette.gray500, DarkPalette.gray500)
+    internal fun trackColor(): Color =
+        when (this) {
+            BRAND_SOLID, NEUTRAL_SOLID, CRITICAL_SOLID ->
+                pushlogThemedColor(
+                    LightPalette.staticWhiteAlpha300,
+                    DarkPalette.staticWhiteAlpha300,
+                )
+            NEUTRAL_WEAK, GHOST -> pushlogThemedColor(LightPalette.gray500, DarkPalette.gray500)
         }
-    }
 }

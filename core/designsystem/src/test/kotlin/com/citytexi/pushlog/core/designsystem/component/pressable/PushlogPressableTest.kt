@@ -28,6 +28,7 @@ import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
@@ -130,6 +131,22 @@ class PushlogPressableTest {
                 .config
                 .contains(SemanticsProperties.Disabled),
         )
+    }
+
+    @Test
+    fun edgeTapSurvivesShrink() {
+        var clicks = 0
+        setBox(enabled = true, onClick = { clicks++ })
+        val node = composeRule.onNode(hasClickAction())
+        // 축소 뒤에는 가장자리 0.5px 지점이 줄어든 표면 밖이다. 판정 영역까지 줄면 살짝 움직일 때 탭이 취소된다.
+        node.performTouchInput { down(Offset(0.5f, centerY)) }
+        composeRule.mainClock.advanceTimeBy(300)
+        node.performTouchInput {
+            moveBy(Offset(0.2f, 0f))
+            up()
+        }
+        composeRule.waitForIdle()
+        assertEquals(1, clicks)
     }
 
     @Test

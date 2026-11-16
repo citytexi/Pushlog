@@ -45,7 +45,7 @@ internal class PressScaleNode(
         val reduceMotionFlow = ReduceMotion.flow(currentValueOf(LocalContext))
         reduceMotion = reduceMotionFlow.value
         pressed = false
-        if (shrink.value != 0f) coroutineScope.launch { shrink.snapTo(0f) }
+        if (shrink.value != 0f || shrink.targetValue != 0f) coroutineScope.launch { shrink.snapTo(0f) }
         pressJob = coroutineScope.launchPressTracking(interactionSource, ::onPressedChange)
         coroutineScope.launch {
             reduceMotionFlow.collect {
