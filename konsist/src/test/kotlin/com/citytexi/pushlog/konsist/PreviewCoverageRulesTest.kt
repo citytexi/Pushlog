@@ -10,7 +10,7 @@ class PreviewCoverageRulesTest {
     fun `every public design system component has a preview screen`() {
         val components =
             allProductionFiles()
-                .filter { it.packagee?.name == COMPONENT_PACKAGE }
+                .filter { isInPackage(it.packagee?.name.orEmpty(), COMPONENT_PACKAGE) }
                 .flatMap { it.functions() }
                 .filter { it.isTopLevel && it.hasAnnotationWithName("Composable") && it.hasPublicOrDefaultModifier }
                 .map { it.name }

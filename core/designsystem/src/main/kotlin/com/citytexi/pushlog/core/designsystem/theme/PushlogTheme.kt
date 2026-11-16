@@ -29,6 +29,9 @@ internal val LocalPushlogRadius = staticCompositionLocalOf { DefaultPushlogRadiu
 internal val LocalPushlogShadows = staticCompositionLocalOf { LightPushlogShadows }
 internal val LocalPushlogMotion = staticCompositionLocalOf { DefaultPushlogMotion }
 
+/** 토큰으로 노출되지 않는 팔레트 값(로딩 트랙 색)을 라이트/다크에 맞게 고를 때만 읽는다. */
+internal val LocalPushlogDarkTheme = staticCompositionLocalOf { false }
+
 /** Pushlog 토큰을 제공하고 같은 값으로 M3 테마를 감싼다. */
 @Composable
 fun PushlogTheme(
@@ -44,6 +47,7 @@ fun PushlogTheme(
         LocalPushlogRadius provides DefaultPushlogRadius,
         LocalPushlogShadows provides shadows,
         LocalPushlogMotion provides DefaultPushlogMotion,
+        LocalPushlogDarkTheme provides darkTheme,
     ) {
         MaterialTheme(
             colorScheme = if (darkTheme) DarkMaterialColorScheme else LightMaterialColorScheme,
