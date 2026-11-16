@@ -20,18 +20,12 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
-import com.citytexi.pushlog.core.designsystem.theme.color.DarkPalette
-import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
-
-// SEED action-button.yaml: LARGE 아이콘 크기. 같은 크기의 간격 토큰이 없다.
-private val LargeIconSize = 22.dp
 
 /**
  * 글자 버튼. 기본 [PushlogActionButtonVariant.NEUTRAL_WEAK]는 SEED가 "대부분의 액션"으로 꼽은 강조다.
@@ -49,9 +43,8 @@ fun PushlogActionButton(
     loading: Boolean = false,
     interactionSource: MutableInteractionSource? = null,
 ) {
-    val contentColor = contentColor(variant, enabled)
-    val dimension = PushlogTheme.dimension
-    val iconSize = if (size == PushlogActionButtonSize.LARGE) LargeIconSize else textIconSize(size)
+    val contentColor = variant.contentColor(enabled)
+    val metrics = size.metrics()
     ActionButtonSurface(
         variant = variant,
         size = size,
@@ -65,36 +58,14 @@ fun PushlogActionButton(
         semanticsModifier = Modifier,
     ) {
         Row(
-            modifier =
-                Modifier.padding(
-                    horizontal =
-                        when (size) {
-                            PushlogActionButtonSize.SMALL -> dimension.x3Half
-                            PushlogActionButtonSize.MEDIUM -> dimension.x4
-                            PushlogActionButtonSize.LARGE -> dimension.x5
-                        },
-                    vertical =
-                        when (size) {
-                            PushlogActionButtonSize.SMALL -> dimension.x2
-                            PushlogActionButtonSize.MEDIUM -> dimension.x2Half
-                            PushlogActionButtonSize.LARGE -> dimension.x3Half
-                        },
-                ),
-            horizontalArrangement =
-                Arrangement.spacedBy(
-                    when (size) {
-                        PushlogActionButtonSize.SMALL -> dimension.x1
-                        PushlogActionButtonSize.MEDIUM -> dimension.x1Half
-                        PushlogActionButtonSize.LARGE -> dimension.x2
-                    },
-                    Alignment.CenterHorizontally,
-                ),
+            modifier = Modifier.padding(horizontal = metrics.paddingX, vertical = metrics.paddingY),
+            horizontalArrangement = Arrangement.spacedBy(metrics.gap, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (prefixIcon != null) {
-                Icon(painter = prefixIcon, contentDescription = null, modifier = Modifier.size(iconSize), tint = contentColor)
+                Icon(painter = prefixIcon, contentDescription = null, modifier = Modifier.size(metrics.prefixIconSize), tint = contentColor)
             }
-            Text(text = text, style = labelStyle(size), color = contentColor)
+            Text(text = text, style = metrics.labelStyle, color = contentColor)
         }
     }
 }
@@ -112,8 +83,8 @@ fun PushlogActionButton(
     loading: Boolean = false,
     interactionSource: MutableInteractionSource? = null,
 ) {
-    val contentColor = contentColor(variant, enabled)
-    val dimension = PushlogTheme.dimension
+    val contentColor = variant.contentColor(enabled)
+    val metrics = size.metrics()
     ActionButtonSurface(
         variant = variant,
         size = size,
@@ -122,33 +93,14 @@ fun PushlogActionButton(
         onClick = onClick,
         interactionSource = interactionSource,
         contentColor = contentColor,
-        minWidth =
-            when (size) {
-                PushlogActionButtonSize.SMALL -> dimension.x9
-                PushlogActionButtonSize.MEDIUM -> dimension.x10
-                PushlogActionButtonSize.LARGE -> dimension.x13
-            },
+        minWidth = metrics.minHeight,
         modifier = modifier,
         semanticsModifier = Modifier.semantics(mergeDescendants = true) { this.contentDescription = contentDescription },
     ) {
         Icon(
             painter = icon,
             contentDescription = null,
-            modifier =
-                Modifier
-                    .padding(
-                        when (size) {
-                            PushlogActionButtonSize.SMALL -> dimension.x2
-                            PushlogActionButtonSize.MEDIUM -> dimension.x2Half
-                            PushlogActionButtonSize.LARGE -> dimension.x3Half
-                        },
-                    ).size(
-                        when (size) {
-                            PushlogActionButtonSize.SMALL -> dimension.x4
-                            PushlogActionButtonSize.MEDIUM -> dimension.x4Half
-                            PushlogActionButtonSize.LARGE -> LargeIconSize
-                        },
-                    ),
+            modifier = Modifier.padding(metrics.iconOnlyPadding).size(metrics.iconOnlyIconSize),
             tint = contentColor,
         )
     }
@@ -168,15 +120,11 @@ private fun ActionButtonSurface(
     semanticsModifier: Modifier,
     content: @Composable () -> Unit,
 ) {
-    val radius = PushlogTheme.radius
-    val bg = PushlogTheme.color.bg
-    val minHeight = minHeight(size)
-    val corner = if (size == PushlogActionButtonSize.LARGE) radius.r3 else radius.r2
-    val shape = remember(corner) { RoundedCornerShape(corner) }
-    val progressSize = progressSize(size)
-    val disabledSurface = if (variant == PushlogActionButtonVariant.GHOST) bg.transparent else bg.disabled
-    val pressedColor = buttonPressedColor(enabled, surfaceColor(variant, pressed = true), disabledSurface)
-    val color = buttonSurfaceColor(enabled, loading, surfaceColor(variant, pressed = false), pressedColor, disabledSurface)
+    val metrics = size.metrics()
+    val shape = remember(metrics.cornerRadius) { RoundedCornerShape(metrics.cornerRadius) }
+    val disabledSurface = variant.disabledSurfaceColor()
+    val pressedColor = buttonPressedColor(enabled, variant.surfaceColor(pressed = true), disabledSurface)
+    val color = buttonSurfaceColor(enabled, loading, variant.surfaceColor(pressed = false), pressedColor, disabledSurface)
     val source = interactionSource ?: remember { MutableInteractionSource() }
     Box(
         modifier =
@@ -189,79 +137,12 @@ private fun ActionButtonSurface(
                     enabled = enabled,
                     loading = loading,
                     onClick = onClick,
-                ).defaultMinSize(minWidth = minWidth, minHeight = minHeight)
+                ).defaultMinSize(minWidth = minWidth, minHeight = metrics.minHeight)
                 .then(semanticsModifier)
                 .pushlogLoadingState(loading),
         contentAlignment = Alignment.Center,
     ) {
-        PushlogLoadingContent(loading, progressSize, trackColor(variant), contentColor, content)
-    }
-}
-
-@Composable
-private fun minHeight(size: PushlogActionButtonSize): Dp =
-    when (size) {
-        PushlogActionButtonSize.SMALL -> PushlogTheme.dimension.x9
-        PushlogActionButtonSize.MEDIUM -> PushlogTheme.dimension.x10
-        PushlogActionButtonSize.LARGE -> PushlogTheme.dimension.x13
-    }
-
-@Composable
-private fun progressSize(size: PushlogActionButtonSize): Dp =
-    when (size) {
-        PushlogActionButtonSize.SMALL -> PushlogTheme.dimension.x3Half
-        PushlogActionButtonSize.MEDIUM -> PushlogTheme.dimension.x4
-        PushlogActionButtonSize.LARGE -> PushlogTheme.dimension.x4Half
-    }
-
-@Composable
-private fun textIconSize(size: PushlogActionButtonSize): Dp =
-    if (size == PushlogActionButtonSize.SMALL) PushlogTheme.dimension.x3Half else PushlogTheme.dimension.x4
-
-@Composable
-private fun labelStyle(size: PushlogActionButtonSize): TextStyle =
-    if (size == PushlogActionButtonSize.LARGE) PushlogTheme.typography.t6Bold else PushlogTheme.typography.t4Bold
-
-@Composable
-private fun surfaceColor(
-    variant: PushlogActionButtonVariant,
-    pressed: Boolean,
-): Color {
-    val bg = PushlogTheme.color.bg
-    return when (variant) {
-        PushlogActionButtonVariant.BRAND_SOLID -> if (pressed) bg.brandSolidPressed else bg.brandSolid
-        PushlogActionButtonVariant.NEUTRAL_SOLID -> if (pressed) bg.neutralSolidPressed else bg.neutralSolid
-        PushlogActionButtonVariant.NEUTRAL_WEAK -> if (pressed) bg.neutralWeakPressed else bg.neutralWeak
-        PushlogActionButtonVariant.CRITICAL_SOLID -> if (pressed) bg.criticalSolidPressed else bg.criticalSolid
-        PushlogActionButtonVariant.GHOST -> if (pressed) bg.transparentPressed else bg.transparent
-    }
-}
-
-@Composable
-private fun contentColor(
-    variant: PushlogActionButtonVariant,
-    enabled: Boolean,
-): Color {
-    val fg = PushlogTheme.color.fg
-    return when {
-        !enabled -> fg.disabled
-        variant == PushlogActionButtonVariant.BRAND_SOLID -> fg.onBrandSolid
-        variant == PushlogActionButtonVariant.NEUTRAL_SOLID -> fg.onNeutralSolid
-        variant == PushlogActionButtonVariant.CRITICAL_SOLID -> fg.onCriticalSolid
-        else -> fg.neutral
-    }
-}
-
-@Composable
-private fun trackColor(variant: PushlogActionButtonVariant): Color {
-    val onSolid =
-        variant == PushlogActionButtonVariant.BRAND_SOLID ||
-            variant == PushlogActionButtonVariant.NEUTRAL_SOLID ||
-            variant == PushlogActionButtonVariant.CRITICAL_SOLID
-    return if (onSolid) {
-        pushlogThemedColor(LightPalette.staticWhiteAlpha300, DarkPalette.staticWhiteAlpha300)
-    } else {
-        pushlogThemedColor(LightPalette.gray500, DarkPalette.gray500)
+        PushlogLoadingContent(loading, metrics.progressSize, variant.trackColor(), contentColor, content)
     }
 }
 

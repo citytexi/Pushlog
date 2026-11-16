@@ -16,11 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogToggleablePressable
@@ -28,21 +26,10 @@ import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
-// SEED chip.yaml: SMALL 최소 너비. 같은 크기의 간격 토큰이 없다.
-private val SmallMinWidth = 44.dp
-
 // SEED chip.yaml: OUTLINE_WEAK 테두리 두께.
 private val BorderWidth = 1.dp
 
 private const val DISABLED_ALPHA = 0.5f
-
-private class ChipMetrics(
-    val minHeight: Dp,
-    val paddingX: Dp,
-    val prefixIconSize: Dp,
-    val suffixIconSize: Dp,
-    val minWidth: Dp,
-)
 
 /**
  * 필터·선택에 쓰는 알약 모양 칩. [selected]가 null이면 버튼이고, 아니면 켜고 끄는 체크 상태를 가진다.
@@ -64,19 +51,14 @@ fun PushlogChip(
     interactionSource: MutableInteractionSource? = null,
 ) {
     val isSelected = selected == true
-    val metrics = chipMetrics(size)
+    val metrics = size.metrics()
     val labelPadding = PushlogTheme.dimension.x1Half
     val shape = PushlogTheme.radius.full
     val source = interactionSource ?: remember { MutableInteractionSource() }
-    val color = surfaceColor(variant, isSelected, pressed = false)
-    val pressedColor = surfaceColor(variant, isSelected, pressed = true)
-    val contentColor = contentColor(variant, isSelected)
-    val borderColor =
-        when {
-            variant == PushlogChipVariant.SOLID -> Color.Transparent
-            isSelected -> PushlogTheme.color.stroke.neutralContrast
-            else -> PushlogTheme.color.stroke.neutralWeak
-        }
+    val color = variant.surfaceColor(isSelected, pressed = false)
+    val pressedColor = variant.surfaceColor(isSelected, pressed = true)
+    val contentColor = variant.contentColor(isSelected)
+    val borderColor = variant.borderColor(isSelected)
     val surface =
         if (selected == null) {
             Modifier.pushlogPressable(source, color, pressedColor, shape, enabled, loading = false, onClick = onClick)
@@ -120,46 +102,6 @@ fun PushlogChip(
             )
         }
     }
-}
-
-@Composable
-private fun chipMetrics(size: PushlogChipSize): ChipMetrics {
-    val dimension = PushlogTheme.dimension
-    return when (size) {
-        PushlogChipSize.SMALL -> ChipMetrics(dimension.x8, dimension.x1Half, dimension.x3Half, dimension.x3Half, SmallMinWidth)
-        PushlogChipSize.MEDIUM -> ChipMetrics(dimension.x9, dimension.x2, dimension.x4, dimension.x3Half, dimension.x12)
-        PushlogChipSize.LARGE -> ChipMetrics(dimension.x10, dimension.x2Half, dimension.x4, dimension.x4, dimension.x13)
-    }
-}
-
-@Composable
-private fun surfaceColor(
-    variant: PushlogChipVariant,
-    selected: Boolean,
-    pressed: Boolean,
-): Color {
-    val bg = PushlogTheme.color.bg
-    return when (variant) {
-        PushlogChipVariant.SOLID ->
-            when {
-                selected -> if (pressed) bg.neutralSolidPressed else bg.neutralSolid
-                else -> if (pressed) bg.neutralWeakAlphaPressed else bg.neutralWeakAlpha
-            }
-        PushlogChipVariant.OUTLINE_WEAK ->
-            when {
-                selected -> if (pressed) bg.neutralWeakPressed else bg.neutralWeak
-                else -> if (pressed) bg.transparentPressed else bg.transparent
-            }
-    }
-}
-
-@Composable
-private fun contentColor(
-    variant: PushlogChipVariant,
-    selected: Boolean,
-): Color {
-    val fg = PushlogTheme.color.fg
-    return if (variant == PushlogChipVariant.SOLID && selected) fg.onNeutralSolid else fg.neutral
 }
 
 @PushlogPreview

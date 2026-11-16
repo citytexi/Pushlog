@@ -70,6 +70,7 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 `PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md).
 
 - 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다.
+- 크기·variant에 따라 갈리는 값은 그 enum의 `internal` 멤버로 둔다. 크기는 `XxxSize.metrics()`가 `XxxMetrics`(같은 패키지, 값만 담는 `internal class`)를 돌려주고, 색은 `XxxVariant.surfaceColor(...)`·`contentColor(...)`처럼 variant가 답한다. 컴포넌트 파일에는 그리는 코드와 거기서만 쓰는 상수만 남긴다. 새 항목을 추가하면 `when`이 그 enum 파일 안에서 빠진 곳을 알려 준다.
 - 새 동작 컴포넌트는 눌림 처리를 새로 만들지 않고 `Modifier.pushlogPressable`(토글은 `pushlogToggleablePressable`)과 `PushlogButtonSupport.kt`의 로딩·색 도우미를 재사용한다.
 - ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2dp 축소로만 보인다. 축소 기준 길이는 max(높이, 너비÷4, 24dp)다. 글자·아이콘 색은 그대로다.
 - 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `pushlogPressable`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier 앞에 따로 두면 표면만 줄고 그림자는 그대로 남는다.

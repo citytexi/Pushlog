@@ -24,8 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
-import com.citytexi.pushlog.core.designsystem.theme.color.DarkPalette
-import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette
 import com.citytexi.pushlog.core.designsystem.theme.shadow.pushlogShadow
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -48,7 +46,7 @@ fun PushlogContextualFloatingButton(
     loading: Boolean = false,
     interactionSource: MutableInteractionSource? = null,
 ) {
-    val contentColor = contentColor(variant, enabled)
+    val contentColor = variant.contentColor(enabled)
     val dimension = PushlogTheme.dimension
     FloatingButtonSurface(
         variant = variant,
@@ -92,7 +90,7 @@ fun PushlogContextualFloatingButton(
     interactionSource: MutableInteractionSource? = null,
 ) {
     val variant = PushlogContextualFloatingButtonVariant.LAYER
-    val contentColor = contentColor(variant, enabled)
+    val contentColor = variant.contentColor(enabled)
     FloatingButtonSurface(
         variant = variant,
         enabled = enabled,
@@ -124,12 +122,10 @@ private fun FloatingButtonSurface(
     semanticsModifier: Modifier,
     content: @Composable () -> Unit,
 ) {
-    val bg = PushlogTheme.color.bg
+    val disabled = PushlogTheme.color.bg.disabled
     val shape = PushlogTheme.radius.full
-    val solid = variant == PushlogContextualFloatingButtonVariant.SOLID
-    val normal = if (solid) bg.neutralSolid else bg.layerFloating
-    val pressed = buttonPressedColor(enabled, if (solid) bg.neutralSolidPressed else bg.layerFloatingPressed, bg.disabled)
-    val color = buttonSurfaceColor(enabled, loading, normal, pressed, bg.disabled)
+    val pressed = buttonPressedColor(enabled, variant.surfaceColor(pressed = true), disabled)
+    val color = buttonSurfaceColor(enabled, loading, variant.surfaceColor(pressed = false), pressed, disabled)
     val source = interactionSource ?: remember { MutableInteractionSource() }
     Box(
         modifier =
@@ -147,30 +143,9 @@ private fun FloatingButtonSurface(
                 .pushlogLoadingState(loading),
         contentAlignment = Alignment.Center,
     ) {
-        PushlogLoadingContent(loading, PushlogTheme.dimension.x4, trackColor(solid), contentColor, content)
+        PushlogLoadingContent(loading, PushlogTheme.dimension.x4, variant.trackColor(), contentColor, content)
     }
 }
-
-@Composable
-private fun contentColor(
-    variant: PushlogContextualFloatingButtonVariant,
-    enabled: Boolean,
-): Color {
-    val fg = PushlogTheme.color.fg
-    return when {
-        !enabled -> fg.disabled
-        variant == PushlogContextualFloatingButtonVariant.SOLID -> fg.onNeutralSolid
-        else -> fg.neutral
-    }
-}
-
-@Composable
-private fun trackColor(solid: Boolean): Color =
-    if (solid) {
-        pushlogThemedColor(LightPalette.gray700, DarkPalette.gray700)
-    } else {
-        pushlogThemedColor(LightPalette.gray500, DarkPalette.gray500)
-    }
 
 @PushlogPreview
 @Composable
