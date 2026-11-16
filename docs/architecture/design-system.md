@@ -69,9 +69,10 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 
 `PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md).
 
-- 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다.
+- 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다. `component` 바로 아래에 두면 Konsist `ComponentRulesTest`가 막는다.
 - 크기·variant에 따라 갈리는 값은 그 enum의 `internal` 멤버로 둔다. 크기는 `XxxSize.metrics()`가 `XxxMetrics`(같은 패키지, 값만 담는 `internal class`)를 돌려주고, 색은 `XxxVariant.surfaceColor(...)`·`contentColor(...)`처럼 variant가 답한다. 컴포넌트 파일에는 그리는 코드와 거기서만 쓰는 상수만 남긴다. 새 항목을 추가하면 `when`이 그 enum 파일 안에서 빠진 곳을 알려 준다.
-- 새 동작 컴포넌트는 표면을 새로 만들지 않고 `PushlogPressableSurface`(눌림 색·축소, 클릭 또는 토글, 테두리, 그림자, 로딩 의미 정보)에 내용을 채운다. 버튼류는 `PushlogButtonSupport.kt`의 로딩 내용·색 도우미를 함께 쓴다. 크기와 접근성 이름은 `modifier`로 넘긴다.
+- `XxxDefaults` object는 호출하는 쪽이 값을 바꿀 수 있게 파라미터를 열 때만 만든다(예: `colors = PushlogChipDefaults.colors(...)`). 컴포넌트 안에서만 쓰는 값은 파일 안 `private` 상수로 둔다. `Defaults`라는 이름은 바꿔도 되는 공개 값으로 읽히고, 공개하면 값 변경이 API 변경이 된다.
+- 새 동작 컴포넌트는 표면을 새로 만들지 않고 `PushlogPressableSurface`(눌림 색·축소, 클릭 또는 토글, 테두리, 그림자, 로딩 의미 정보)에 내용을 채운다. `pressable` 밖에서 `clickable`·`toggleable`·`selectable`·`indication`·ripple을 직접 쓰면 `ComponentRulesTest`가 막는다. 눌림 모양과 로딩 규칙이 컴포넌트마다 갈라지지 않게 하려는 것이다. 버튼류는 `PushlogButtonSupport.kt`의 로딩 내용·색 도우미를 함께 쓴다. 크기와 접근성 이름은 `modifier`로 넘긴다.
 - ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2dp 축소로만 보인다. 축소 기준 길이는 max(높이, 너비÷4, 24dp)다. 글자·아이콘 색은 그대로다.
 - 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `PushlogPressableSurface`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier에 따로 두면 표면만 줄고 그림자는 그대로 남는다.
 - 로딩은 비활성으로 읽히지 않는다. 의미 정보에는 `enabled`가 남고 클릭만 삼킨다. 스크린 리더가 "사용 불가"로 안내하면 곧 다시 쓸 수 있는 버튼이 막힌 것처럼 들린다.
