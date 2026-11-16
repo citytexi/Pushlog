@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 /**
  * 눌리면 뒤따르는 내용을 [pressedScaleFactor]만큼 줄이는 층. 레이아웃 크기는 그대로다.
- * 비활성·로딩·애니메이션 삭제 중에는 줄이지 않는다. 애니메이션 삭제 설정은 앱 전체가 공유하는 [ReduceMotion]으로 지켜본다.
+ * 비활성·로딩·애니메이션 삭제 중에는 줄이지 않는다.
  */
 internal class PressScaleNode(
     private var interactionSource: InteractionSource,

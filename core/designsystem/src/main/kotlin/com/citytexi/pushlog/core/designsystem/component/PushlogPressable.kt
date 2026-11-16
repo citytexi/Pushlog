@@ -53,7 +53,7 @@ internal fun Modifier.pushlogPressable(
             onClick = { if (!loading) onClick() },
         )
 
-/** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. 로딩 상태는 없다. */
+/** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. */
 internal fun Modifier.pushlogToggleablePressable(
     interactionSource: MutableInteractionSource,
     selected: Boolean,

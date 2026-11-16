@@ -62,7 +62,6 @@ class PushlogActionButtonScreenshotTest {
         }
     }
 
-    /** 행마다 variant, 열은 기본·눌림·비활성·로딩. 눌림 열은 Press를 주입해 찍는다. */
     @Composable
     private fun States() {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

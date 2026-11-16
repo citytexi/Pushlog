@@ -44,7 +44,7 @@ class PushlogChipScreenshotTest {
 
     /**
      * 눌림 열은 Press를 주입한 뒤 한 번만 찍는다. 같은 파일을 두 번 쓰면 기본 상태가 덮인다.
-     * 로딩 호는 무한 전환이라 시계를 멈추고 직접 흘려야 보인다. 화면을 넓혀 열이 잘리지 않게 한다.
+     * 눌림 전환이 끝난 뒤 찍으려고 시계를 멈추고 직접 흘린다. 화면을 넓혀 열이 잘리지 않게 한다.
      */
     private fun captureStates(
         name: String,
@@ -67,7 +67,7 @@ class PushlogChipScreenshotTest {
         }
     }
 
-    /** variant마다 세 줄: 기본·눌림 / selected·selected+눌림 / 비활성·selected+비활성. 눌림 열은 Press를 주입해 찍는다. */
+    /** variant마다 세 줄: 기본·눌림 / selected·selected+눌림 / 비활성·selected+비활성. */
     @Composable
     private fun States() {
         val plus = rememberVectorPainter(PreviewSampleIcons.Plus)

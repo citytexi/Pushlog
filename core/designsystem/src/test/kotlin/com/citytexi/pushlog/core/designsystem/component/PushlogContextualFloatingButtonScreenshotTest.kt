@@ -64,7 +64,6 @@ class PushlogContextualFloatingButtonScreenshotTest {
         }
     }
 
-    /** 행마다 variant, 열은 기본·눌림·비활성·로딩. */
     @Composable
     private fun States() {
         val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)

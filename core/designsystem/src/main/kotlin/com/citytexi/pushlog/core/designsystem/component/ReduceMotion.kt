@@ -19,7 +19,6 @@ internal object ReduceMotion {
     private var resolver: ContentResolver? = null
     private var observer: ContentObserver? = null
 
-    /** 애니메이션 삭제 켜짐 여부. 값이 바뀔 때만 내보낸다. */
     fun flow(context: Context): StateFlow<Boolean> {
         val appResolver = context.applicationContext.contentResolver
         if (appResolver !== resolver) register(appResolver)
