@@ -1,6 +1,6 @@
 package com.citytexi.pushlog.core.designsystem.component.chip
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -20,8 +19,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
-import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogToggleablePressable
+import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -54,52 +52,54 @@ fun PushlogChip(
     val metrics = size.metrics()
     val labelPadding = PushlogTheme.dimension.x1Half
     val shape = PushlogTheme.radius.full
-    val source = interactionSource ?: remember { MutableInteractionSource() }
     val color = variant.surfaceColor(isSelected, pressed = false)
     val pressedColor = variant.surfaceColor(isSelected, pressed = true)
     val contentColor = variant.contentColor(isSelected)
     val borderColor = variant.borderColor(isSelected)
-    val surface =
-        if (selected == null) {
-            Modifier.pushlogPressable(source, color, pressedColor, shape, enabled, loading = false, onClick = onClick)
-        } else {
-            Modifier.pushlogToggleablePressable(source, selected, color, pressedColor, shape, enabled, onClick = onClick)
-        }
-    Row(
-        modifier =
-            modifier
-                .alpha(if (enabled) 1f else DISABLED_ALPHA)
-                .then(surface)
-                .then(if (variant == PushlogChipVariant.OUTLINE_WEAK) Modifier.border(BorderWidth, borderColor, shape) else Modifier)
-                .widthIn(min = metrics.minWidth)
-                .heightIn(min = metrics.minHeight)
-                .padding(horizontal = metrics.paddingX),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+    PushlogPressableSurface(
+        color = color,
+        pressedColor = pressedColor,
+        shape = shape,
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier.alpha(if (enabled) 1f else DISABLED_ALPHA),
+        selected = selected,
+        border = if (variant == PushlogChipVariant.OUTLINE_WEAK) BorderStroke(BorderWidth, borderColor) else null,
+        interactionSource = interactionSource,
     ) {
-        if (prefixIcon != null) {
-            Icon(
-                painter = prefixIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(start = labelPadding).size(metrics.prefixIconSize),
-                tint = contentColor,
+        Row(
+            modifier =
+                Modifier
+                    .widthIn(min = metrics.minWidth)
+                    .heightIn(min = metrics.minHeight)
+                    .padding(horizontal = metrics.paddingX),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (prefixIcon != null) {
+                Icon(
+                    painter = prefixIcon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(start = labelPadding).size(metrics.prefixIconSize),
+                    tint = contentColor,
+                )
+            }
+            Text(
+                text = text,
+                style = PushlogTheme.typography.t4Medium,
+                color = contentColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false).padding(horizontal = labelPadding),
             )
-        }
-        Text(
-            text = text,
-            style = PushlogTheme.typography.t4Medium,
-            color = contentColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false).padding(horizontal = labelPadding),
-        )
-        if (suffixIcon != null) {
-            Icon(
-                painter = suffixIcon,
-                contentDescription = null,
-                modifier = Modifier.padding(end = labelPadding).size(metrics.suffixIconSize),
-                tint = contentColor,
-            )
+            if (suffixIcon != null) {
+                Icon(
+                    painter = suffixIcon,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = labelPadding).size(metrics.suffixIconSize),
+                    tint = contentColor,
+                )
+            }
         }
     }
 }

@@ -3,7 +3,6 @@ package com.citytexi.pushlog.core.designsystem.component.button
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,7 +20,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
+import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.designsystem.theme.shadow.pushlogShadow
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
@@ -126,22 +124,16 @@ private fun FloatingButtonSurface(
     val shape = PushlogTheme.radius.full
     val pressed = buttonPressedColor(enabled, variant.surfaceColor(pressed = true), disabled)
     val color = buttonSurfaceColor(enabled, loading, variant.surfaceColor(pressed = false), pressed, disabled)
-    val source = interactionSource ?: remember { MutableInteractionSource() }
-    Box(
-        modifier =
-            modifier
-                .pushlogPressable(
-                    interactionSource = source,
-                    color = color,
-                    pressedColor = pressed,
-                    shape = shape,
-                    enabled = enabled,
-                    loading = loading,
-                    onClick = onClick,
-                    shadow = Modifier.pushlogShadow(PushlogTheme.shadow.s3, shape),
-                ).then(semanticsModifier)
-                .pushlogLoadingState(loading),
-        contentAlignment = Alignment.Center,
+    PushlogPressableSurface(
+        color = color,
+        pressedColor = pressed,
+        shape = shape,
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier.then(semanticsModifier),
+        loading = loading,
+        shadow = Modifier.pushlogShadow(PushlogTheme.shadow.s3, shape),
+        interactionSource = interactionSource,
     ) {
         PushlogLoadingContent(loading, PushlogTheme.dimension.x4, variant.trackColor(), contentColor, content)
     }

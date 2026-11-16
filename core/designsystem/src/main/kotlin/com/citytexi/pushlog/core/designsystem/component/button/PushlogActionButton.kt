@@ -2,7 +2,6 @@ package com.citytexi.pushlog.core.designsystem.component.button
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
@@ -22,7 +21,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressable
+import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -125,22 +124,15 @@ private fun ActionButtonSurface(
     val disabledSurface = variant.disabledSurfaceColor()
     val pressedColor = buttonPressedColor(enabled, variant.surfaceColor(pressed = true), disabledSurface)
     val color = buttonSurfaceColor(enabled, loading, variant.surfaceColor(pressed = false), pressedColor, disabledSurface)
-    val source = interactionSource ?: remember { MutableInteractionSource() }
-    Box(
-        modifier =
-            modifier
-                .pushlogPressable(
-                    interactionSource = source,
-                    color = color,
-                    pressedColor = pressedColor,
-                    shape = shape,
-                    enabled = enabled,
-                    loading = loading,
-                    onClick = onClick,
-                ).defaultMinSize(minWidth = minWidth, minHeight = metrics.minHeight)
-                .then(semanticsModifier)
-                .pushlogLoadingState(loading),
-        contentAlignment = Alignment.Center,
+    PushlogPressableSurface(
+        color = color,
+        pressedColor = pressedColor,
+        shape = shape,
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier.defaultMinSize(minWidth = minWidth, minHeight = metrics.minHeight).then(semanticsModifier),
+        loading = loading,
+        interactionSource = interactionSource,
     ) {
         PushlogLoadingContent(loading, metrics.progressSize, variant.trackColor(), contentColor, content)
     }

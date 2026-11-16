@@ -62,8 +62,9 @@ internal fun Modifier.pushlogToggleablePressable(
     shape: Shape,
     enabled: Boolean,
     onClick: () -> Unit,
+    shadow: Modifier = Modifier,
 ): Modifier =
-    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = Modifier)
+    pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = shadow)
         .toggleable(
             value = selected,
             interactionSource = interactionSource,

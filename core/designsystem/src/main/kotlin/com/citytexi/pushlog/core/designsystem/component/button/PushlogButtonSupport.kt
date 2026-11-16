@@ -6,11 +6,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
-import com.citytexi.pushlog.core.designsystem.R
 import com.citytexi.pushlog.core.designsystem.component.loading.PushlogProgressCircle
 import com.citytexi.pushlog.core.designsystem.theme.LocalPushlogDarkTheme
 
@@ -34,13 +30,6 @@ internal fun buttonPressedColor(
     pressed: Color,
     disabled: Color,
 ): Color = if (enabled) pressed else disabled
-
-/** 로딩 중이면 읽는 이에게 "불러오는 중"을 알린다. 비활성으로는 표시하지 않는다. */
-@Composable
-internal fun Modifier.pushlogLoadingState(loading: Boolean): Modifier {
-    val description = stringResource(R.string.designsystem_loading)
-    return semantics { if (loading) stateDescription = description }
-}
 
 /** 로딩 중에도 [content]를 투명하게 배치에 남겨 너비를 유지하고, 그 위 가운데에 진행 원을 그린다. */
 @Composable

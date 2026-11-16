@@ -71,9 +71,9 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 
 - 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다.
 - 크기·variant에 따라 갈리는 값은 그 enum의 `internal` 멤버로 둔다. 크기는 `XxxSize.metrics()`가 `XxxMetrics`(같은 패키지, 값만 담는 `internal class`)를 돌려주고, 색은 `XxxVariant.surfaceColor(...)`·`contentColor(...)`처럼 variant가 답한다. 컴포넌트 파일에는 그리는 코드와 거기서만 쓰는 상수만 남긴다. 새 항목을 추가하면 `when`이 그 enum 파일 안에서 빠진 곳을 알려 준다.
-- 새 동작 컴포넌트는 눌림 처리를 새로 만들지 않고 `Modifier.pushlogPressable`(토글은 `pushlogToggleablePressable`)과 `PushlogButtonSupport.kt`의 로딩·색 도우미를 재사용한다.
+- 새 동작 컴포넌트는 표면을 새로 만들지 않고 `PushlogPressableSurface`(눌림 색·축소, 클릭 또는 토글, 테두리, 그림자, 로딩 의미 정보)에 내용을 채운다. 버튼류는 `PushlogButtonSupport.kt`의 로딩 내용·색 도우미를 함께 쓴다. 크기와 접근성 이름은 `modifier`로 넘긴다.
 - ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2dp 축소로만 보인다. 축소 기준 길이는 max(높이, 너비÷4, 24dp)다. 글자·아이콘 색은 그대로다.
-- 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `pushlogPressable`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier 앞에 따로 두면 표면만 줄고 그림자는 그대로 남는다.
+- 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `PushlogPressableSurface`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier에 따로 두면 표면만 줄고 그림자는 그대로 남는다.
 - 로딩은 비활성으로 읽히지 않는다. 의미 정보에는 `enabled`가 남고 클릭만 삼킨다. 스크린 리더가 "사용 불가"로 안내하면 곧 다시 쓸 수 있는 버튼이 막힌 것처럼 들린다.
 - 칩 높이는 최솟값이다. SEED는 `height`를 고정하지만 Pushlog는 최솟값(`heightIn(min)`)으로 둬서 글자가 잘리지 않고, 글자가 필요로 하면 칩이 커진다. 글자 크기 200%에서도 칩이 SEED 높이(36dp) 그대로인 것은 Compose가 큰 글자를 비선형으로 확대해 t4 한 줄이 36dp 안에 들어서다. 더 큰 배율에서는 커진다(`growsWithFontScale`이 fontScale 4로 확인한다).
 - SEED의 px 값은 같은 크기의 토큰으로 옮긴다(14→`x3Half`, 16→`x4`, 32→`x8` 등). 토큰이 없는 22dp, 44dp, 1dp(칩 테두리)와 progress 애니메이션 값만 파일 안 `private` 상수로 두고 SEED 출처를 주석으로 단다. progress 두께 2dp는 `x0Half`를 읽는다. 눌림 축소량 2dp는 배율 계산 안의 숫자 상수다.
