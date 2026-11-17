@@ -103,7 +103,7 @@ fun PushlogSwitchmark(
 
 /**
  * [shape]를 [color]로 채운다. 색은 그리기 단계에서만 읽어 색 애니메이션 동안 다시 구성하지 않고 다시 그리기만 한다.
- * 윤곽은 크기·방향이 바뀔 때만 다시 만든다.
+ * 윤곽은 애니메이션 프레임마다가 아니라 크기·방향이 바뀌거나 마크가 다시 구성될 때만 다시 만든다.
  */
 private fun Modifier.shapeFill(
     shape: Shape,
