@@ -25,3 +25,6 @@ enum class PushlogSelectBoxLayout {
 
 /** 그룹이 박스에 주는 layout 기본값. 그룹 밖이면 HORIZONTAL. */
 internal val LocalSelectBoxLayout = staticCompositionLocalOf { PushlogSelectBoxLayout.HORIZONTAL }
+
+/** 여러 열 그룹 안이면 true. 박스가 줄 높이를 받아 내용을 그 높이에 펼친다. */
+internal val LocalSelectBoxFillsRow = staticCompositionLocalOf { false }

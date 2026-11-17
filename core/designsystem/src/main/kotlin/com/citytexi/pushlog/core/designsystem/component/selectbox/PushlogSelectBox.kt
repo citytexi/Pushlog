@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -132,7 +133,12 @@ private fun SelectBoxContent(
     footerVisible: Boolean,
 ) {
     val metrics = layout.metrics()
-    Column(Modifier.fillMaxWidth()) {
+    // 그룹 밖에서 늘 채우면 높이 제한이 있는 부모(Column)의 남은 높이를 모두 차지한다.
+    val height = if (LocalSelectBoxFillsRow.current) Modifier.fillMaxHeight() else Modifier
+    Column(
+        modifier = Modifier.fillMaxWidth().then(height),
+        verticalArrangement = contentArrangement(layout, hasFooter = footer != null),
+    ) {
         Row(
             modifier =
                 Modifier.padding(
@@ -151,6 +157,17 @@ private fun SelectBoxContent(
         if (footer != null) SelectBoxFooter(footerVisible, footer)
     }
 }
+
+// 줄 높이를 받았을 때만 의미가 있다. footer가 있으면 줄은 위, footer는 아래에 붙는다(닫힌 footer는 높이 0으로 남는다).
+private fun contentArrangement(
+    layout: PushlogSelectBoxLayout,
+    hasFooter: Boolean,
+): Arrangement.Vertical =
+    when {
+        hasFooter -> Arrangement.SpaceBetween
+        layout == PushlogSelectBoxLayout.HORIZONTAL -> Arrangement.Center
+        else -> Arrangement.Top
+    }
 
 @Composable
 private fun SelectBoxTrigger(
