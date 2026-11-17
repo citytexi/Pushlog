@@ -8,7 +8,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckbox
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckboxGroup
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
@@ -58,7 +58,7 @@ private fun CheckboxGroupSection() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxGroupPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxGroupSection() }
     }
 }

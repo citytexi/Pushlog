@@ -30,7 +30,7 @@ tags: [architecture, design-system]
 | `PushlogTheme.motion` | `PushlogMotion` | 시간(ms)과 easing |
 
 - 기본값은 라이트다. `PushlogTheme`으로 감싸지 않은 Preview·테스트도 라이트 값으로 그려진다.
-- 컴포넌트·화면 미리보기는 `@PushlogPreview`(`core:ui`, 라이트·다크·글자 크기 200%)를 붙이고 본문을 `PushlogTheme { }`로 감싼다. 다크 변형은 uiMode로 바뀌고 `PushlogTheme`의 기본 `darkTheme = isSystemInDarkTheme()`가 따라간다.
+- 컴포넌트·화면 미리보기는 `@PushlogPreview`(`core:ui`, 라이트·다크·글자 크기 200%)를 붙이고 본문을 `PushlogPreviewTheme { }`(`core:designsystem` `theme`)로 감싼다. 다크 변형은 uiMode로 바뀌고 `PushlogTheme`의 기본 `darkTheme = isSystemInDarkTheme()`가 따라간다. `PushlogPreviewTheme`은 테마 아래에 `bg.layerDefault` 배경과 `fg.neutral` 글자색을 깐다. `@Preview`의 `showBackground`는 테마와 무관하게 흰색이라 `PushlogTheme`만 쓰면 다크 변형이 흰 바탕에 밝은 글자로 찍힌다. 미리보기 함수가 있는 파일에서 `PushlogTheme { }`를 직접 부르면 `PreviewThemeRulesTest`가 막는다. 래퍼는 `core:ui`가 아니라 `core:designsystem`에 둔다. `core:designsystem`이 `core:ui`를 의존하므로 반대 방향은 순환이 된다.
 - 파일은 타입마다 하나다(`FileStructureRulesTest`). 파일 이름이 타입 이름이고 라이트/다크/기본 인스턴스(`LightPushlogColors`, `DefaultPushlogDimension` 등)는 자기 타입 파일에 둔다. `theme/color`(`PushlogColors`, `PushlogBgColors`, `PushlogFgColors`, `PushlogStrokeColors`, `LightPalette`, `DarkPalette`), `theme/dimension`, `theme/motion`, `theme/shadow`(`PushlogShadowToken`, `PushlogShadows`, `PushlogShadowModifier.kt`의 `Modifier.pushlogShadow`)로 나뉜다.
 - 팔레트(`LightPalette`, `DarkPalette`, 단계별 원색)는 `internal`이다. 화면이 원색을 직접 집으면 다크 전환과 용도 분리가 깨지므로 용도별 색만 공개한다.
 

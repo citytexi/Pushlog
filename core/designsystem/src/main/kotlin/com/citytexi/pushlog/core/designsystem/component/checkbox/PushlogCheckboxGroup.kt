@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -30,7 +31,7 @@ fun PushlogCheckboxGroup(
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxGroupPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PushlogCheckboxGroup(Modifier.padding(PushlogTheme.dimension.x4)) {
             var first by remember { mutableStateOf(true) }
             var second by remember { mutableStateOf(false) }

@@ -10,6 +10,7 @@ import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmar
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkSize
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkTone
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkVariant
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
@@ -62,7 +63,7 @@ private fun CheckmarkSizeSection(size: PushlogCheckmarkSize) {
 @PushlogPreview
 @Composable
 private fun PushlogCheckmarkSquarePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckmarkVariantSection(PushlogCheckmarkVariant.SQUARE) }
     }
 }
@@ -70,7 +71,7 @@ private fun PushlogCheckmarkSquarePreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckmarkGhostPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckmarkVariantSection(PushlogCheckmarkVariant.GHOST) }
     }
 }
@@ -78,7 +79,7 @@ private fun PushlogCheckmarkGhostPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckmarkSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckmarkSizeSection(PushlogCheckmarkSize.MEDIUM) }
     }
 }
@@ -86,7 +87,7 @@ private fun PushlogCheckmarkSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckmarkSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckmarkSizeSection(PushlogCheckmarkSize.LARGE) }
     }
 }

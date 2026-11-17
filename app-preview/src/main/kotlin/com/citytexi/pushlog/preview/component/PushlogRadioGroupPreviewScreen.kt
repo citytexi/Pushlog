@@ -9,7 +9,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadio
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadioGroup
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
@@ -44,7 +44,7 @@ private fun RadioGroupSection() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioGroupPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioGroupSection() }
     }
 }

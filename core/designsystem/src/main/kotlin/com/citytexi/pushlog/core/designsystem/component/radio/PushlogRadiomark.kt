@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressIndication
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -67,7 +68,7 @@ fun PushlogRadiomark(
 @PushlogPreview
 @Composable
 private fun PushlogRadiomarkPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(
             Modifier.padding(PushlogTheme.dimension.x4),
             verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2),

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkSize
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkTone
 import com.citytexi.pushlog.core.designsystem.component.checkbox.PushlogCheckmarkVariant
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 
@@ -13,7 +13,7 @@ import com.citytexi.pushlog.preview.foundation.PreviewBody
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxSquareNeutralPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxVariantSection(PushlogCheckmarkVariant.SQUARE, PushlogCheckmarkTone.NEUTRAL) }
     }
 }
@@ -21,7 +21,7 @@ private fun PushlogCheckboxSquareNeutralPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxSquareBrandPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxVariantSection(PushlogCheckmarkVariant.SQUARE, PushlogCheckmarkTone.BRAND) }
     }
 }
@@ -29,7 +29,7 @@ private fun PushlogCheckboxSquareBrandPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxGhostNeutralPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxVariantSection(PushlogCheckmarkVariant.GHOST, PushlogCheckmarkTone.NEUTRAL) }
     }
 }
@@ -37,7 +37,7 @@ private fun PushlogCheckboxGhostNeutralPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxGhostBrandPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxVariantSection(PushlogCheckmarkVariant.GHOST, PushlogCheckmarkTone.BRAND) }
     }
 }
@@ -45,7 +45,7 @@ private fun PushlogCheckboxGhostBrandPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxSizeSection(PushlogCheckmarkSize.MEDIUM) }
     }
 }
@@ -53,7 +53,7 @@ private fun PushlogCheckboxSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxSizeSection(PushlogCheckmarkSize.LARGE) }
     }
 }
@@ -61,7 +61,7 @@ private fun PushlogCheckboxSizeLargePreview() {
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxLongLabelPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { CheckboxLongLabel() }
     }
 }

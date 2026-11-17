@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.designsystem.theme.shadow.pushlogShadow
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
@@ -142,7 +143,7 @@ private fun FloatingButtonSurface(
 @PushlogPreview
 @Composable
 private fun PushlogContextualFloatingButtonPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(
             Modifier.background(PushlogTheme.color.bg.layerDefault).padding(PushlogTheme.dimension.x4),
             verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3),

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -108,7 +109,7 @@ fun PushlogChip(
 @PushlogPreview
 @Composable
 private fun PushlogChipPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(
             Modifier.padding(PushlogTheme.dimension.x4),
             verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2),

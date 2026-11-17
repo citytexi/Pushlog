@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -57,7 +58,7 @@ fun PreviewScaffold(
 @PushlogPreview
 @Composable
 private fun PreviewScaffoldPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewScaffold(title = "PushlogActionButton", onBack = {}) {
             Text(text = "Body", color = PushlogTheme.color.fg.neutral)
         }

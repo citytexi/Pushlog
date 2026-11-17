@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogSelectableArea
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -74,7 +75,7 @@ fun PushlogRadio(
 @PushlogPreview
 @Composable
 private fun PushlogRadioPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PushlogRadioGroup(Modifier.padding(PushlogTheme.dimension.x4)) {
             var selected by remember { mutableIntStateOf(0) }
             listOf("선택됨", "선택 안 됨").forEachIndexed { index, label ->

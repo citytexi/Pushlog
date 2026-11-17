@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -30,7 +31,7 @@ fun PushlogRadioGroup(
 @PushlogPreview
 @Composable
 private fun PushlogRadioGroupPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PushlogRadioGroup(Modifier.padding(PushlogTheme.dimension.x4)) {
             var selected by remember { mutableIntStateOf(0) }
             listOf("최신순", "오래된순").forEachIndexed { index, label ->

@@ -15,7 +15,7 @@ import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadio
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadioWeight
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkSize
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkTone
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
@@ -79,7 +79,7 @@ private fun RadioLongLabel() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioNeutralPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioToneSection(PushlogRadiomarkTone.NEUTRAL) }
     }
 }
@@ -87,7 +87,7 @@ private fun PushlogRadioNeutralPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioBrandPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioToneSection(PushlogRadiomarkTone.BRAND) }
     }
 }
@@ -95,7 +95,7 @@ private fun PushlogRadioBrandPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioSizeSection(PushlogRadiomarkSize.MEDIUM) }
     }
 }
@@ -103,7 +103,7 @@ private fun PushlogRadioSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioSizeSection(PushlogRadiomarkSize.LARGE) }
     }
 }
@@ -111,7 +111,7 @@ private fun PushlogRadioSizeLargePreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadioLongLabelPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadioLongLabel() }
     }
 }

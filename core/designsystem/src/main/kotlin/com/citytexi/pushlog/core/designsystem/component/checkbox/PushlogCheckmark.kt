@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressIndication
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -94,7 +95,7 @@ private val PreviewStates = listOf(ToggleableState.Off, ToggleableState.On, Togg
 @PushlogPreview
 @Composable
 private fun PushlogCheckmarkPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(
             Modifier.padding(PushlogTheme.dimension.x4),
             verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2),

@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.button.PushlogContextualFloatingButton
 import com.citytexi.pushlog.core.designsystem.component.button.PushlogContextualFloatingButtonVariant
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -68,7 +69,7 @@ private fun FloatingButtonLayouts() {
 @PushlogPreview
 @Composable
 private fun PushlogContextualFloatingButtonVariantsPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { FloatingButtonVariants() }
     }
 }
@@ -76,7 +77,7 @@ private fun PushlogContextualFloatingButtonVariantsPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogContextualFloatingButtonLayoutsPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { FloatingButtonLayouts() }
     }
 }

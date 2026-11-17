@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.catalog.PreviewCatalogItem
@@ -97,7 +98,7 @@ private fun PreviewCategory.title(): String =
 @PushlogPreview
 @Composable
 private fun PreviewHomeContentPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewHomeContent(
             catalog = listOf(PreviewCatalogItem(PreviewCategory.FOUNDATION, "Color", PreviewHomeKey)),
             onOpen = {},

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogTriStateToggleArea
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
@@ -103,7 +104,7 @@ fun PushlogCheckbox(
 @PushlogPreview
 @Composable
 private fun PushlogCheckboxPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(Modifier.padding(PushlogTheme.dimension.x4)) {
             PushlogCheckbox(state = ToggleableState.On, onClick = {}, label = "선택됨")
             PushlogCheckbox(state = ToggleableState.Indeterminate, onClick = {}, label = "일부 선택")

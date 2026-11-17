@@ -3,7 +3,7 @@ package com.citytexi.pushlog.preview.component
 import androidx.compose.runtime.Composable
 import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonSize
 import com.citytexi.pushlog.core.designsystem.component.button.PushlogActionButtonVariant
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 
@@ -12,7 +12,7 @@ import com.citytexi.pushlog.preview.foundation.PreviewBody
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonBrandSolidPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonVariantSection(PushlogActionButtonVariant.BRAND_SOLID) }
     }
 }
@@ -20,7 +20,7 @@ private fun PushlogActionButtonBrandSolidPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonNeutralSolidPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonVariantSection(PushlogActionButtonVariant.NEUTRAL_SOLID) }
     }
 }
@@ -28,7 +28,7 @@ private fun PushlogActionButtonNeutralSolidPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonNeutralWeakPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonVariantSection(PushlogActionButtonVariant.NEUTRAL_WEAK) }
     }
 }
@@ -36,7 +36,7 @@ private fun PushlogActionButtonNeutralWeakPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonCriticalSolidPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonVariantSection(PushlogActionButtonVariant.CRITICAL_SOLID) }
     }
 }
@@ -44,7 +44,7 @@ private fun PushlogActionButtonCriticalSolidPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonGhostPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonVariantSection(PushlogActionButtonVariant.GHOST) }
     }
 }
@@ -52,7 +52,7 @@ private fun PushlogActionButtonGhostPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonSizeSmallPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonSizeSection(PushlogActionButtonSize.SMALL) }
     }
 }
@@ -60,7 +60,7 @@ private fun PushlogActionButtonSizeSmallPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonSizeSection(PushlogActionButtonSize.MEDIUM) }
     }
 }
@@ -68,7 +68,7 @@ private fun PushlogActionButtonSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ActionButtonSizeSection(PushlogActionButtonSize.LARGE) }
     }
 }

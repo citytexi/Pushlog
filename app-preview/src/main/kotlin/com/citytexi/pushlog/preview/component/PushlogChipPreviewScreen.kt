@@ -16,6 +16,7 @@ import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChip
 import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChipSize
 import com.citytexi.pushlog.core.designsystem.component.chip.PushlogChipVariant
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -80,7 +81,7 @@ private fun ChipLongLabel() {
 @PushlogPreview
 @Composable
 private fun PushlogChipSolidPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ChipVariantSection(PushlogChipVariant.SOLID) }
     }
 }
@@ -88,7 +89,7 @@ private fun PushlogChipSolidPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogChipOutlineWeakPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ChipVariantSection(PushlogChipVariant.OUTLINE_WEAK) }
     }
 }
@@ -96,7 +97,7 @@ private fun PushlogChipOutlineWeakPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogChipSizeSmallPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ChipSizeSection(PushlogChipSize.SMALL) }
     }
 }
@@ -104,7 +105,7 @@ private fun PushlogChipSizeSmallPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogChipSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ChipSizeSection(PushlogChipSize.MEDIUM) }
     }
 }
@@ -112,7 +113,7 @@ private fun PushlogChipSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogChipSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { ChipSizeSection(PushlogChipSize.LARGE) }
     }
 }

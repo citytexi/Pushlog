@@ -8,6 +8,7 @@ import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomark
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkSize
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkTone
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
@@ -57,7 +58,7 @@ private fun RadiomarkSizeSection(size: PushlogRadiomarkSize) {
 @PushlogPreview
 @Composable
 private fun PushlogRadiomarkNeutralPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadiomarkToneSection(PushlogRadiomarkTone.NEUTRAL) }
     }
 }
@@ -65,7 +66,7 @@ private fun PushlogRadiomarkNeutralPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadiomarkBrandPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadiomarkToneSection(PushlogRadiomarkTone.BRAND) }
     }
 }
@@ -73,7 +74,7 @@ private fun PushlogRadiomarkBrandPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadiomarkSizeMediumPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadiomarkSizeSection(PushlogRadiomarkSize.MEDIUM) }
     }
 }
@@ -81,7 +82,7 @@ private fun PushlogRadiomarkSizeMediumPreview() {
 @PushlogPreview
 @Composable
 private fun PushlogRadiomarkSizeLargePreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         PreviewBody { RadiomarkSizeSection(PushlogRadiomarkSize.LARGE) }
     }
 }
