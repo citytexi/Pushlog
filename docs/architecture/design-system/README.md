@@ -5,7 +5,7 @@ category: architecture
 status: living
 platforms: android
 verified: 2026-11-17
-related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md, docs/superpowers/specs/2026-11-13-design-system-action-components-design.md, docs/superpowers/specs/2026-11-16-design-system-selection-controls-design.md]
+related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md, docs/superpowers/specs/2026-11-13-design-system-action-components-design.md, docs/superpowers/specs/2026-11-16-design-system-selection-controls-design.md, docs/superpowers/specs/2026-11-17-design-system-text-inputs-design.md]
 related_adr:
 related_architecture: [module-structure]
 related_code: [PushlogTheme, PushlogPreviewTheme]
@@ -24,6 +24,7 @@ tags: [architecture, design-system]
 | 눌리는 컴포넌트를 새로 만든다(패키지, 메트릭, 표면, 축소, 로딩) | [pressable.md](pressable.md) |
 | 버튼·칩·플로팅 버튼을 고친다 | [components/action.md](components/action.md) |
 | 체크박스·라디오·스위치·세그먼트·select-box를 고친다 | [components/selection.md](components/selection.md) |
+| field·text-input·search-input·input-button·segmented 입력을 고친다 | [components/input.md](components/input.md) |
 | 미리보기 화면·프리뷰 스크린샷을 추가한다 | [preview.md](preview.md) |
 
 새 컴포넌트 묶음은 `components/` 아래에 파일을 하나 더 만들고 위 표에 한 줄을 더한다. 공통 규칙은 `pressable.md`에 둔다.

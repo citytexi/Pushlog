@@ -44,3 +44,4 @@ tags: [architecture, design-system]
 - 그룹 칸 너비는 세그먼트처럼 나머지 픽셀을 칸마다 나눠 마지막 칸이 오른쪽 끝에 닿는다. 칸끼리 1px 다를 수 있다.
 - 그룹은 intrinsic 측정을 직접 계산한다(너비는 열 수 × 가장 넓은 자식 + 간격, 높이는 측정과 같은 줄 계산). 기본 구현은 너비 제한 없이 측정을 불러 `IntrinsicSize` 부모나 `DropdownMenu` 안에서 실패한다. 측정 자체는 여전히 너비 제한이 있어야 한다.
 - 열이 2 이상일 때만 박스가 줄 높이를 채운다(`internal LocalSelectBoxFillsRow`를 그룹이 켠다). 단독 박스가 채우면 높이가 정해진 부모를 따라 늘어나서 끈다. `CompositionLocal`은 셀 안 모든 것에 닿으므로 박스는 그룹의 직계 자식이어야 한다. 형제가 있는 래퍼로 감싸면 박스가 눌린다.
+- 체크박스·라디오·select-box 그룹은 `PushlogField` 안에서 field 상태(`enabled`, 라벨, 오류)를 받는다. 전달 방식과 끊는 지점은 [input.md](input.md)에 있다.
