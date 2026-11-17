@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 
-/** 글자 토큰. t1~t14는 크기 단계, 뒤는 굵기. 값은 `docs/architecture/design-system.md`. */
+/** 글자 토큰. t1~t14는 크기 단계, 뒤는 굵기. 값은 `docs/architecture/design-system/foundation.md`. */
 @Immutable
 data class PushlogTypography(
     val screenTitle: TextStyle,

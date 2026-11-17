@@ -15,6 +15,7 @@ Pushlog의 구조·설계 명세 문서를 모읍니다. (모듈 구조, 상태�
 | [adding-feature.md](adding-feature.md) | 새 feature 모듈 추가 절차·nav 등록·문구·테스트 |
 | [data-layer.md](data-layer.md) | 데이터 소스 추가(network/database/datastore)·Room 마이그레이션·`SecureStore` |
 | [build-and-release.md](build-and-release.md) | `testStarter`/`verifyStarter`·앱 버전 규칙·release 브랜치·서명 |
+| [design-system/](design-system/README.md) | 디자인 시스템 토큰·컴포넌트·미리보기 앱. 작업별 문서로 나뉨 |
 
 ## Frontmatter (필수)
 모든 architecture 문서는 YAML frontmatter를 단다(형식 권위: [`template.md`](template.md)). 필드: `id` · `title` · `category`(=architecture) · `status`(**living / superseded / deprecated**) · `platforms`(=android) · `verified`(코드 대조일) · `related_spec` · `related_adr` · `related_architecture` · `related_code`(심볼명, 라인번호 금지) · `tags`.

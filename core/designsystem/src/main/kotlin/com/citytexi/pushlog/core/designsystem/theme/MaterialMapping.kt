@@ -23,7 +23,7 @@ internal val DefaultMaterialShapes = DefaultPushlogRadius.toMaterialShapes()
 /**
  * M3 컴포넌트가 브랜드 색으로 보이게 하는 임시 다리. 기본값(M3 보라)이 새지 않도록 생성자의
  * 모든 칸을 이름과 함께 채운다. `inversePrimary`는 용도 토큰에 짝이 없어 테마별 팔레트 단계를
- * 받는다. 칸별 근거는 `docs/architecture/design-system.md`.
+ * 받는다. 칸별 근거는 `docs/architecture/design-system/foundation.md`.
  */
 internal fun PushlogColors.toColorScheme(inversePrimary: Color): ColorScheme =
     ColorScheme(

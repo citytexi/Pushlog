@@ -3,7 +3,7 @@ package com.citytexi.pushlog.core.designsystem.theme.color
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-/** 앱이 쓰는 용도별 색 묶음. 값 출처와 다크 예외는 `docs/architecture/design-system.md`. */
+/** 앱이 쓰는 용도별 색 묶음. 값 출처와 다크 예외는 `docs/architecture/design-system/foundation.md`. */
 @Immutable
 data class PushlogColors(
     val bg: PushlogBgColors,
@@ -108,7 +108,7 @@ internal val LightPushlogColors =
             ),
     )
 
-/** 라이트와 같은 연결이되 `bg.brandSolid`·`brandSolidPressed`만 다크 예외다(`docs/architecture/design-system.md`). */
+/** 라이트와 같은 연결이되 `bg.brandSolid`·`brandSolidPressed`만 다크 예외다(`docs/architecture/design-system/foundation.md`). */
 internal val DarkPushlogColors =
     PushlogColors(
         bg =

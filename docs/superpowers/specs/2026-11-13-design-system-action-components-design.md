@@ -39,7 +39,7 @@ Pushlog 화면(목록, 검색, 대화방, 태그, 설정)이 쓸 동작 컴포�
 ## 3. 제약
 
 - `AGENTS.md` 금지 사항, `docs/code-conventions.md` 주석 규칙.
-- 디자인 시스템 문서의 [컴포넌트를 추가할 때](../../architecture/design-system.md#컴포넌트를-추가할-때) 네 단계와 [누락 방지 테스트](../../architecture/design-system.md#누락-방지-테스트). `component` 패키지(하위 패키지 제외)의 공개 최상위 `@Composable`마다 미리보기 앱 화면이 있어야 한다. 그래서 공용 부품은 `internal`로 둔다.
+- 디자인 시스템 문서의 [컴포넌트를 추가할 때](../../architecture/design-system/preview.md#컴포넌트를-추가할-때) 네 단계와 [누락 방지 테스트](../../architecture/design-system/preview.md#누락-방지-테스트). `component` 패키지(하위 패키지 제외)의 공개 최상위 `@Composable`마다 미리보기 앱 화면이 있어야 한다. 그래서 공용 부품은 `internal`로 둔다.
 - 팔레트(`LightPalette`, `DarkPalette`)는 `internal`이다. 컴포넌트는 `core:designsystem` 안이라 접근은 되지만 라이트/다크를 따라가야 한다.
 - 파일은 타입마다 하나다(`FileStructureRulesTest`).
 
