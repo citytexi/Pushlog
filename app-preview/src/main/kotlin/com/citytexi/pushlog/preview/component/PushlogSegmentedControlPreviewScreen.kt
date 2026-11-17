@@ -29,12 +29,16 @@ fun EntryProviderScope<NavKey>.pushlogSegmentedControlPreviewEntry(onBack: () ->
     }
 }
 
-/** PushlogSegmentedControl with 2, 3 and 4 options, stretched, and narrow with wrapping labels; draws no background of its own. */
+/**
+ * PushlogSegmentedControl with 2, 3 and 4 options, stretched, narrow with wrapping labels, and disabled.
+ * Draws no background of its own.
+ */
 @Composable
 fun PushlogSegmentedControlPreviewContent() {
     PreviewBody {
         SegmentedControlCountSection()
         SegmentedControlWidthSection()
+        SegmentedControlDisabledSection()
     }
 }
 
@@ -57,17 +61,32 @@ internal fun SegmentedControlWidthSection() {
     SelectableSegmentedControl(WrappingLabels, Modifier.width(200.dp))
 }
 
+/** A disabled control, a disabled unselected option, and a disabled selected option that covers the indicator. */
+@Composable
+internal fun SegmentedControlDisabledSection() {
+    val labels = ViewLabels.take(3)
+    PreviewSectionTitle("Disabled control")
+    SelectableSegmentedControl(labels, enabled = false)
+    PreviewSectionTitle("Second option disabled")
+    SelectableSegmentedControl(labels, disabledIndex = 1)
+    PreviewSectionTitle("Selected option disabled")
+    SelectableSegmentedControl(labels, disabledIndex = 0)
+}
+
 @Composable
 private fun SelectableSegmentedControl(
     labels: List<String>,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    disabledIndex: Int? = null,
 ) {
     var selected by remember { mutableIntStateOf(0) }
     PushlogSegmentedControl(
-        options = labels.map { PushlogSegmentedControlOption(it) },
+        options = labels.mapIndexed { index, label -> PushlogSegmentedControlOption(label, enabled = index != disabledIndex) },
         selectedIndex = selected,
         onSelectedIndexChange = { selected = it },
         modifier = modifier,
+        enabled = enabled,
     )
 }
 
@@ -84,5 +103,13 @@ private fun PushlogSegmentedControlCountPreview() {
 private fun PushlogSegmentedControlWidthPreview() {
     PushlogPreviewTheme {
         PreviewBody { SegmentedControlWidthSection() }
+    }
+}
+
+@PushlogPreview
+@Composable
+private fun PushlogSegmentedControlDisabledPreview() {
+    PushlogPreviewTheme {
+        PreviewBody { SegmentedControlDisabledSection() }
     }
 }

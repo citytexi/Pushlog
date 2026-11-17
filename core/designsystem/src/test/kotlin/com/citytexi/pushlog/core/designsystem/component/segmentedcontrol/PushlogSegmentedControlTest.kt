@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PixelMap
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.captureToImage
@@ -35,10 +37,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -63,6 +67,11 @@ class PushlogSegmentedControlTest {
     val composeRule = createComposeRule()
 
     private var selected by mutableIntStateOf(0)
+
+    // 기대 색. 컴포지션 안에서 PushlogTheme.color로 읽어 둔다.
+    private var weakPressed = Color.Unspecified
+    private var strokeMuted = Color.Unspecified
+    private var bgDisabled = Color.Unspecified
 
     private val density get() = composeRule.density.density
 
@@ -246,6 +255,96 @@ class PushlogSegmentedControlTest {
         assertNear("indicator start on its straight edge", 4f * density, indicatorStart(y).toFloat())
     }
 
+    @Test
+    fun pressedUnselectedShowsColorAndBorder() {
+        setControl(THREE, autoAdvance = false, keepSelection = true)
+        val before = borderPixel(THREE[1])
+        item(THREE[1]).performTouchInput { down(center) }
+        composeRule.mainClock.advanceTimeBy(300)
+        assertColorNear("pressed border", strokeMuted.compositeOver(weakPressed), borderPixel(THREE[1]))
+        assertColorNear("pressed surface", weakPressed, surfacePixel(THREE[1]))
+        item(THREE[1]).performTouchInput { up() }
+        composeRule.mainClock.advanceTimeBy(300)
+        assertColorNear("released border", before, borderPixel(THREE[1]))
+    }
+
+    @Test
+    fun pressedSelectedItemCoversIndicatorWithGray100() {
+        setControl(THREE, autoAdvance = false)
+        item(THREE[0]).performTouchInput { down(center) }
+        composeRule.mainClock.advanceTimeBy(300)
+        assertColorNear("pressed selected surface", LightPalette.gray100, surfacePixel(THREE[0]))
+        assertColorNear("pressed selected border", strokeMuted.compositeOver(LightPalette.gray100), borderPixel(THREE[0]))
+        item(THREE[0]).performTouchInput { up() }
+        composeRule.mainClock.advanceTimeBy(300)
+        assertColorNear("released selected surface", LightPalette.gray00, surfacePixel(THREE[0]))
+    }
+
+    @Test
+    fun pressShrinksLabelOnly() {
+        setControl(THREE, autoAdvance = false, keepSelection = true)
+        val bounds = item(THREE[1]).bounds()
+        val (beforeStart, beforeEnd) = labelRange(THREE[1])
+        assertTrue("label should be drawn, $beforeStart..$beforeEnd", beforeEnd > beforeStart)
+        item(THREE[1]).performTouchInput { down(center) }
+        composeRule.mainClock.advanceTimeBy(300)
+        val (afterStart, afterEnd) = labelRange(THREE[1])
+        assertTrue(
+            "label $afterStart..$afterEnd should be narrower than $beforeStart..$beforeEnd",
+            afterEnd - afterStart < beforeEnd - beforeStart,
+        )
+        assertEquals("item bounds stay the same", bounds, item(THREE[1]).bounds())
+    }
+
+    @Test
+    fun disabledOptionIgnoresTap() {
+        var changes = 0
+        setControl(THREE, disabled = setOf(1), onChange = { changes++ })
+        item(THREE[1]).assertIsNotEnabled()
+        item(THREE[1]).performClick()
+        assertEquals(0, changes)
+        item(THREE[2]).performClick()
+        assertEquals(1, changes)
+    }
+
+    @Test
+    fun disabledOptionShowsNoPress() {
+        setControl(THREE, autoAdvance = false, disabled = setOf(1), keepSelection = true)
+        val before = borderPixel(THREE[1])
+        item(THREE[1]).performTouchInput { down(center) }
+        composeRule.mainClock.advanceTimeBy(300)
+        assertColorNear("disabled border", before, borderPixel(THREE[1]))
+        assertColorNear("disabled surface", before, surfacePixel(THREE[1]))
+    }
+
+    @Test
+    fun disabledControlIgnoresAllTaps() {
+        var changes = 0
+        setControl(THREE, enabled = false, onChange = { changes++ })
+        THREE.forEach { label ->
+            item(label).assertIsNotEnabled()
+            item(label).performClick()
+        }
+        assertEquals(0, changes)
+    }
+
+    @Test
+    fun disabledSelectedItemCoversIndicatorWithBgDisabled() {
+        setControl(THREE, enabled = false)
+        assertDisabledCover()
+    }
+
+    @Test
+    fun disabledSelectedOptionCoversIndicatorWithBgDisabled() {
+        setControl(THREE, disabled = setOf(0))
+        assertDisabledCover()
+    }
+
+    private fun assertDisabledCover() {
+        assertColorNear("disabled selected surface", bgDisabled.compositeOver(LightPalette.gray00), surfacePixel(THREE[0]))
+        assertColorNear("disabled selected border", strokeMuted.compositeOver(bgDisabled), borderPixel(THREE[0]))
+    }
+
     private fun setControl(
         labels: List<String>,
         initial: Int = 0,
@@ -253,6 +352,9 @@ class PushlogSegmentedControlTest {
         autoAdvance: Boolean = true,
         layoutDirection: LayoutDirection = LayoutDirection.Ltr,
         fontScale: Float = 1f,
+        enabled: Boolean = true,
+        disabled: Set<Int> = emptySet(),
+        keepSelection: Boolean = false,
         onChange: (Int) -> Unit = {},
         container: @Composable (content: @Composable () -> Unit) -> Unit = { it() },
     ) {
@@ -265,16 +367,21 @@ class PushlogSegmentedControlTest {
                 LocalLayoutDirection provides layoutDirection,
             ) {
                 PushlogTheme(darkTheme = false) {
+                    weakPressed = PushlogTheme.color.bg.neutralWeakPressed
+                    strokeMuted = PushlogTheme.color.stroke.neutralMuted
+                    bgDisabled = PushlogTheme.color.bg.disabled
                     Box(Modifier.background(Color.White)) {
                         container {
                             PushlogSegmentedControl(
-                                options = labels.map(::opt),
+                                options = labels.mapIndexed { index, label -> PushlogSegmentedControlOption(label, index !in disabled) },
                                 selectedIndex = selected,
                                 onSelectedIndexChange = {
-                                    selected = it
+                                    // 놓을 때 선택이 바뀌면 indicator가 와서 눌림 해제 색을 볼 수 없다.
+                                    if (!keepSelection) selected = it
                                     onChange(it)
                                 },
                                 modifier = modifier.testTag(CONTROL),
+                                enabled = enabled,
                             )
                         }
                     }
@@ -331,6 +438,56 @@ class PushlogSegmentedControlTest {
         return (rows.first() - borderPx()) to (rows.last() + 1 + borderPx())
     }
 
+    /** 항목 표면 테두리 픽셀. 항목 가로 가운데, 컨트롤 위에서 (4 + 0.5)dp. */
+    private fun borderPixel(label: String): Color = pixelAt(label, 4.5f)
+
+    /** 항목 표면(테두리 안쪽) 픽셀. 항목 가로 가운데, 컨트롤 위에서 (4 + 3)dp. 라벨보다 위다. */
+    private fun surfacePixel(label: String): Color = pixelAt(label, 7f)
+
+    private fun pixelAt(
+        label: String,
+        dpFromControlTop: Float,
+    ): Color {
+        val x =
+            item(label)
+                .bounds()
+                .center.x
+                .toInt()
+        val y = (control().bounds().top + dpFromControlTop * density).toInt()
+        return capture()[x, y]
+    }
+
+    /**
+     * 항목 안 라벨 글자 픽셀의 가로 범위(px, 끝 포함). 표면 색(위에서 (4 + 3)dp)과 많이 다른 픽셀을 글자로 본다.
+     * 위아래 8dp는 테두리·둥근 모서리라 빼고 찾는다.
+     */
+    private fun labelRange(label: String): Pair<Int, Int> {
+        val image = capture()
+        val bounds = item(label).bounds()
+        val surface = surfacePixel(label)
+        val margin = (8 * density).roundToInt()
+        val xs =
+            (bounds.left.roundToInt() + margin until bounds.right.toInt() - margin).filter { x ->
+                (bounds.top.roundToInt() + margin until bounds.bottom.toInt() - margin).any { y ->
+                    colorDistance(image[x, y], surface) > LABEL_THRESHOLD
+                }
+            }
+        return if (xs.isEmpty()) 0 to 0 else xs.first() to xs.last()
+    }
+
+    private fun colorDistance(
+        a: Color,
+        b: Color,
+    ): Float = maxOf(abs(a.red - b.red), abs(a.green - b.green), abs(a.blue - b.blue))
+
+    private fun assertColorNear(
+        message: String,
+        expected: Color,
+        actual: Color,
+    ) {
+        assertTrue("$message: $actual should be within 2/255 of $expected", colorDistance(expected, actual) * 255 <= 2.5f)
+    }
+
     private fun assertNear(
         message: String,
         expected: Float,
@@ -343,6 +500,7 @@ class PushlogSegmentedControlTest {
     private companion object {
         const val CONTROL = "control"
         const val NATURAL = "natural"
+        const val LABEL_THRESHOLD = 0.2f
         val THREE = listOf("첫째", "둘째", "셋째")
 
         fun opt(label: String) = PushlogSegmentedControlOption(label)
