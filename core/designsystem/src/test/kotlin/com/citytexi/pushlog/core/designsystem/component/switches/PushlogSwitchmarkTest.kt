@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,9 +15,11 @@ import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.unit.LayoutDirection
 import com.citytexi.pushlog.core.designsystem.component.button.pushlogThemedColor
 import com.citytexi.pushlog.core.designsystem.component.pressable.pressedScaleFactor
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -59,6 +62,17 @@ class PushlogSwitchmarkTest {
         toggleTo(true)
         composeRule.mainClock.advanceTimeBy(300)
         assertNear("thumb left edge when on", (3f + 20f) * density, thumbLeft())
+    }
+
+    /** RTL에서는 꺼짐이 오른쪽, 켜짐이 왼쪽이고 thumb은 트랙 안에 머문다. */
+    @Test
+    fun thumbMirrorsInRtl() {
+        setMark(autoAdvance = false, layoutDirection = LayoutDirection.Rtl)
+        composeRule.mainClock.advanceTimeBy(16)
+        assertNear("RTL thumb left edge when off", (52f - 3f - 26f * 0.9f) * density, thumbLeft())
+        toggleTo(true)
+        composeRule.mainClock.advanceTimeBy(300)
+        assertNear("RTL thumb left edge when on", 3f * density, thumbLeft())
     }
 
     @Test
@@ -124,6 +138,7 @@ class PushlogSwitchmarkTest {
         autoAdvance: Boolean = true,
         enabled: Boolean = true,
         scaleOnPress: Boolean = true,
+        layoutDirection: LayoutDirection = LayoutDirection.Ltr,
     ) {
         composeRule.mainClock.autoAdvance = autoAdvance
         composeRule.setContent {
@@ -131,13 +146,15 @@ class PushlogSwitchmarkTest {
                 gray600 = pushlogThemedColor(LightPalette.gray600, DarkPalette.gray600)
                 neutralSolid = PushlogTheme.color.bg.neutralSolid
                 thumb = PushlogTheme.color.fg.onNeutralSolid
-                Box(Modifier.background(Color.White)) {
-                    PushlogSwitchmark(
-                        checked = checked,
-                        enabled = enabled,
-                        scaleOnPress = scaleOnPress,
-                        interactionSource = source,
-                    )
+                CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+                    Box(Modifier.background(Color.White)) {
+                        PushlogSwitchmark(
+                            checked = checked,
+                            enabled = enabled,
+                            scaleOnPress = scaleOnPress,
+                            interactionSource = source,
+                        )
+                    }
                 }
             }
         }

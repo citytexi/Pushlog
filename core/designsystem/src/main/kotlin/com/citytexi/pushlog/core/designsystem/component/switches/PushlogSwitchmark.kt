@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -19,11 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.util.lerp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogPressScale
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
+import kotlin.math.roundToInt
 
 // SEED switchmark.yaml colorDelay 20ms. 같은 길이의 토큰이 없다.
 private const val COLOR_DELAY_MILLIS = 20
@@ -84,10 +87,11 @@ fun PushlogSwitchmark(
         Box(
             Modifier
                 .size(metrics.thumbSize)
-                // fraction을 층 블록 안에서 읽어 애니메이션 중에는 다시 그리기만 한다.
+                // fraction을 배치·층 블록 안에서만 읽어 애니메이션 중에는 다시 배치하고 그리기만 한다.
+                // offset 람다는 RTL에서 방향을 뒤집어 thumb이 트랙 시작 쪽으로 간다.
+                .offset { IntOffset((travel.toPx() * fraction).roundToInt(), 0) }
                 .graphicsLayer {
                     val scale = lerp(OFF_THUMB_SCALE, 1f, fraction)
-                    translationX = travel.toPx() * fraction
                     scaleX = scale
                     scaleY = scale
                 }.background(thumbColor, shape),
