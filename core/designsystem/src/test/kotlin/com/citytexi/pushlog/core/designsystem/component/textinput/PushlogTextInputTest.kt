@@ -2,7 +2,6 @@ package com.citytexi.pushlog.core.designsystem.component.textinput
 
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +25,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.field.PushlogField
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -170,8 +170,28 @@ class PushlogTextInputTest {
     fun typedValueIsKept() {
         val state = TextFieldState()
         composeRule.setContent { PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT)) } }
-        composeRule.runOnIdle { state.setTextAndPlaceCursorAtEnd("hi") }
+        input.performTextInput("hi")
         assertEquals("hi", state.text.toString())
+    }
+
+    @Test
+    fun midInsertAtLimitKeepsExistingText() {
+        val state = TextFieldState("abc", TextRange(0))
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), maxGraphemeCount = 3) }
+        }
+        input.performTextInput("x")
+        assertEquals("abc", state.text.toString())
+    }
+
+    @Test
+    fun insertBeyondRemainingCapacityTrimsInsertedPart() {
+        val state = TextFieldState("ab", TextRange(1))
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), maxGraphemeCount = 4) }
+        }
+        input.performTextInput("XYZ")
+        assertEquals("aXYb", state.text.toString())
     }
 
     private companion object {
