@@ -20,6 +20,7 @@ import com.citytexi.pushlog.preview.component.pushlogSelectBoxGroupPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSelectBoxPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSwitchPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSwitchmarkPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogTextAreaPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogTextInputPreviewEntry
 import com.citytexi.pushlog.preview.foundation.colorPreviewEntry
 import com.citytexi.pushlog.preview.foundation.materialPreviewEntry
@@ -58,5 +59,6 @@ fun previewEntryProvider(
         pushlogFieldLabelPreviewEntry(onBack)
         pushlogFieldPreviewEntry(onBack)
         pushlogTextInputPreviewEntry(onBack)
+        pushlogTextAreaPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }

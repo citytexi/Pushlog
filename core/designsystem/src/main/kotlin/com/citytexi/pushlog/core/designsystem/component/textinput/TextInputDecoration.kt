@@ -88,7 +88,7 @@ private fun DrawScope.drawStroke(
     }
 }
 
-/** 한 줄·여러 줄 입력이 같이 쓰는 상자. 값 자리는 [innerTextField]가 채운다. */
+/** 한 줄·여러 줄 입력이 같이 쓰는 상자. 값 자리는 [innerTextField]가 채운다. [multiline]이면 앞뒤 요소를 위쪽에 맞춘다. */
 @Composable
 internal fun TextInputDecoration(
     variant: PushlogTextInputVariant,
@@ -103,6 +103,7 @@ internal fun TextInputDecoration(
     prefixText: String?,
     suffixText: String?,
     suffixIcon: Painter?,
+    multiline: Boolean = false,
     modifier: Modifier = Modifier,
     innerTextField: @Composable () -> Unit,
 ) {
@@ -118,7 +119,7 @@ internal fun TextInputDecoration(
                 .textInputStroke(variant, metrics.cornerRadius, focused, invalid)
                 .padding(horizontal = metrics.paddingX, vertical = metrics.paddingY),
         horizontalArrangement = Arrangement.spacedBy(metrics.gap),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = if (multiline) Alignment.Top else Alignment.CenterVertically,
     ) {
         prefixIcon?.let { DecorationIcon(it, metrics, iconColor) }
         prefixText?.let { DecorationText(it, metrics, affixColor) }
