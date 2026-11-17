@@ -35,7 +35,10 @@ private val STROKE_WIDTH = 1.dp
 private val EMPHASIS_STROKE_WIDTH = 2.dp
 private const val EMPHASIS_DURATION_MILLIS = 100
 
-/** 기본선을 늘 그리고, emphasized || invalid면 2dp 강조선을 100ms 투명도 전환으로 겹친다. */
+/**
+ * 기본선을 늘 그리고 그 위에 2dp 포커스 층(emphasized)과 오류 층(invalid)을 겹친다. 두 층은 따로 100ms 투명도 전환한다.
+ * 오류 층이 위라서 포커스 중 오류가 생기거나 걷혀도 색이 튀거나 강조선이 비지 않는다.
+ */
 @Composable
 internal fun Modifier.textInputStroke(
     variant: PushlogTextInputVariant,
@@ -45,16 +48,15 @@ internal fun Modifier.textInputStroke(
 ): Modifier {
     val stroke = PushlogTheme.color.stroke
     val baseColor = stroke.neutralWeak
-    val emphasisColor = if (invalid) stroke.criticalSolid else stroke.neutralContrast
-    val alpha =
-        animateFloatAsState(
-            targetValue = if (emphasized || invalid) 1f else 0f,
-            animationSpec = tween(EMPHASIS_DURATION_MILLIS, easing = PushlogTheme.motion.timingFunction.easing),
-            label = "textInputStroke",
-        )
+    val focusColor = stroke.neutralContrast
+    val errorColor = stroke.criticalSolid
+    val spec = tween<Float>(EMPHASIS_DURATION_MILLIS, easing = PushlogTheme.motion.timingFunction.easing)
+    val focusAlpha = animateFloatAsState(if (emphasized) 1f else 0f, spec, label = "textInputFocusStroke")
+    val errorAlpha = animateFloatAsState(if (invalid) 1f else 0f, spec, label = "textInputErrorStroke")
     return drawBehind {
         drawStroke(variant, STROKE_WIDTH, cornerRadius, baseColor, 1f)
-        drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, emphasisColor, alpha.value)
+        drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, focusColor, focusAlpha.value)
+        drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, errorColor, errorAlpha.value)
     }
 }
 
@@ -135,7 +137,7 @@ internal fun TextInputDecoration(
                         text = placeholder,
                         style = metrics.textStyle,
                         color = variant.placeholderColor(enabled, readOnly),
-                        maxLines = 1,
+                        maxLines = if (multiline) Int.MAX_VALUE else 1,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }

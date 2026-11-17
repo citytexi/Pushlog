@@ -6,13 +6,18 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -42,6 +47,7 @@ class PushlogTextAreaTest {
         state: TextFieldState,
         lineLimits: TextFieldLineLimits = TextFieldLineLimits.MultiLine(),
         maxGraphemeCount: Int? = null,
+        placeholder: String? = null,
     ) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
@@ -50,9 +56,22 @@ class PushlogTextAreaTest {
                     modifier = Modifier.testTag(AREA).width(200.dp),
                     lineLimits = lineLimits,
                     maxGraphemeCount = maxGraphemeCount,
+                    placeholder = placeholder,
                 )
             }
         }
+    }
+
+    @Test
+    fun longPlaceholderWrapsInsteadOfClipping() {
+        val placeholder = "긴 안내 문구가 한 줄을 넘어가도 잘리지 않고 다음 줄로 이어져야 한다"
+        show(TextFieldState(), placeholder = placeholder)
+        val results = mutableListOf<TextLayoutResult>()
+        composeRule
+            .onNodeWithText(placeholder, useUnmergedTree = true)
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        assertTrue(results.single().lineCount > 1)
+        assertFalse(results.single().hasVisualOverflow)
     }
 
     @Test

@@ -35,7 +35,9 @@ import com.citytexi.pushlog.core.designsystem.component.field.PushlogField
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -138,25 +140,57 @@ class PushlogTextInputTest {
 
     @Test
     fun invalidClearedWhileFocusedKeepsEmphasis() {
+        val (mid, end) = strokeWhileFocused(initialInvalid = true)
+        // 오류 층이 걷히는 동안 포커스 층이 아래에 그대로 있어 두 색 사이에 머문다(투명해지지 않는다).
+        assertBetween(mid, contrast, critical)
+        assertEquals(contrast.toArgb(), end.toArgb())
+    }
+
+    @Test
+    fun invalidSetWhileFocusedFadesErrorIn() {
+        val (mid, end) = strokeWhileFocused(initialInvalid = false)
+        assertNotEquals(critical.toArgb(), mid.toArgb())
+        assertBetween(mid, contrast, critical)
+        assertEquals(critical.toArgb(), end.toArgb())
+    }
+
+    private var contrast = Color.Unspecified
+    private var critical = Color.Unspecified
+
+    /** 포커스한 입력의 invalid를 뒤집고 전환 중간(약 66ms)과 끝(약 232ms)의 위쪽 테두리 색. */
+    private fun strokeWhileFocused(initialInvalid: Boolean): Pair<Color, Color> {
         composeRule.mainClock.autoAdvance = false
-        var invalid by mutableStateOf(true)
-        var expected = Color.Unspecified
+        var invalid by mutableStateOf(initialInvalid)
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
-                expected = PushlogTheme.color.stroke.neutralContrast
+                contrast = PushlogTheme.color.stroke.neutralContrast
+                critical = PushlogTheme.color.stroke.criticalSolid
                 PushlogTextInput(TextFieldState(), modifier = Modifier.testTag(INPUT).width(200.dp), invalid = invalid)
             }
         }
         composeRule.onNodeWithTag(INPUT).performClick()
         composeRule.mainClock.advanceTimeBy(200)
-        composeRule.runOnIdle { invalid = false }
-        listOf(50L, 150L).forEach { elapsed ->
-            composeRule.mainClock.advanceTimeBy(elapsed)
-            // 멈춘 시계에서는 상태가 바뀐 뒤 첫 캡처가 이전 프레임을 돌려주므로 한 번 버린다.
-            composeRule.onRoot().captureToImage()
-            composeRule.mainClock.advanceTimeBy(FRAME_MILLIS)
-            val image = composeRule.onRoot().captureToImage().toPixelMap()
-            assertEquals(expected.toArgb(), image[image.width / 2, 0].toArgb())
+        composeRule.runOnIdle { invalid = !initialInvalid }
+        return listOf(50L, 150L)
+            .map { elapsed ->
+                composeRule.mainClock.advanceTimeBy(elapsed)
+                // 멈춘 시계에서는 상태가 바뀐 뒤 첫 캡처가 이전 프레임을 돌려주므로 한 번 버린다.
+                composeRule.onRoot().captureToImage()
+                composeRule.mainClock.advanceTimeBy(FRAME_MILLIS)
+                val image = composeRule.onRoot().captureToImage().toPixelMap()
+                image[image.width / 2, 0]
+            }.let { it[0] to it[1] }
+    }
+
+    private fun assertBetween(
+        actual: Color,
+        a: Color,
+        b: Color,
+    ) {
+        listOf(Color::red, Color::green, Color::blue).forEach { channel ->
+            val low = minOf(channel(a), channel(b)) - CHANNEL_TOLERANCE
+            val high = maxOf(channel(a), channel(b)) + CHANNEL_TOLERANCE
+            assertTrue("$actual not between $a and $b", channel(actual) in low..high)
         }
     }
 
@@ -223,5 +257,6 @@ class PushlogTextInputTest {
     private companion object {
         const val INPUT = "input"
         const val FRAME_MILLIS = 16L
+        const val CHANNEL_TOLERANCE = 0.01f
     }
 }
