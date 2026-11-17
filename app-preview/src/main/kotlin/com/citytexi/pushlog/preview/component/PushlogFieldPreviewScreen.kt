@@ -1,16 +1,14 @@
 package com.citytexi.pushlog.preview.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.field.PushlogField
+import com.citytexi.pushlog.core.designsystem.component.textinput.PushlogTextInput
+import com.citytexi.pushlog.core.designsystem.component.textinput.graphemeCount
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
-import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
@@ -23,7 +21,7 @@ fun EntryProviderScope<NavKey>.pushlogFieldPreviewEntry(onBack: () -> Unit) {
     }
 }
 
-/** PushlogField around a placeholder slot in each state; draws no background of its own. */
+/** PushlogField around a PushlogTextInput in each state; draws no background of its own. */
 @Composable
 fun PushlogFieldPreviewContent() {
     PreviewBody { FieldSections() }
@@ -32,19 +30,22 @@ fun PushlogFieldPreviewContent() {
 @Composable
 private fun FieldSections() {
     PreviewSectionTitle("label and description")
-    PushlogField(label = "Name", description = "Use your real name") { Slot() }
+    PushlogField(label = "Name", description = "Use your real name") { PushlogTextInput(remember { TextFieldState() }) }
     PreviewSectionTitle("required and indicator text")
-    PushlogField(label = "Name", showRequiredIndicator = true, indicatorText = "Optional") { Slot() }
+    PushlogField(
+        label = "Name",
+        showRequiredIndicator = true,
+        indicatorText = "Optional",
+    ) { PushlogTextInput(remember { TextFieldState() }) }
     PreviewSectionTitle("invalid")
-    PushlogField(label = "Name", description = "Digits only", errorMessage = "Required", invalid = true) { Slot() }
+    PushlogField(label = "Name", description = "Digits only", errorMessage = "Required", invalid = true) {
+        PushlogTextInput(remember { TextFieldState() })
+    }
     PreviewSectionTitle("character count")
-    PushlogField(label = "Bio", characterCount = 3, maxCharacterCount = 40) { Slot() }
-}
-
-// Stands in for the input until PushlogTextInput exists.
-@Composable
-private fun Slot() {
-    Box(Modifier.fillMaxWidth().height(PushlogTheme.dimension.x13).background(PushlogTheme.color.bg.neutralWeak))
+    val bio = remember { TextFieldState("abc") }
+    PushlogField(label = "Bio", characterCount = bio.graphemeCount, maxCharacterCount = 40) {
+        PushlogTextInput(bio, maxGraphemeCount = 40)
+    }
 }
 
 @PushlogPreview
