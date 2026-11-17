@@ -12,8 +12,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -25,6 +28,7 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextInputSelection
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.pressKey
@@ -98,6 +102,19 @@ class PushlogTextInputTest {
         runCatching { input.performTextInput("d") }
         assertEquals("abc", state.text.toString())
         assertFalse(input.fetchSemanticsNode().config[SemanticsProperties.IsEditable])
+    }
+
+    @Test
+    fun readOnlyAllowsSelectionAndCopy() {
+        val state = TextFieldState("abc")
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), readOnly = true) }
+        }
+        input.assert(SemanticsMatcher.keyIsDefined(SemanticsActions.SetSelection))
+        input.performTextInputSelection(TextRange(0, 3))
+        input.assert(SemanticsMatcher.keyIsDefined(SemanticsActions.CopyText))
+        assertEquals("abc", state.text.toString())
+        assertEquals(TextRange(0, 3), state.selection)
     }
 
     @Test
