@@ -3,7 +3,6 @@ package com.citytexi.pushlog.core.designsystem.component.switches
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.util.lerp
@@ -80,7 +82,7 @@ fun PushlogSwitchmark(
                 .size(metrics.trackWidth, metrics.trackHeight)
                 .then(if (scaleOnPress) Modifier.pushlogPressScale(source, enabled) else Modifier)
                 .graphicsLayer { alpha = disabledAlpha }
-                .background(trackColor, shape)
+                .shapeFill(shape) { trackColor }
                 .padding(metrics.padding),
         contentAlignment = Alignment.CenterStart,
     ) {
@@ -94,10 +96,23 @@ fun PushlogSwitchmark(
                     val scale = lerp(OFF_THUMB_SCALE, 1f, fraction)
                     scaleX = scale
                     scaleY = scale
-                }.background(thumbColor, shape),
+                }.shapeFill(shape) { thumbColor },
         )
     }
 }
+
+/**
+ * [shape]를 [color]로 채운다. 색은 그리기 단계에서만 읽어 색 애니메이션 동안 다시 구성하지 않고 다시 그리기만 한다.
+ * 윤곽은 크기·방향이 바뀔 때만 다시 만든다.
+ */
+private fun Modifier.shapeFill(
+    shape: Shape,
+    color: () -> Color,
+): Modifier =
+    drawWithCache {
+        val outline = shape.createOutline(size, layoutDirection, this)
+        onDrawBehind { drawOutline(outline, color()) }
+    }
 
 @PushlogPreview
 @Composable

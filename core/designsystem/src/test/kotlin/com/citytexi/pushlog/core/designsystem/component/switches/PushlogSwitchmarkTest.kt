@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composer
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.CompositionTracer
+import androidx.compose.runtime.InternalComposeTracingApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -98,6 +101,47 @@ class PushlogSwitchmarkTest {
         assertEquals("track should wait 20ms before changing", gray600.toArgb(), trackPixel())
         composeRule.mainClock.advanceTimeBy(150)
         assertEquals(neutralSolid.toArgb(), trackPixel())
+    }
+
+    /**
+     * 색 tween(20ms 지연 + 50ms) 동안 마크는 다시 구성하지 않고 그리기만 한다.
+     * 색을 구성 단계에서 읽으면 매 프레임 다시 구성된다.
+     */
+    @OptIn(InternalComposeTracingApi::class)
+    @Test
+    fun colorAnimationDoesNotRecompose() {
+        setMark(autoAdvance = false)
+        composeRule.mainClock.advanceTimeBy(16)
+        var recompositions = 0
+        val tracer =
+            object : CompositionTracer {
+                override fun isTraceInProgress(): Boolean = true
+
+                override fun traceEventStart(
+                    key: Int,
+                    dirty1: Int,
+                    dirty2: Int,
+                    info: String,
+                ) {
+                    if (info.contains(".PushlogSwitchmark (")) recompositions++
+                }
+
+                override fun traceEventEnd() = Unit
+            }
+        Composer.setTracer(tracer)
+        try {
+            toggleTo(true)
+            // checked 변경으로 다시 구성되고 애니메이션이 시작하는 프레임까지 넘긴다.
+            composeRule.mainClock.advanceTimeBy(32)
+            // 대조군: 추적기가 마크의 재구성을 실제로 센다. 0이면 아래 단언이 의미 없이 통과한다.
+            assertTrue("tracer should see the checked recomposition, counted $recompositions", recompositions > 0)
+            recompositions = 0
+            composeRule.mainClock.advanceTimeBy(200)
+        } finally {
+            Composer.setTracer(null)
+        }
+        assertEquals(neutralSolid.toArgb(), trackPixel())
+        assertEquals("mark should not recompose while colors animate", 0, recompositions)
     }
 
     @Test
