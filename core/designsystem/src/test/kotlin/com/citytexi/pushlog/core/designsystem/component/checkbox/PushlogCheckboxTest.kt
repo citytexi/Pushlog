@@ -85,6 +85,7 @@ class PushlogCheckboxTest {
         row().assertIsNotEnabled().performClick()
         assertEquals(0, clicks)
         val before = markPixels()
+        assertTrue("disabled mark should be drawn, counted $before", before > 0)
         press()
         assertEquals(before, markPixels())
     }
@@ -154,9 +155,9 @@ class PushlogCheckboxTest {
     ) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
-                markColor =
-                    PushlogTheme.color.bg.neutralSolid
-                        .toArgb()
+                // 비활성 SQUARE 마크는 bg.disabled로 칠한다. 같은 색을 세야 눌림 축소 여부를 볼 수 있다.
+                val bg = PushlogTheme.color.bg
+                markColor = (if (enabled) bg.neutralSolid else bg.disabled).toArgb()
                 PushlogCheckbox(
                     state = state,
                     onClick = onClick,
