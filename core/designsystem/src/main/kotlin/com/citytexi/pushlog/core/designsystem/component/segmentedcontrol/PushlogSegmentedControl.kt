@@ -13,14 +13,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
-import kotlin.math.roundToInt
+import kotlin.math.floor
 
 // SEED segmented-control-item.yaml: minWidth 86px, minHeight 34px. 같은 크기의 토큰이 없다.
 // 최소 너비는 자연 너비 계산에만 쓴다. 항목에 걸면 좁은 컨테이너에서 칸을 넘친다(SEED max-width: 100%).
@@ -71,8 +71,9 @@ fun PushlogSegmentedControl(
         modifier =
             modifier
                 .selectableGroup()
-                .clip(shape)
-                .background(PushlogTheme.color.bg.neutralWeakAlpha)
+                // clip하지 않는다. 글자가 커져 컨트롤이 칸보다 높아지면 컨테이너 모서리가 칸 안쪽까지 휘는데,
+                // clip하면 가장자리 indicator와 항목이 잘린다. SEED도 둥근 배경만 두고 넘침을 자르지 않는다.
+                .background(PushlogTheme.color.bg.neutralWeakAlpha, shape)
                 .padding(PushlogTheme.dimension.x1),
     ) { measurables, constraints ->
         val indicator = measurables.first()
@@ -91,11 +92,18 @@ fun PushlogSegmentedControl(
             items.mapIndexed { index, item ->
                 item.measure(Constraints.fixed(cellStart(index + 1) - cellStart(index), height))
             }
-        val indicatorPlaceable = indicator.measure(Constraints.fixed(cell, height))
         layout(width, height) {
             // 위치를 배치 단계에서만 읽어 이동 중에는 다시 구성하지 않고 다시 배치만 한다.
+            // 칸 너비가 1px씩 다를 수 있어 indicator의 양 끝을 이웃 칸 경계 사이에서 보간하고, 그 너비로 여기서 잰다.
+            val slot = position.value.coerceIn(0f, (count - 1).toFloat())
+            val from = floor(slot).toInt()
+            val to = minOf(from + 1, count - 1)
+            val fraction = slot - from
+            val start = lerp(cellStart(from), cellStart(to), fraction)
+            val end = lerp(cellStart(from + 1), cellStart(to + 1), fraction)
+            val indicatorPlaceable = indicator.measure(Constraints.fixed(end - start, height))
             // placeRelative라 RTL에서는 칸과 indicator가 함께 뒤집힌다.
-            indicatorPlaceable.placeRelative((position.value * width / count).roundToInt(), 0)
+            indicatorPlaceable.placeRelative(start, 0)
             itemPlaceables.forEachIndexed { index, placeable -> placeable.placeRelative(cellStart(index), 0) }
         }
     }

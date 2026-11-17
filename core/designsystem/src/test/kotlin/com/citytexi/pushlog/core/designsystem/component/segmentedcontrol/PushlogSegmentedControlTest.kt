@@ -188,13 +188,18 @@ class PushlogSegmentedControlTest {
             Box(Modifier.width(400.dp)) { content() }
         }
         listOf("A", "B").forEach { assertNear("item width", 196f * density, item(it).bounds().width) }
-        assertNear("indicator start", (4f + 196f) * density, indicatorStart().toFloat(), tolerance = 2f)
+        assertNear("indicator start", (4f + 196f) * density, indicatorStart().toFloat())
     }
 
     @Test
     fun initialIndicatorStartsAtSelectedSlot() {
         setControl(THREE, initial = 2, modifier = Modifier.width(300.dp), autoAdvance = false)
-        assertNear("indicator start", (4f + 292f * 2 / 3) * density, indicatorStart().toFloat(), tolerance = 2f)
+        assertNear("indicator start", (4f + 292f * 2 / 3) * density, indicatorStart().toFloat())
+        // 292dp는 3으로 나누어떨어지지 않아 칸 너비가 1px 다를 수 있다. indicator는 그 칸의 경계에 정확히 맞는다.
+        val cell = item(THREE[2]).bounds()
+        val left = control().bounds().left
+        assertEquals("indicator start on the cell edge", (cell.left - left).roundToInt(), indicatorStart())
+        assertEquals("indicator end on the cell edge", cell.right.roundToInt(), indicatorEnd())
     }
 
     @Test
@@ -207,7 +212,7 @@ class PushlogSegmentedControlTest {
         val midway = indicatorStart().toFloat()
         assertTrue("indicator $midway should be between the slots", midway > 4f * density + 2 && midway < end - 2)
         composeRule.mainClock.advanceTimeBy(300)
-        assertNear("indicator start", end, indicatorStart().toFloat(), tolerance = 2f)
+        assertNear("indicator start", end, indicatorStart().toFloat())
     }
 
     @Test
@@ -216,7 +221,7 @@ class PushlogSegmentedControlTest {
         val control = control().bounds()
         val first = item(THREE[0]).bounds()
         assertNear("first item sits at the right end", control.right - 4f * density, first.right)
-        assertNear("indicator end", control.right - 4f * density, indicatorEnd().toFloat(), tolerance = 2f)
+        assertNear("indicator end", control.right - 4f * density, indicatorEnd().toFloat())
     }
 
     @Test
@@ -228,6 +233,17 @@ class PushlogSegmentedControlTest {
         val (top, bottom) = indicatorVerticalRange()
         assertNear("indicator top", bounds[1].top, top.toFloat())
         assertNear("indicator bottom", bounds[1].bottom, bottom.toFloat())
+    }
+
+    @Test
+    fun largeFontNarrowControlDoesNotClipIndicator() {
+        val labels = listOf("New items", "Old items")
+        setControl(labels, fontScale = 2f) { content -> Box(Modifier.width(200.dp)) { content() } }
+        val cell = item(labels[0]).bounds()
+        assertTrue("cell should be taller than wide, ${cell.width}x${cell.height}", cell.height > cell.width + 8f * density)
+        // indicator 둥근 끝(반지름 = 칸 너비/2) 바로 아래 줄은 indicator 옆면이 곧고 컨테이너 모서리는 아직 휘어 있다.
+        val y = (cell.top + cell.width / 2 + 2f * density).roundToInt()
+        assertNear("indicator start on its straight edge", 4f * density, indicatorStart(y).toFloat())
     }
 
     private fun setControl(
@@ -280,13 +296,20 @@ class PushlogSegmentedControlTest {
 
     private fun borderPx(): Int = (1 * density).roundToInt()
 
-    /** 컨트롤 왼쪽 끝에서 잰 indicator 왼쪽 끝(px). 세로 가운데 줄의 첫 흰 픽셀에서 테두리 1dp를 뺀다. */
-    private fun indicatorStart(): Int {
+    /** 컨트롤 왼쪽 끝에서 잰 indicator 왼쪽 끝(px). [y] 줄(기본은 세로 가운데)에서 indicator 첫 흰 픽셀을 찾아 테두리 1dp를 뺀다. */
+    private fun indicatorStart(
+        y: Int =
+            control()
+                .bounds()
+                .center.y
+                .toInt(),
+    ): Int {
         val image = capture()
         val bounds = control().bounds()
-        val y = bounds.center.y.toInt()
         val left = bounds.left.roundToInt()
-        val x = (left until bounds.right.toInt()).first { isWhite(image[it, y]) }
+        // 컨테이너 모서리가 휜 줄에서는 왼쪽 끝이 바탕 흰색이다. 흰색이 아닌 첫 픽셀(테두리나 컨테이너) 뒤의 첫 흰 픽셀을 찾는다.
+        val drawn = (left until bounds.right.toInt()).first { !isWhite(image[it, y]) }
+        val x = (drawn until bounds.right.toInt()).first { isWhite(image[it, y]) }
         return x - borderPx() - left
     }
 
