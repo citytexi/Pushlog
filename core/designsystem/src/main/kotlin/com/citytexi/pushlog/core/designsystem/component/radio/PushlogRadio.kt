@@ -1,21 +1,15 @@
 package com.citytexi.pushlog.core.designsystem.component.radio
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogSelectableArea
+import com.citytexi.pushlog.core.designsystem.component.selection.SelectionControlRow
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -43,32 +37,23 @@ fun PushlogRadio(
     // 줄의 탭 영역과 마크가 같은 소스를 봐야 라벨을 눌러도 마크가 줄어든다.
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val metrics = size.metrics()
-    val labelStyle = weight.labelStyle(metrics)
-    val lineHeight = with(LocalDensity.current) { labelStyle.lineHeight.toDp() }
-    Row(
-        modifier =
-            modifier
-                .pushlogSelectableArea(selected, source, enabled, onClick)
-                .heightIn(min = metrics.rowMinHeight),
-        horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2),
-        verticalAlignment = Alignment.Top,
-    ) {
+    SelectionControlRow(
+        tapArea = Modifier.pushlogSelectableArea(selected, source, enabled, onClick),
+        rowMinHeight = metrics.rowMinHeight,
+        markHeight = metrics.markSize,
+        gap = PushlogTheme.dimension.x2,
+        label = label,
+        labelStyle = weight.labelStyle(metrics),
+        labelColor = if (enabled) PushlogTheme.color.fg.neutral else PushlogTheme.color.fg.disabled,
+        modifier = modifier,
+    ) { markModifier ->
         PushlogRadiomark(
             selected = selected,
-            modifier = Modifier.padding(top = (metrics.rowMinHeight - metrics.markSize) / 2),
+            modifier = markModifier,
             tone = tone,
             size = size,
             enabled = enabled,
             interactionSource = source,
-        )
-        Text(
-            text = label,
-            style = labelStyle,
-            color = if (enabled) PushlogTheme.color.fg.neutral else PushlogTheme.color.fg.disabled,
-            modifier =
-                Modifier
-                    .weight(1f, fill = false)
-                    .padding(top = ((metrics.rowMinHeight - lineHeight) / 2).coerceAtLeast(0.dp)),
         )
     }
 }
