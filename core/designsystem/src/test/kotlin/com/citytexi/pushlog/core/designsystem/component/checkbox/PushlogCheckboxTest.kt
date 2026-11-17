@@ -52,6 +52,9 @@ class PushlogCheckboxTest {
     private val source = MutableInteractionSource()
     private var markColor = 0
 
+    // 눌리면 마크가 눌림 색으로 바뀐다. 쉰 색만 세면 크기와 상관없이 줄어든 것처럼 보이므로 두 색을 함께 센다.
+    private var pressedMarkColor = 0
+
     @Test
     fun labelTapTogglesState() {
         composeRule.setContent {
@@ -98,7 +101,8 @@ class PushlogCheckboxTest {
         val marks = markPixels()
         val label = labelImage()
         press()
-        assertTrue("pressed mark ${markPixels()} should be below $marks", markPixels() < marks)
+        val after = markPixels()
+        assertTrue("pressed mark $after should be below $marks", after < marks)
         assertTrue("label pixels stay the same", label.sameAs(labelImage()))
     }
 
@@ -109,7 +113,8 @@ class PushlogCheckboxTest {
         label().performTouchInput { down(center) }
         composeRule.mainClock.advanceTimeBy(300)
         composeRule.waitForIdle()
-        assertTrue("pressed mark ${markPixels()} should be below $before", markPixels() < before)
+        val after = markPixels()
+        assertTrue("pressed mark $after should be below $before", after < before)
     }
 
     @Test
@@ -173,6 +178,7 @@ class PushlogCheckboxTest {
                 // 비활성 SQUARE 마크는 bg.disabled로 칠한다. 같은 색을 세야 눌림 축소 여부를 볼 수 있다.
                 val bg = PushlogTheme.color.bg
                 markColor = (if (enabled) bg.neutralSolid else bg.disabled).toArgb()
+                pressedMarkColor = (if (enabled) bg.neutralSolidPressed else bg.disabled).toArgb()
                 PushlogCheckbox(
                     state = state,
                     onClick = onClick,
@@ -189,14 +195,15 @@ class PushlogCheckboxTest {
 
     private fun label() = composeRule.onNodeWithText(LABEL, useUnmergedTree = true)
 
-    /** 라벨 앞 마크 구간(x < 20dp)에서 마크 색 픽셀 수. 눌림 축소는 graphicsLayer라 레이아웃이 아니라 픽셀로 잰다. */
+    /** 라벨 앞 마크 구간(x < 20dp)에서 마크 색(쉰 색, 눌림 색) 픽셀 수. 눌림 축소는 graphicsLayer라 레이아웃이 아니라 픽셀로 잰다. */
     private fun markPixels(): Int {
         val image = composeRule.onRoot().captureToImage().toPixelMap()
         val markWidth = (20 * composeRule.density.density).toInt()
         var count = 0
         for (x in 0 until minOf(markWidth, image.width)) {
             for (y in 0 until image.height) {
-                if (image[x, y].toArgb() == markColor) count++
+                val color = image[x, y].toArgb()
+                if (color == markColor || color == pressedMarkColor) count++
             }
         }
         return count
