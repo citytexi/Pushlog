@@ -4,7 +4,7 @@ title: 디자인 시스템 foundation 구조
 category: architecture
 status: living
 platforms: android
-verified: 2026-11-14
+verified: 2026-11-17
 related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md]
 related_adr:
 related_architecture: [module-structure]
@@ -67,12 +67,12 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 
 ## 동작 컴포넌트
 
-`PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md).
+`PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`을 다룬다. 결정 배경은 [동작 컴포넌트 스펙](../superpowers/specs/2026-11-13-design-system-action-components-design.md), 선택 컨트롤은 [선택 컨트롤 스펙](../superpowers/specs/2026-11-16-design-system-selection-controls-design.md).
 
 - 컴포넌트는 `component` 아래 종류별 하위 패키지에 둔다. `button`(액션 버튼, 플로팅 버튼, 둘이 함께 쓰는 `PushlogButtonSupport.kt`), `chip`, `loading`, `pressable`(눌림 부품, 모두 `internal`)이다. `component` 바로 아래에 두면 Konsist `ComponentRulesTest`가 막는다.
 - 크기·variant에 따라 갈리는 값은 그 enum의 `internal` 멤버로 둔다. 크기는 `PushlogXxxSize.metrics()`가 `XxxMetrics`(같은 패키지, `Pushlog` 접두사 없이 값만 담는 `internal class`, 예: `PushlogChipSize` → `ChipMetrics`)를 돌려주고, 색은 `PushlogXxxVariant.surfaceColor(...)`·`contentColor(...)`처럼 variant가 답한다. 컴포넌트 파일에는 그리는 코드와 거기서만 쓰는 상수만 남긴다. 멤버는 `else`·`==` 없이 `when (this)`로 모든 항목을 적는다. 그래야 새 항목을 추가했을 때 컴파일러가 빠진 곳을 알려 준다.
 - `XxxDefaults` object는 호출하는 쪽이 값을 바꿀 수 있게 파라미터를 열 때만 만든다(예: 나중에 `colors = PushlogChipDefaults.colors(...)`처럼 열 때). 컴포넌트 안에서만 쓰는 값은 파일 안 `private` 상수로 둔다. `Defaults`라는 이름은 바꿔도 되는 공개 값으로 읽히고, 공개하면 값 변경이 API 변경이 된다.
-- 새 동작 컴포넌트는 표면을 새로 만들지 않고 `PushlogPressableSurface`(눌림 색·축소, 클릭 또는 토글, 테두리, 그림자, 로딩 의미 정보)에 내용을 채운다. `pressable` 밖에서 `clickable`·`toggleable`·`selectable`·`indication`·`pointerInput`·ripple을 직접 쓰거나 Icon·Text·진행 표시 외의 Material 3 컴포넌트를 쓰면 `ComponentRulesTest`가 막는다. 눌림 모양과 로딩 규칙이 컴포넌트마다 갈라지지 않게 하려는 것이다. 버튼류는 `PushlogButtonSupport.kt`의 로딩 내용·색 도우미를 함께 쓴다. 크기와 접근성 이름은 `modifier`로 넘긴다.
+- 새 동작 컴포넌트는 표면을 새로 만들지 않고 `PushlogPressableSurface`(눌림 색·축소, 클릭 또는 토글, 테두리, 그림자, 로딩 의미 정보)에 내용을 채운다. 탭 영역과 축소 대상이 다른 컨트롤(체크박스·라디오 줄)은 `pressable`의 탭 영역 modifier와 눌림 표시 modifier를 같은 `interactionSource`로 묶는다. `pressable` 밖에서 `clickable`·`toggleable`·`selectable`·`indication`·`pointerInput`·ripple을 직접 쓰거나 Icon·Text·진행 표시 외의 Material 3 컴포넌트를 쓰면 `ComponentRulesTest`가 막는다. 눌림 모양과 로딩 규칙이 컴포넌트마다 갈라지지 않게 하려는 것이다. 버튼류는 `PushlogButtonSupport.kt`의 로딩 내용·색 도우미를 함께 쓴다. 크기와 접근성 이름은 `modifier`로 넘긴다.
 - ripple을 쓰지 않는다. 눌림은 표면 색 교체와 2dp 축소로만 보인다. 축소 기준 길이는 max(높이, 너비÷4, 24dp)다. 글자·아이콘 색은 그대로다.
 - 축소는 그림자까지 요소 전체를 줄인다(SEED `scaleScope: self`). 그래서 그림자는 `PushlogPressableSurface`의 `shadow` 인자로 넘겨 축소 층 안에 그린다. modifier에 따로 두면 표면만 줄고 그림자는 그대로 남는다. 탭 판정 영역은 줄이지 않는다. 판정 영역까지 줄면 가장자리를 누른 손가락이 줄어든 표면 밖으로 밀려나 탭이 취소된다(`edgeTapSurvivesShrink`).
 - 로딩은 비활성으로 읽히지 않는다. 의미 정보에는 `enabled`가 남고 클릭만 삼킨다. 스크린 리더가 "사용 불가"로 안내하면 곧 다시 쓸 수 있는 버튼이 막힌 것처럼 들린다.
@@ -80,6 +80,37 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 - SEED의 px 값은 같은 크기의 토큰으로 옮긴다(14→`x3Half`, 16→`x4`, 32→`x8` 등). 토큰이 없는 22dp, 44dp, 1dp(칩 테두리)와 progress 애니메이션 값만 파일 안 `private` 상수로 두고 SEED 출처를 주석으로 단다. progress 두께 2dp는 `x0Half`를 읽는다. 눌림 축소량 2dp는 배율 계산 안의 숫자 상수다.
 - 아이콘만 버튼은 같은 이름의 오버로드다. 한 이름에 미리보기 화면이 하나라서(`PreviewCoverageRulesTest`) 두 오버로드를 한 화면에 함께 보여 준다.
 - `PreviewSampleIcons`(`core:ui`)는 미리보기·테스트 전용이다. 제품 아이콘 세트가 아니다.
+
+## 선택 컨트롤
+
+체크박스와 라디오를 다룬다. 스위치·세그먼트·select-box는 뒤따르는 PR이 같은 부품 위에 얹는다. 결정 배경은 [선택 컨트롤 스펙](../superpowers/specs/2026-11-16-design-system-selection-controls-design.md).
+
+- 패키지는 `checkbox`(`PushlogCheckmark`, `PushlogCheckbox`, `PushlogCheckboxGroup`)와 `radio`(`PushlogRadiomark`, `PushlogRadio`, `PushlogRadioGroup`)다. 마크(`PushlogCheckmark`, `PushlogRadiomark`)는 공개하지만 탭을 처리하지 않는다. #22 리스트 줄이 마크를 조합해 쓰기 때문이다.
+- 줄 전체가 탭 영역이고 마크만 줄어든다(SEED). 라벨을 눌러도 상태가 바뀐다. 탭 판정이 축소 층 바깥에 있어서 `edgeTapSurvivesShrink` 규칙이 그대로 지켜진다. 마크 20dp는 축소 기준 길이가 24dp라 22/24로 준다.
+- 상태 3개(`ToggleableState`)와 부모의 일부 선택 계산은 호출하는 쪽이 한다. `checked: Boolean` 오버로드는 편의용이다.
+- 기본값은 SEED recipe의 `defaultVariants`를 따르되 tone만 `NEUTRAL`이다(SEED 문서 권장, recipe는 brand).
+- 체크와 대시는 SEED 체크박스가 쓰는 채운 아이콘(`IconCheckmarkFatFill`, `IconMinusFatFill`)의 경로를 `Canvas`로 그린다. 아이콘 자원과 의존을 늘리지 않으려는 것이다. 그리기 함수는 `CheckmarkIconDrawing.kt`에 둬서 뒤따르는 select-box 체크 마크가 같이 쓴다.
+- 라벨이 여러 줄이면 마크는 첫 줄에 붙는다(SEED 위치 보정). 글자 200%에서 보정값이 음수가 되면 0으로 자른다.
+- ghost "선택 + 눌림" 마크 배경은 SEED의 `carrot-200` 대신 brand는 `forest200`(라이트·다크 같은 단계), neutral은 `gray200`이다. 아이콘은 그대로 `fg.brand`다. 아이콘과 배경의 대비는 라이트 3.96(`fg.brand` `forest600` 대 `forest200`), 다크 4.36(`fg.brand` `forest700` 대 `forest200`)이다. 다크의 다른 단계는 `forest100` 5.05, `forest300` 3.43, `forest400` 2.56이라 `forest400`은 3:1에 못 미친다. 같은 단계를 쓰는 편이 SEED와 맞아 `forest200`으로 정했다. `CheckmarkContrastTest`가 라이트·다크 모두 3:1 이상을 강제한다.
+
+### `pressable` 부품
+
+체크박스·라디오가 쓰는 부품과, 단위 테스트로만 검증하는 부품(뒤따르는 PR의 대상)이 있다. 모두 `internal`이다.
+
+| 부품 | 하는 일 | 쓰는 곳 |
+|---|---|---|
+| `pushlogTriStateToggleArea` | 3상태 토글 탭 영역, `Role.Checkbox` | `PushlogCheckbox` |
+| `pushlogSelectableArea` | 단일 선택 탭 영역, `Role.RadioButton` | `PushlogRadio` |
+| `pushlogToggleableArea` | 켬·끔 탭 영역, 역할을 인자로 받음 | 스위치 줄, 다중 선택 select-box(후속 PR) |
+| `pushlogPressIndication` | 탭 없이 눌림 색과 축소만 보임. 축소는 끌 수 있음 | `PushlogCheckmark`, `PushlogRadiomark` |
+| `pushlogPressScale` | 눌림 색 없이 축소만 보임 | 스위치 마크(후속 PR) |
+| `PushlogPressableSurface`의 `scaleScope` | `SELF`는 표면 전체, `CONTENT`는 안의 내용만 줄임 | select-box 카드, 세그먼트 항목(후속 PR) |
+| `PushlogPressableSurface`의 `selectionMode` | `TOGGLE`은 toggleable, `SINGLE`은 selectable(`Role.RadioButton`) | 세그먼트 항목, 단일 선택 select-box(후속 PR) |
+| `PushlogPressableSurface`의 `pressedBorder` | 눌린 동안만 테두리를 그림 | 세그먼트 항목(후속 PR) |
+| `pushlogToggleablePressable`의 `role` | 토글 역할. 기본값 `Role.Checkbox`로 칩 동작 유지 | 스위치(후속 PR) |
+
+- 탭 영역 modifier는 시각 효과가 없고 `indication = null`이다. 눌림 표시 modifier는 탭을 받지 않는다. 둘이 같은 `interactionSource`를 봐서 줄을 누르면 마크가 눌린다.
+- 내용 축소(`CONTENT`)의 배율은 안쪽 내용이 아니라 바깥 표면 크기로 잰다(SEED `scale-feedback.ts`: 비율은 측정한 요소 크기에서 나온다). 안쪽 상자가 표면의 최소 제약을 그대로 받아 표면과 크기가 같아지므로 `PressScaleNode`가 자기 크기로 재도 같은 값이 나온다.
 
 ## M3 연결
 
@@ -142,6 +173,7 @@ Pretendard 정적 OTF 400/500/700(orioncactus/pretendard v1.3.9)을 번들한다
 `starter.android.screenshot`을 적용한 모듈은 namespace 아래 `@Preview`(private 포함)를 자동으로 캡처한다(Roborazzi Compose Preview 스캔). 결과는 `<module>/build/outputs/roborazzi/com.citytexi.pushlog.<...>.png`이고 UI diff PR 코멘트에서 비교된다. 언제 도는지는 [빌드 문서](build-and-release.md#검증)에 있다.
 
 - 상태는 되도록 프리뷰로 표현한다. 직접 쓴 스크린샷 테스트는 프리뷰로 그릴 수 없는 상태(눌림, 애니메이션 진행 시점, 특수 화면 폭, `LaunchedEffect`로 띄우는 스낵바)에만 쓴다. 예: `SampleScreenScreenshotTest`(에러 스낵바), `FoundationCatalogScreenshotTest`(긴 화면, 412dp 폭).
+- 선택 컨트롤의 마크는 눌림을 주입하는 `PushlogCheckmarkScreenshotTest`, `PushlogRadiomarkScreenshotTest`가 직접 찍는다. 크기·레이아웃과 2배 글자는 동작 컴포넌트와 같이 `app-preview` 섹션 프리뷰가 맡는다.
 - 동작 컴포넌트(`PushlogActionButton`, `PushlogChip`, `PushlogContextualFloatingButton`)의 직접 쓴 스크린샷 테스트는 `states`(눌림 열 주입, 로딩 호 시계 진행)만 남겼다. 크기·레이아웃과 2배 글자는 `app-preview`에서 섹션마다 둔 `@PushlogPreview`(`PushlogActionButtonPreviews.kt`, 칩·플로팅 버튼은 `*PreviewScreen.kt` 아래쪽)가 Light/Dark/Light font 2x로 찍는다. 앱 화면용 `*PreviewContent`는 찍히지 않는다. 미리보기 캔버스(320x470)가 넘치는 부분을 잘라 내므로, 새 크기나 레이아웃을 추가하면 그 섹션의 `@PushlogPreview`를 하나 더 만든다.
 - Robolectric에서 그릴 수 없는 프리뷰(Hilt·ViewModel)나 실행마다 달라지는 프리뷰에는 `@ScreenshotExcluded`(`core:ui`)를 붙인다.
 - 프리뷰 이름은 파일명이 된다(공백은 `_`로 바뀐다). 글자·숫자·`_`·`-`·`.`·공백 외의 기호(`%`, 괄호, `+` 등)가 있으면 UI diff 스크립트가 경로 안전 검사(`report.py`의 `PART_RE`)에서 그 이미지를 빼고, 코멘트에 뺀 개수를 경고로 남긴다. `@PushlogPreview`의 200% 변형 이름이 `Light font 2x`인 이유다.
