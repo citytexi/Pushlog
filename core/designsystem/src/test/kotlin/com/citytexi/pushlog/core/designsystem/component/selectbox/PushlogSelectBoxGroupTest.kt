@@ -71,6 +71,16 @@ class PushlogSelectBoxGroupTest {
     }
 
     @Test
+    fun remainderPixelsSpreadAcrossCells() {
+        // (361 - 12 × 2) / 3 = 112.33: 나머지 1px을 버리면 마지막 칸이 그룹 오른쪽 끝에 닿지 않는다.
+        setGroup(columns = 3, width = 361.dp) { repeat(3) { Cell(it) } }
+        val group = composeRule.onNodeWithTag(GROUP).getBoundsInRoot()
+        assertEquals(group.right.value, bounds(2).right.value, 0.01f)
+        repeat(3) { assertDp(bounds(0).width, bounds(it).width) }
+        assertDp(12.dp, bounds(2).left - bounds(1).right)
+    }
+
+    @Test
     fun rowGapIsComponentDefault() {
         setGroup(columns = 2) { repeat(4) { Cell(it) } }
         assertDp(12.dp, bounds(2).top - bounds(0).bottom)
@@ -193,13 +203,14 @@ class PushlogSelectBoxGroupTest {
     private fun setGroup(
         columns: Int?,
         fontScale: Float = 1f,
+        width: Dp = GROUP_WIDTH,
         content: @Composable () -> Unit,
     ) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
                 CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, fontScale)) {
                     PushlogSelectBoxGroup(
-                        modifier = Modifier.width(GROUP_WIDTH).testTag(GROUP),
+                        modifier = Modifier.width(width).testTag(GROUP),
                         columns = columns ?: columnsState.intValue,
                         content = content,
                     )

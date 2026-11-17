@@ -63,9 +63,9 @@ internal class SelectBoxGridMeasurePolicy(
         row: List<Measurable>,
         width: Int,
     ): List<Placeable> {
-        if (columns == 1) return row.map { it.measure(Constraints.fixedWidth(cellWidth(width))) }
-        val rowHeight = row.maxOf { it.maxIntrinsicHeight(cellWidth(width)) }
-        return row.map { it.measure(Constraints.fixed(cellWidth(width), rowHeight)) }
+        if (columns == 1) return row.map { it.measure(Constraints.fixedWidth(cellWidth(width, 0))) }
+        val rowHeight = row.withIndex().maxOf { (c, measurable) -> measurable.maxIntrinsicHeight(cellWidth(width, c)) }
+        return row.mapIndexed { c, measurable -> measurable.measure(Constraints.fixed(cellWidth(width, c), rowHeight)) }
     }
 
     private fun gridWidth(widestCell: Int?): Int = if (widestCell == null) 0 else widestCell * columns + gapX * (columns - 1)
@@ -77,22 +77,26 @@ internal class SelectBoxGridMeasurePolicy(
     ): Int =
         stack(
             measurables.chunked(columns).map { row ->
-                row.maxOf { cellHeight(it, cellWidth(width)) }
+                row.withIndex().maxOf { (c, measurable) -> cellHeight(measurable, cellWidth(width, c)) }
             },
         )
 
     private fun stack(rowHeights: List<Int>): Int = rowHeights.sum() + gapY * (rowHeights.size - 1).coerceAtLeast(0)
 
+    /** [index]번째 칸의 시작 x. 칸 몫의 나머지 픽셀을 칸마다 고루 나눠 마지막 칸이 오른쪽 끝에 닿는다. */
     private fun cellStart(
         width: Int,
         index: Int,
-    ): Int = index * (cellWidth(width) + gapX)
+    ): Int = index * gapX + (width - gapX * (columns - 1)).coerceAtLeast(0) * index / columns
 
     // intrinsic 높이는 너비 제한 없이 물을 수 있다. 그때는 칸 너비도 제한하지 않는다.
-    private fun cellWidth(width: Int): Int =
+    private fun cellWidth(
+        width: Int,
+        index: Int,
+    ): Int =
         if (width == Constraints.Infinity) {
             Constraints.Infinity
         } else {
-            ((width - gapX * (columns - 1)) / columns).coerceAtLeast(0)
+            cellStart(width, index + 1) - cellStart(width, index) - gapX
         }
 }
