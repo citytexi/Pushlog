@@ -136,14 +136,15 @@ class PushlogSelectBoxTest {
     @Test
     fun disabledIgnoresPressAndTap() {
         setBox(enabled = false, interactionSource = source)
-        box().assertIsNotEnabled()
-        box().performClick()
-        assertEquals(0, clicks)
-        val before = pixels(capture())
-        composeRule.runOnIdle { source.tryEmit(PressInteraction.Press(Offset.Zero)) }
-        composeRule.mainClock.advanceTimeBy(300)
-        composeRule.waitForIdle()
-        assertEquals("disabled card must not change on press", before, pixels(capture()))
+        assertIgnoresPressAndTap()
+    }
+
+    // 라디오 마크는 체크 마크와 따로 비활성을 받는다. 선택된 단일 박스에서 마크가 눌림에 반응하면 여기서 걸린다.
+    @Test
+    fun disabledSelectedSingleIgnoresPressAndTap() {
+        selectedState.value = true
+        setBox(type = PushlogSelectBoxType.SINGLE, enabled = false, interactionSource = source)
+        assertIgnoresPressAndTap()
     }
 
     @Test
@@ -284,6 +285,17 @@ class PushlogSelectBoxTest {
 
     private fun assertMultipleRole(node: SemanticsNodeInteraction) {
         node.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox)).assertIsOn()
+    }
+
+    private fun assertIgnoresPressAndTap() {
+        box().assertIsNotEnabled()
+        box().performClick()
+        assertEquals(0, clicks)
+        val before = pixels(capture())
+        composeRule.runOnIdle { source.tryEmit(PressInteraction.Press(Offset.Zero)) }
+        composeRule.mainClock.advanceTimeBy(300)
+        composeRule.waitForIdle()
+        assertEquals("disabled card must not change on press", before, pixels(capture()))
     }
 
     private fun assertLabelInset(expected: Dp) {

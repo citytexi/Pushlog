@@ -67,7 +67,10 @@ class PushlogSelectBoxFooterTest {
         switchTo(selected = true)
         composeRule.mainClock.advanceTimeBy(200)
         assertBetween(closed, open, height())
-        composeRule.mainClock.advanceTimeBy(250)
+        // 여는 높이가 300ms라면 여기서 이미 다 열렸다. 400ms면 easing으로 94%쯤이라 footer가 세 줄이어야 차이가 보인다.
+        composeRule.mainClock.advanceTimeBy(100)
+        assertBetween(closed, open, height())
+        composeRule.mainClock.advanceTimeBy(150)
         assertEquals(open, height())
 
         switchTo(selected = false)
@@ -76,6 +79,7 @@ class PushlogSelectBoxFooterTest {
         composeRule.mainClock.advanceTimeBy(200)
         assertEquals(closed, height())
         // 높이는 300ms에 닫혀도 투명도는 400ms까지 이어진다. 그 뒤에야 footer가 빠진다.
+        footer().assertExists()
         composeRule.mainClock.advanceTimeBy(100)
         footer().assertDoesNotExist()
     }
@@ -161,7 +165,7 @@ class PushlogSelectBoxFooterTest {
     private companion object {
         const val TAG = "box"
         const val LABEL = "사과"
-        const val FOOTER = "추가 정보"
+        const val FOOTER = "추가 정보\n둘째 줄\n셋째 줄"
         const val SETTLE_MILLIS = 1000L
     }
 }

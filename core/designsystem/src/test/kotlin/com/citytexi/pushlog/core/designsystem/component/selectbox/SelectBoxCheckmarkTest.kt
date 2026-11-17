@@ -41,6 +41,8 @@ class SelectBoxCheckmarkTest {
     fun idleIconIsPlaceholder() {
         setCheckmark(selected = false, enabled = true)
         assertTrue("placeholder icon should be drawn", count(placeholder) > 0)
+        assertEquals(0, count(neutral))
+        assertEquals(0, count(neutralSubtle))
     }
 
     @Test
@@ -55,9 +57,19 @@ class SelectBoxCheckmarkTest {
     fun selectedIconIsNeutralEvenWhenPressed() {
         setCheckmark(selected = true, enabled = true)
         assertTrue("selected icon should be neutral", count(neutral) > 0)
+        val before = pixels()
         press()
-        assertTrue("selected icon stays neutral while pressed", count(neutral) > 0)
+        assertEquals("selected icon must not change on press", before, pixels())
         assertEquals(0, count(neutralSubtle))
+    }
+
+    @Test
+    fun disabledUnselectedIconIgnoresPress() {
+        setCheckmark(selected = false, enabled = false)
+        press()
+        assertTrue("disabled icon should be disabled color", count(disabled) > 0)
+        assertEquals(0, count(neutralSubtle))
+        assertEquals(0, count(placeholder))
     }
 
     @Test
@@ -116,6 +128,11 @@ class SelectBoxCheckmarkTest {
     }
 
     private fun image(): PixelMap = composeRule.onRoot().captureToImage().toPixelMap()
+
+    private fun pixels(): List<Int> {
+        val image = image()
+        return (0 until image.height).flatMap { y -> (0 until image.width).map { x -> image[x, y].toArgb() } }
+    }
 
     /** 캡처 이미지에서 색이 정확히 [color]인 픽셀 수. */
     private fun count(color: Int): Int {

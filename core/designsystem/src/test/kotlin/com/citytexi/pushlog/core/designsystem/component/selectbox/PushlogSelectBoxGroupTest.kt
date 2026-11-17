@@ -10,14 +10,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
@@ -44,6 +47,7 @@ class PushlogSelectBoxGroupTest {
     val composeRule = createComposeRule()
 
     private val columnsState = mutableIntStateOf(1)
+    private val footerSelected = mutableStateOf(false)
 
     @Test
     fun groupIsSelectableGroup() {
@@ -151,10 +155,49 @@ class PushlogSelectBoxGroupTest {
     fun largeFontInThreeColumnsKeepsLabelInsideCard() {
         setGroup(columns = 3, fontScale = 2f) { repeat(3) { Cell(it, label = "$LONG_LABEL $it") } }
         repeat(3) {
-            val label = composeRule.onNodeWithText("$LONG_LABEL $it", useUnmergedTree = true).getBoundsInRoot()
+            val node = composeRule.onNodeWithText("$LONG_LABEL $it", useUnmergedTree = true)
+            val label = node.getBoundsInRoot()
             assertTrue("label $it bottom ${label.bottom} inside ${bounds(it).bottom}", label.bottom <= bounds(it).bottom)
             assertDp(bounds(0).height, bounds(it).height)
+            // 줄바꿈 없이 한 줄이면 넘친 글자가 잘려도 위 검사는 통과한다.
+            val results = mutableListOf<TextLayoutResult>()
+            node
+                .fetchSemanticsNode()
+                .config[SemanticsActions.GetTextLayoutResult]
+                .action
+                ?.invoke(results)
+            assertTrue("label $it should wrap", results.first().lineCount > 1)
         }
+    }
+
+    @Test
+    fun footerAnimatesSharedRowHeight() {
+        composeRule.mainClock.autoAdvance = false
+        setGroup(columns = 2) {
+            PushlogSelectBox(
+                selected = footerSelected.value,
+                onClick = {},
+                type = PushlogSelectBoxType.MULTIPLE,
+                label = "$LABEL 0",
+                modifier = Modifier.testTag("b0"),
+                footer = { Text("Footer\nsecond line") },
+            )
+            Cell(1)
+        }
+        val closed = settledRowHeight(selected = false)
+        val open = settledRowHeight(selected = true)
+        settledRowHeight(selected = false)
+
+        switchFooter(selected = true)
+        composeRule.mainClock.advanceTimeBy(200)
+        assertSharedRowBetween(closed, open)
+        settledRowHeight(selected = true)
+
+        switchFooter(selected = false)
+        composeRule.mainClock.advanceTimeBy(150)
+        assertSharedRowBetween(closed, open)
+        assertDp(closed, settledRowHeight(selected = false))
+        assertDp(closed, bounds(1).height)
     }
 
     @Test
@@ -241,6 +284,29 @@ class PushlogSelectBoxGroupTest {
         )
     }
 
+    /** 시계를 멈춘 동안 상태를 바꾸고 애니메이션이 시작되는 프레임까지 흘린다. */
+    private fun switchFooter(selected: Boolean) {
+        composeRule.runOnIdle { footerSelected.value = selected }
+        composeRule.waitForIdle()
+        composeRule.mainClock.advanceTimeByFrame()
+    }
+
+    private fun settledRowHeight(selected: Boolean): Dp {
+        switchFooter(selected)
+        composeRule.mainClock.advanceTimeBy(SETTLE_MILLIS)
+        return bounds(0).height
+    }
+
+    /** footer가 없는 이웃 칸도 같은 높이로 함께 움직인다. */
+    private fun assertSharedRowBetween(
+        closed: Dp,
+        open: Dp,
+    ) {
+        val height = bounds(0).height
+        assertTrue("$closed < $height < $open", height > closed && height < open)
+        assertDp(height, bounds(1).height)
+    }
+
     private fun bounds(index: Int): DpRect = composeRule.onNodeWithTag("b$index").getBoundsInRoot()
 
     private fun assertLabelInset(
@@ -263,6 +329,7 @@ class PushlogSelectBoxGroupTest {
     private companion object {
         const val GROUP = "group"
         const val SIDE = "side"
+        const val SETTLE_MILLIS = 1000L
         const val LABEL = "Box"
         const val LONG_LABEL = "아주 긴 선택지 이름"
         const val THREE_LINES = "first line of the description\nsecond line\nthird line"
