@@ -3,7 +3,6 @@ package com.citytexi.pushlog.core.designsystem.component.selectbox
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +16,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.PressScaleScope
 import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
@@ -32,6 +38,7 @@ import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkTo
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
+import kotlin.math.ceil
 
 // SEED select-box.yaml: strokeWidth 1px. 같은 크기의 토큰이 없다.
 private val StrokeWidth = 1.dp
@@ -75,15 +82,17 @@ fun PushlogSelectBox(
 ) {
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val resolvedLayout = layout ?: LocalSelectBoxLayout.current
-    val shape = RoundedCornerShape(PushlogTheme.radius.r3)
+    val radius = PushlogTheme.radius.r3
+    val shape = RoundedCornerShape(radius)
     val color = PushlogTheme.color
     val motion = PushlogTheme.motion
     // 같은 색조의 alpha 0에서 번지게 해 중간에 다른 색이 지나가지 않는다. SEED strokeDuration 0.1s = d2.
-    val selectedStrokeColor by animateColorAsState(
-        targetValue = color.stroke.neutralContrast.copy(alpha = if (enabled && selected) 1f else 0f),
-        animationSpec = tween(motion.duration.d2, easing = motion.timingFunction.easing),
-        label = "SelectBoxSelectedStroke",
-    )
+    val selectedStrokeColor =
+        animateColorAsState(
+            targetValue = color.stroke.neutralContrast.copy(alpha = if (enabled && selected) 1f else 0f),
+            animationSpec = tween(motion.duration.d2, easing = motion.timingFunction.easing),
+            label = "SelectBoxSelectedStroke",
+        )
     val baseStrokeWidth = if (!enabled && selected) SelectedStrokeWidth else StrokeWidth
     PushlogPressableSurface(
         color = color.bg.transparent,
@@ -91,8 +100,7 @@ fun PushlogSelectBox(
         shape = shape,
         enabled = enabled,
         onClick = onClick,
-        // 바깥 테두리는 표면과 기본 테두리 위에 그려진다(SEED ::after). 표면은 줄지 않으므로 테두리도 그대로다.
-        modifier = modifier.border(SelectedStrokeWidth, selectedStrokeColor, shape),
+        modifier = modifier.selectedStroke(selectedStrokeColor, radius),
         selected = selected,
         selectionMode = type.selectionMode(),
         scaleScope = PressScaleScope.CONTENT,
@@ -106,19 +114,40 @@ fun PushlogSelectBox(
             prefixIcon = prefixIcon,
             enabled = enabled,
             suffix = suffix,
-            control = if (showControl) SelectBoxControlState(type, selected, source) else null,
+            type = type,
+            selected = selected,
+            showControl = showControl,
+            interactionSource = source,
             footer = footer,
             footerVisible = footerVisibility.isVisible(selected),
         )
     }
 }
 
-/** 마크를 그릴 때 필요한 값. null이면 마크를 그리지 않는다. */
-private class SelectBoxControlState(
-    val type: PushlogSelectBoxType,
-    val selected: Boolean,
-    val interactionSource: InteractionSource,
-)
+/**
+ * 바깥 선택 테두리. 표면과 기본 테두리 위에 그려진다(SEED ::after). 표면은 줄지 않으므로 테두리도 그대로다.
+ * 색은 그리기 단계에서만 읽어 페이드 중에 카드를 다시 구성하지 않는다. 모양과 위치는 `border`와 같다(선 안쪽 끝이 카드 안).
+ */
+private fun Modifier.selectedStroke(
+    color: State<Color>,
+    radius: Dp,
+): Modifier =
+    drawWithCache {
+        val strokePx = ceil(SelectedStrokeWidth.toPx())
+        val half = strokePx / 2
+        val corner = (minOf(radius.toPx(), size.minDimension / 2) - half).coerceAtLeast(0f)
+        val stroke = Stroke(strokePx)
+        onDrawWithContent {
+            drawContent()
+            drawRoundRect(
+                color = color.value,
+                topLeft = Offset(half, half),
+                size = Size(size.width - strokePx, size.height - strokePx),
+                cornerRadius = CornerRadius(corner),
+                style = stroke,
+            )
+        }
+    }
 
 @Composable
 private fun SelectBoxContent(
@@ -128,7 +157,10 @@ private fun SelectBoxContent(
     prefixIcon: Painter?,
     enabled: Boolean,
     suffix: (@Composable () -> Unit)?,
-    control: SelectBoxControlState?,
+    type: PushlogSelectBoxType,
+    selected: Boolean,
+    showControl: Boolean,
+    interactionSource: InteractionSource,
     footer: (@Composable () -> Unit)?,
     footerVisible: Boolean,
 ) {
@@ -152,7 +184,7 @@ private fun SelectBoxContent(
         ) {
             SelectBoxTrigger(layout, metrics, label, description, prefixIcon, enabled, Modifier.weight(1f))
             suffix?.invoke()
-            if (control != null) SelectBoxControl(control, enabled)
+            if (showControl) SelectBoxControl(type, selected, enabled, interactionSource)
         }
         if (footer != null) SelectBoxFooter(footerVisible, footer)
     }
@@ -237,20 +269,22 @@ private fun SelectBoxTexts(
 // 카드가 내용 축소로 마크까지 줄이므로 마크는 스스로 줄지 않는다.
 @Composable
 private fun SelectBoxControl(
-    control: SelectBoxControlState,
+    type: PushlogSelectBoxType,
+    selected: Boolean,
     enabled: Boolean,
+    interactionSource: InteractionSource,
 ) {
-    when (control.type) {
+    when (type) {
         PushlogSelectBoxType.SINGLE ->
             PushlogRadiomark(
-                selected = control.selected,
+                selected = selected,
                 tone = PushlogRadiomarkTone.NEUTRAL,
                 size = PushlogRadiomarkSize.MEDIUM,
                 enabled = enabled,
                 scaleOnPress = false,
-                interactionSource = control.interactionSource,
+                interactionSource = interactionSource,
             )
-        PushlogSelectBoxType.MULTIPLE -> SelectBoxCheckmark(control.selected, enabled, control.interactionSource)
+        PushlogSelectBoxType.MULTIPLE -> SelectBoxCheckmark(selected, enabled, interactionSource)
     }
 }
 
