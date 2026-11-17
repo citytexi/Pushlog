@@ -5,10 +5,10 @@ category: architecture
 status: living
 platforms: android
 verified: 2026-11-17
-related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md]
+related_spec: [docs/superpowers/specs/2026-11-13-design-system-foundation-design.md, docs/superpowers/specs/2026-11-16-design-system-selection-controls-design.md]
 related_adr:
 related_architecture: [module-structure]
-related_code: [PushlogTheme, PushlogColors, toColorScheme, PushlogActionButton, PushlogChip, PushlogContextualFloatingButton]
+related_code: [PushlogTheme, PushlogColors, toColorScheme, PushlogActionButton, PushlogChip, PushlogContextualFloatingButton, PushlogCheckmark, PushlogCheckbox, PushlogCheckboxGroup, PushlogRadiomark, PushlogRadio, PushlogRadioGroup, PushlogPreviewTheme]
 tags: [architecture, design-system]
 ---
 
@@ -83,31 +83,31 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 
 ## 선택 컨트롤
 
-체크박스와 라디오를 다룬다. 스위치·세그먼트·select-box는 뒤따르는 PR이 같은 부품 위에 얹는다. 결정 배경은 [선택 컨트롤 스펙](../superpowers/specs/2026-11-16-design-system-selection-controls-design.md).
+체크박스와 라디오를 다룬다. 스위치·세그먼트·select-box도 같은 `pressable` 부품 위에 얹도록 설계했다. 결정 배경은 [선택 컨트롤 스펙](../superpowers/specs/2026-11-16-design-system-selection-controls-design.md).
 
 - 패키지는 `checkbox`(`PushlogCheckmark`, `PushlogCheckbox`, `PushlogCheckboxGroup`)와 `radio`(`PushlogRadiomark`, `PushlogRadio`, `PushlogRadioGroup`)다. 마크(`PushlogCheckmark`, `PushlogRadiomark`)는 공개하지만 탭을 처리하지 않는다. #22 리스트 줄이 마크를 조합해 쓰기 때문이다.
 - 줄 전체가 탭 영역이고 마크만 줄어든다(SEED). 라벨을 눌러도 상태가 바뀐다. 탭 판정이 축소 층 바깥에 있어서 `edgeTapSurvivesShrink` 규칙이 그대로 지켜진다. 마크 20dp는 축소 기준 길이가 24dp라 22/24로 준다.
 - 상태 3개(`ToggleableState`)와 부모의 일부 선택 계산은 호출하는 쪽이 한다. `checked: Boolean` 오버로드는 편의용이다.
 - 기본값은 SEED recipe의 `defaultVariants`를 따르되 tone만 `NEUTRAL`이다(SEED 문서 권장, recipe는 brand).
-- 체크와 대시는 SEED 체크박스가 쓰는 채운 아이콘(`IconCheckmarkFatFill`, `IconMinusFatFill`)의 경로를 `Canvas`로 그린다. 아이콘 자원과 의존을 늘리지 않으려는 것이다. 그리기 함수는 `CheckmarkIconDrawing.kt`에 둬서 뒤따르는 select-box 체크 마크가 같이 쓴다.
-- 라벨이 여러 줄이면 마크는 첫 줄에 붙는다(SEED 위치 보정). 글자 200%에서 보정값이 음수가 되면 0으로 자른다.
+- 체크와 대시는 SEED 체크박스가 쓰는 채운 아이콘(`IconCheckmarkFatFill`, `IconMinusFatFill`)의 경로를 `Canvas`로 그린다. 아이콘 자원과 의존을 늘리지 않으려는 것이다. 그리기 함수는 `CheckmarkIconDrawing.kt`에 따로 둬서 select-box 체크 마크도 같이 쓸 수 있게 했다.
+- 마크의 위쪽 여백은 `(rowMinHeight - markSize) / 2`로 고정이고, 라벨의 위쪽 여백은 `(rowMinHeight - 첫 줄 높이) / 2`다(SEED 위치 보정). 기본 글자 크기에서는 마크와 첫 줄의 가운데가 맞고 라벨이 여러 줄이어도 마크는 첫 줄 옆에 남는다. 글자가 커져 첫 줄이 `rowMinHeight`보다 높아지면 라벨 여백은 0으로 잘리고 마크는 첫 줄 가운데보다 조금 위에 놓인다.
 - ghost "선택 + 눌림" 마크 배경은 SEED의 `carrot-200` 대신 brand는 `forest200`(라이트·다크 같은 단계), neutral은 `gray200`이다. 아이콘은 그대로 `fg.brand`다. 아이콘과 배경의 대비는 라이트 3.96(`fg.brand` `forest600` 대 `forest200`), 다크 4.36(`fg.brand` `forest700` 대 `forest200`)이다. 다크의 다른 단계는 `forest100` 5.05, `forest300` 3.43, `forest400` 2.56이라 `forest400`은 3:1에 못 미친다. 같은 단계를 쓰는 편이 SEED와 맞아 `forest200`으로 정했다. `CheckmarkContrastTest`가 라이트·다크 모두 3:1 이상을 강제한다.
 
 ### `pressable` 부품
 
-체크박스·라디오가 쓰는 부품과, 단위 테스트로만 검증하는 부품(뒤따르는 PR의 대상)이 있다. 모두 `internal`이다.
+체크박스·라디오가 이미 쓰는 부품과, 아직 쓰는 컴포넌트 없이 단위 테스트로만 검증하는 부품이 있다. 모두 `internal`이다. 표의 "쓰는 곳"이 컴포넌트 이름이 아니면 의도한 사용처다.
 
 | 부품 | 하는 일 | 쓰는 곳 |
 |---|---|---|
 | `pushlogTriStateToggleArea` | 3상태 토글 탭 영역, `Role.Checkbox` | `PushlogCheckbox` |
 | `pushlogSelectableArea` | 단일 선택 탭 영역, `Role.RadioButton` | `PushlogRadio` |
-| `pushlogToggleableArea` | 켬·끔 탭 영역, 역할을 인자로 받음 | 스위치 줄, 다중 선택 select-box(후속 PR) |
+| `pushlogToggleableArea` | 켬·끔 탭 영역, 역할을 인자로 받음 | 스위치 줄, 다중 선택 select-box용 |
 | `pushlogPressIndication` | 탭 없이 눌림 색과 축소만 보임. 축소는 끌 수 있음 | `PushlogCheckmark`, `PushlogRadiomark` |
-| `pushlogPressScale` | 눌림 색 없이 축소만 보임 | 스위치 마크(후속 PR) |
-| `PushlogPressableSurface`의 `scaleScope` | `SELF`는 표면 전체, `CONTENT`는 안의 내용만 줄임 | select-box 카드, 세그먼트 항목(후속 PR) |
-| `PushlogPressableSurface`의 `selectionMode` | `TOGGLE`은 toggleable, `SINGLE`은 selectable(`Role.RadioButton`) | 세그먼트 항목, 단일 선택 select-box(후속 PR) |
-| `PushlogPressableSurface`의 `pressedBorder` | 눌린 동안만 테두리를 그림 | 세그먼트 항목(후속 PR) |
-| `pushlogToggleablePressable`의 `role` | 토글 역할. 기본값 `Role.Checkbox`로 칩 동작 유지 | 스위치(후속 PR) |
+| `pushlogPressScale` | 눌림 색 없이 축소만 보임 | 스위치 마크용 |
+| `PushlogPressableSurface`의 `scaleScope` | `SELF`는 표면 전체, `CONTENT`는 안의 내용만 줄임 | select-box 카드, 세그먼트 항목용 |
+| `PushlogPressableSurface`의 `selectionMode` | `TOGGLE`은 toggleable, `SINGLE`은 selectable(`Role.RadioButton`) | 세그먼트 항목, 단일 선택 select-box용 |
+| `PushlogPressableSurface`의 `pressedBorder` | 눌린 동안만 테두리를 그림 | 세그먼트 항목용 |
+| `pushlogToggleablePressable`의 `role` | 토글 역할. 기본값 `Role.Checkbox`로 칩 동작 유지 | 스위치용 |
 
 - 탭 영역 modifier는 시각 효과가 없고 `indication = null`이다. 눌림 표시 modifier는 탭을 받지 않는다. 둘이 같은 `interactionSource`를 봐서 줄을 누르면 마크가 눌린다.
 - 내용 축소(`CONTENT`)의 배율은 안쪽 내용이 아니라 바깥 표면 크기로 잰다(SEED `scale-feedback.ts`: 비율은 측정한 요소 크기에서 나온다). 안쪽 상자가 표면의 최소 제약을 그대로 받아 표면과 크기가 같아지므로 `PressScaleNode`가 자기 크기로 재도 같은 값이 나온다.
