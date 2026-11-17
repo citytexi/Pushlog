@@ -116,16 +116,18 @@ private fun FieldFooter(
                     Canvas(Modifier.size(dimension.x4)) { drawExclamationCircleIcon(critical) }
                 }
             } else if (description != null) {
-                FieldMessage(description, PushlogTheme.color.fg.neutralSubtle) {
-                    if (descriptionIcon != null) {
-                        Icon(
-                            painter = descriptionIcon,
-                            contentDescription = null,
-                            modifier = Modifier.size(dimension.x4),
-                            tint = PushlogTheme.color.fg.neutralSubtle,
-                        )
+                val icon: (@Composable () -> Unit)? =
+                    descriptionIcon?.let {
+                        {
+                            Icon(
+                                painter = it,
+                                contentDescription = null,
+                                modifier = Modifier.size(dimension.x4),
+                                tint = PushlogTheme.color.fg.neutralSubtle,
+                            )
+                        }
                     }
-                }
+                FieldMessage(description, PushlogTheme.color.fg.neutralSubtle, icon)
             }
         }
         if (characterCount != null) FieldCharacterCount(characterCount, maxCharacterCount, invalid)
@@ -136,10 +138,12 @@ private fun FieldFooter(
 private fun FieldMessage(
     text: String,
     color: Color,
-    icon: @Composable () -> Unit,
+    icon: (@Composable () -> Unit)?,
 ) {
-    icon()
-    Spacer(Modifier.width(PushlogTheme.dimension.x1Half))
+    if (icon != null) {
+        icon()
+        Spacer(Modifier.width(PushlogTheme.dimension.x1Half))
+    }
     Text(text = text, style = PushlogTheme.typography.t4Regular, color = color)
 }
 

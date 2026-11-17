@@ -111,6 +111,22 @@ class PushlogFieldTest {
     }
 
     @Test
+    fun descriptionWithoutIconAlignsWithLabel() {
+        setField(label = LABEL, description = DESCRIPTION)
+        val labelLeft =
+            composeRule
+                .onNodeWithText(LABEL, useUnmergedTree = true)
+                .fetchSemanticsNode()
+                .boundsInRoot.left
+        val descLeft =
+            composeRule
+                .onNodeWithText(DESCRIPTION, useUnmergedTree = true)
+                .fetchSemanticsNode()
+                .boundsInRoot.left
+        assertEquals(labelLeft, descLeft, 0.5f)
+    }
+
+    @Test
     fun requiredIndicatorScalesWithFont() {
         var scale by mutableFloatStateOf(1f)
         setField(label = LABEL, showRequiredIndicator = true, fontScale = { scale })
