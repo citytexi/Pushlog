@@ -10,6 +10,7 @@ import com.citytexi.pushlog.preview.component.PushlogContextualFloatingButtonPre
 import com.citytexi.pushlog.preview.component.PushlogRadioGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadiomarkPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogSwitchmarkPreviewKey
 import com.citytexi.pushlog.preview.foundation.ColorPreviewKey
 import com.citytexi.pushlog.preview.foundation.MaterialPreviewKey
 import com.citytexi.pushlog.preview.foundation.ShapePreviewKey
@@ -30,6 +31,7 @@ val previewCatalog: List<PreviewCatalogItem> =
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogRadiomark", PushlogRadiomarkPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogRadio", PushlogRadioPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogRadioGroup", PushlogRadioGroupPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogSwitchmark", PushlogSwitchmarkPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogContextualFloatingButton", PushlogContextualFloatingButtonPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "LoadingContent", LoadingContentPreviewKey),
     )

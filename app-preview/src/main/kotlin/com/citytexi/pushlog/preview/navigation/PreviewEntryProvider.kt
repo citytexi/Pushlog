@@ -13,6 +13,7 @@ import com.citytexi.pushlog.preview.component.pushlogContextualFloatingButtonPre
 import com.citytexi.pushlog.preview.component.pushlogRadioGroupPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadioPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadiomarkPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogSwitchmarkPreviewEntry
 import com.citytexi.pushlog.preview.foundation.colorPreviewEntry
 import com.citytexi.pushlog.preview.foundation.materialPreviewEntry
 import com.citytexi.pushlog.preview.foundation.shapePreviewEntry
@@ -41,6 +42,7 @@ fun previewEntryProvider(
         pushlogRadiomarkPreviewEntry(onBack)
         pushlogRadioPreviewEntry(onBack)
         pushlogRadioGroupPreviewEntry(onBack)
+        pushlogSwitchmarkPreviewEntry(onBack)
         pushlogContextualFloatingButtonPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }
