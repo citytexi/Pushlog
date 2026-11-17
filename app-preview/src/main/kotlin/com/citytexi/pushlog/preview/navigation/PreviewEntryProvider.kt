@@ -10,6 +10,7 @@ import com.citytexi.pushlog.preview.component.pushlogCheckboxPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogCheckmarkPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogChipPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogContextualFloatingButtonPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogFieldLabelPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadioGroupPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadioPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadiomarkPreviewEntry
@@ -52,5 +53,6 @@ fun previewEntryProvider(
         pushlogSelectBoxPreviewEntry(onBack)
         pushlogSelectBoxGroupPreviewEntry(onBack)
         pushlogContextualFloatingButtonPreviewEntry(onBack)
+        pushlogFieldLabelPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }
