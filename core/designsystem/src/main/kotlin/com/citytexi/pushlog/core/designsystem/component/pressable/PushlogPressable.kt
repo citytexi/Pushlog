@@ -52,7 +52,7 @@ internal fun Modifier.pushlogPressable(
         onClick = { if (!loading) onClick() },
     ).pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading, shadow)
 
-/** [pushlogPressable]과 같되 선택 상태를 가진 칩용이다. */
+/** [pushlogPressable]과 같되 선택 상태를 가진다. [role] 기본값은 칩의 역할이다. */
 internal fun Modifier.pushlogToggleablePressable(
     interactionSource: MutableInteractionSource,
     selected: Boolean,
@@ -61,6 +61,7 @@ internal fun Modifier.pushlogToggleablePressable(
     shape: Shape,
     enabled: Boolean,
     onClick: () -> Unit,
+    role: Role = Role.Checkbox,
     shadow: Modifier = Modifier,
 ): Modifier =
     toggleable(
@@ -68,7 +69,7 @@ internal fun Modifier.pushlogToggleablePressable(
         interactionSource = interactionSource,
         indication = null,
         enabled = enabled,
-        role = Role.Checkbox,
+        role = role,
         onValueChange = { onClick() },
     ).pressableSurface(interactionSource, color, pressedColor, shape, enabled, loading = false, shadow = shadow)
 
