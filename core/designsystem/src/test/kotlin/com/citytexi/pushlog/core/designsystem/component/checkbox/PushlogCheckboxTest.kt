@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.PixelMap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
@@ -25,6 +26,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -147,6 +149,19 @@ class PushlogCheckboxTest {
         assertTrue("row height $height should exceed 32dp", height > 32 * composeRule.density.density)
     }
 
+    @Test
+    fun checkboxGroupIsSelectableGroup() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogCheckboxGroup(Modifier.testTag(GROUP)) {
+                    PushlogCheckbox(checked = true, onCheckedChange = {}, label = LABEL)
+                }
+            }
+        }
+        val config = composeRule.onNodeWithTag(GROUP).fetchSemanticsNode().config
+        assertTrue(config.contains(SemanticsProperties.SelectableGroup))
+    }
+
     private fun setCheckbox(
         state: ToggleableState = ToggleableState.On,
         enabled: Boolean = true,
@@ -203,6 +218,7 @@ class PushlogCheckboxTest {
 
     private companion object {
         const val LABEL = "알림"
+        const val GROUP = "group"
         const val LONG_LABEL = "아주 긴 라벨이 좁은 줄에서 여러 줄로 넘어가는지 확인하는 문장입니다"
     }
 }

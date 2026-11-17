@@ -1,0 +1,86 @@
+package com.citytexi.pushlog.core.designsystem.component.radio
+
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogSelectableArea
+import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.ui.preview.PushlogPreview
+
+/**
+ * 라디오 마크와 라벨을 한 줄로 놓은 라디오 버튼. 줄 전체가 탭 하나라 라벨을 눌러도 [onClick]이 불린다.
+ * 눌리면 줄은 그대로고 마크만 눌림 색으로 바뀌고 줄어든다.
+ *
+ * 같은 질문의 선택지는 [PushlogRadioGroup]으로 묶고, 하나만 고르는 상태는 호출하는 쪽이 갖는다.
+ * 라벨이 여러 줄이면 마크는 첫 줄 높이에 맞춘다.
+ */
+@Composable
+fun PushlogRadio(
+    selected: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    modifier: Modifier = Modifier,
+    tone: PushlogRadiomarkTone = PushlogRadiomarkTone.NEUTRAL,
+    size: PushlogRadiomarkSize = PushlogRadiomarkSize.MEDIUM,
+    weight: PushlogRadioWeight = PushlogRadioWeight.REGULAR,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+) {
+    // 줄의 탭 영역과 마크가 같은 소스를 봐야 라벨을 눌러도 마크가 줄어든다.
+    val source = interactionSource ?: remember { MutableInteractionSource() }
+    val metrics = size.metrics()
+    val labelStyle = weight.labelStyle(metrics)
+    val lineHeight = with(LocalDensity.current) { labelStyle.lineHeight.toDp() }
+    Row(
+        modifier =
+            modifier
+                .pushlogSelectableArea(selected, source, enabled, onClick)
+                .heightIn(min = metrics.rowMinHeight),
+        horizontalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2),
+        verticalAlignment = Alignment.Top,
+    ) {
+        PushlogRadiomark(
+            selected = selected,
+            modifier = Modifier.padding(top = (metrics.rowMinHeight - metrics.markSize) / 2),
+            tone = tone,
+            size = size,
+            enabled = enabled,
+            interactionSource = source,
+        )
+        Text(
+            text = label,
+            style = labelStyle,
+            color = if (enabled) PushlogTheme.color.fg.neutral else PushlogTheme.color.fg.disabled,
+            modifier =
+                Modifier
+                    .weight(1f, fill = false)
+                    .padding(top = ((metrics.rowMinHeight - lineHeight) / 2).coerceAtLeast(0.dp)),
+        )
+    }
+}
+
+@PushlogPreview
+@Composable
+private fun PushlogRadioPreview() {
+    PushlogTheme {
+        PushlogRadioGroup(Modifier.padding(PushlogTheme.dimension.x4)) {
+            var selected by remember { mutableIntStateOf(0) }
+            listOf("선택됨", "선택 안 됨").forEachIndexed { index, label ->
+                PushlogRadio(selected = selected == index, onClick = { selected = index }, label = label)
+            }
+            PushlogRadio(selected = true, onClick = {}, label = "비활성", enabled = false)
+        }
+    }
+}
