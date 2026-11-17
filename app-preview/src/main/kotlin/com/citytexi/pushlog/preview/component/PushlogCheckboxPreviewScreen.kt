@@ -20,7 +20,7 @@ import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
 
-private const val LONG_LABEL = "A much longer checkbox label that wraps onto several lines while the mark stays on the first"
+private const val LONG_LABEL = "A much longer checkbox label that wraps onto several lines while the mark stays on the first line."
 
 /** Registers the PushlogCheckbox screen for [PushlogCheckboxPreviewKey]. */
 fun EntryProviderScope<NavKey>.pushlogCheckboxPreviewEntry(onBack: () -> Unit) {

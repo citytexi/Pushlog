@@ -32,8 +32,8 @@ private val StrokeWidth = 1.dp
 /**
  * 체크박스의 체크 표시. 그림만 그리고 탭을 처리하지 않으며 의미 정보도 두지 않는다.
  *
- * 단독으로 쓰면 호출하는 쪽이 줄에 `Modifier.toggleable`을 `indication = null`로 붙이고
- * 같은 [interactionSource]를 넘긴다. 그러면 줄을 누를 때 마크만 눌림 색으로 바뀌고 줄어든다.
+ * 단독으로 쓰면 호출하는 쪽이 줄에 `Modifier.triStateToggleable`(두 상태만 쓰면 `Modifier.toggleable`)을
+ * `indication = null`로 붙이고 같은 [interactionSource]를 넘긴다. 그러면 줄을 누를 때 마크만 눌림 색으로 바뀌고 줄어든다.
  * 감싸는 쪽이 이미 눌림 피드백을 주면 [scaleOnPress]를 false로 둔다.
  */
 @Composable
