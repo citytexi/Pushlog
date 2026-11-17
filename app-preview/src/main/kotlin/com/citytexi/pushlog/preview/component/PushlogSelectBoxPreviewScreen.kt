@@ -1,5 +1,7 @@
 package com.citytexi.pushlog.preview.component
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.selectbox.PushlogSelectBox
+import com.citytexi.pushlog.core.designsystem.component.selectbox.PushlogSelectBoxFooterVisibility
 import com.citytexi.pushlog.core.designsystem.component.selectbox.PushlogSelectBoxLayout
 import com.citytexi.pushlog.core.designsystem.component.selectbox.PushlogSelectBoxType
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -35,7 +38,10 @@ fun EntryProviderScope<NavKey>.pushlogSelectBoxPreviewEntry(onBack: () -> Unit) 
     }
 }
 
-/** PushlogSelectBox per type, without a control, with prefix and suffix, vertical, and with long text; draws no background of its own. */
+/**
+ * PushlogSelectBox per type, without a control, with prefix and suffix, vertical, with long text,
+ * and with a footer; draws no background of its own.
+ */
 @Composable
 fun PushlogSelectBoxPreviewContent() {
     PreviewBody {
@@ -45,6 +51,7 @@ fun PushlogSelectBoxPreviewContent() {
         SelectBoxPrefixSuffixSection()
         SelectBoxVerticalSection()
         SelectBoxLongTextSection()
+        SelectBoxFooterSection()
     }
 }
 
@@ -146,4 +153,33 @@ internal fun SelectBoxLongTextSection() {
         label = LONG_LABEL,
         description = LONG_DESCRIPTION,
     )
+}
+
+/** Each box starts selected, so only the when-unselected box hides its footer until tapped. */
+@Composable
+internal fun SelectBoxFooterSection() {
+    PreviewSectionTitle("footer")
+    listOf(
+        PushlogSelectBoxFooterVisibility.WHEN_SELECTED to "When selected",
+        PushlogSelectBoxFooterVisibility.ALWAYS to "Always",
+        PushlogSelectBoxFooterVisibility.WHEN_NOT_SELECTED to "When unselected",
+    ).forEach { (visibility, label) ->
+        var selected by remember { mutableStateOf(true) }
+        PushlogSelectBox(
+            selected = selected,
+            onClick = { selected = !selected },
+            type = PushlogSelectBoxType.MULTIPLE,
+            label = label,
+            footerVisibility = visibility,
+            footer = { SelectBoxFooterSample() },
+        )
+    }
+}
+
+@Composable
+private fun SelectBoxFooterSample() {
+    val x5 = PushlogTheme.dimension.x5
+    Box(Modifier.padding(start = x5, end = x5, bottom = x5)) {
+        Text("Extra details", style = PushlogTheme.typography.t3Medium, color = PushlogTheme.color.fg.neutralMuted)
+    }
 }

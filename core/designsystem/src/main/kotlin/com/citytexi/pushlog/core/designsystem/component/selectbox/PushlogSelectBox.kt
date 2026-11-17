@@ -50,7 +50,9 @@ private const val DESCRIPTION_MAX_LINES = 2
  * [showControl]이 false여도 접근성 역할은 [type]을 따른다.
  * 고르는 즉시 실행하는 버튼으로 쓰지 말고 별도 확인 버튼으로 반영한다(SEED 가이드).
  * [layout]이 null이면 감싸는 그룹이 주는 값을 쓰고, 그룹 밖이면 HORIZONTAL이다.
- * [suffix]에는 intrinsic 측정을 지원하지 않는 레이아웃(`LazyColumn`, `BoxWithConstraints`)을 넣지 않는다.
+ * [footer]는 줄 아래에 놓이고 [footerVisibility]에 따라 열고 닫는다. 카드 탭 영역 안이고 눌리면 내용과 함께 준다.
+ * 안쪽 여백은 [footer]가 직접 준다(SEED 예시: 좌우·아래 x5).
+ * [suffix]와 [footer]에는 intrinsic 측정을 지원하지 않는 레이아웃(`LazyColumn`, `BoxWithConstraints`)을 넣지 않는다.
  * 여러 열 그룹이 intrinsic 높이로 줄을 맞춘다.
  */
 @Composable
@@ -67,6 +69,8 @@ fun PushlogSelectBox(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     suffix: (@Composable () -> Unit)? = null,
+    footerVisibility: PushlogSelectBoxFooterVisibility = PushlogSelectBoxFooterVisibility.WHEN_SELECTED,
+    footer: (@Composable () -> Unit)? = null,
 ) {
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val resolvedLayout = layout ?: LocalSelectBoxLayout.current
@@ -102,6 +106,8 @@ fun PushlogSelectBox(
             enabled = enabled,
             suffix = suffix,
             control = if (showControl) SelectBoxControlState(type, selected, source) else null,
+            footer = footer,
+            footerVisible = footerVisibility.isVisible(selected),
         )
     }
 }
@@ -122,6 +128,8 @@ private fun SelectBoxContent(
     enabled: Boolean,
     suffix: (@Composable () -> Unit)?,
     control: SelectBoxControlState?,
+    footer: (@Composable () -> Unit)?,
+    footerVisible: Boolean,
 ) {
     val metrics = layout.metrics()
     Column(Modifier.fillMaxWidth()) {
@@ -140,6 +148,7 @@ private fun SelectBoxContent(
             suffix?.invoke()
             if (control != null) SelectBoxControl(control, enabled)
         }
+        if (footer != null) SelectBoxFooter(footerVisible, footer)
     }
 }
 

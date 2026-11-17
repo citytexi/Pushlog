@@ -54,3 +54,11 @@ private fun PushlogSelectBoxLongTextPreview() {
         PreviewBody { SelectBoxLongTextSection() }
     }
 }
+
+@PushlogPreview
+@Composable
+private fun PushlogSelectBoxFooterPreview() {
+    PushlogPreviewTheme {
+        PreviewBody { SelectBoxFooterSection() }
+    }
+}
