@@ -11,6 +11,7 @@ paths:
 - 컴포넌트는 `component.<종류>` 하위 패키지(`button`, `chip`, `loading`, `pressable` …)에 둔다. `component` 바로 아래는 Konsist가 막는다.
 - 눌리는 컴포넌트는 `PushlogPressableSurface`에 내용을 채운다. 줄 전체가 탭이고 마크만 줄어드는 컨트롤은 `pressable`의 탭 영역 modifier + 눌림 표시 modifier를 같은 `interactionSource`로 쓴다. `pressable` 밖에서 `clickable`·`toggleable`·`pointerInput`·ripple, 눌리는 Material 3 컴포넌트를 쓰지 않는다(Konsist가 막는다).
 - 크기별 값은 `PushlogXxxSize.metrics()`가 `XxxMetrics`(예: `ChipMetrics`)로, 색은 `PushlogXxxVariant`의 `internal` 멤버가 돌려준다. 멤버는 `else` 없이 `when (this)`로 쓴다. 컴포넌트 파일에는 그리는 코드와 거기서만 쓰는 `private` 상수만 둔다.
+- variant·size가 없는 컴포넌트(세그먼트 컨트롤)는 메트릭 클래스 없이 토큰을 컴포넌트 파일에서 바로 읽는다.
 - `XxxDefaults`는 호출하는 쪽에 값을 열 때만 만든다. 내부 값은 `private` 상수다.
 - SEED px 값은 같은 크기의 토큰으로 옮기고, 토큰이 없을 때만 `private` 상수에 SEED 출처 주석을 단다.
 - 크기·레이아웃 스크린샷은 `app-preview`의 섹션별 `@PushlogPreview`가 찍는다. 새 크기나 레이아웃을 추가하면 그 `@PushlogPreview`를 하나 더 만든다.
