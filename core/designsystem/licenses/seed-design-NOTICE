@@ -18,3 +18,6 @@ Copyright 2025 주식회사 당근마켓
 - 당근마켓의 제품 또는 서비스와 제휴, 후원, 보증, 그 밖의 관련이 있는 것처럼 오인하게 하는 사용
 
 [당근마켓 브랜드 리소스 가이드라인]: https://app.notion.com/p/daangn/6fdd92981e4a42d8b29c89cbbba7a8b7
+
+체크 마크의 체크·대시 경로는 @karrotmarket/react-monochrome-icon 1.35.0(Apache-2.0)의 IconCheckmarkFatFill, IconMinusFatFill에서 옮겼습니다.
+Copyright 주식회사 당근마켓, Apache License 2.0.
