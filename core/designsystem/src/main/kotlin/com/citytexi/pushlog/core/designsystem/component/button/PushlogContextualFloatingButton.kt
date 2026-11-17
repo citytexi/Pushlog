@@ -1,6 +1,5 @@
 package com.citytexi.pushlog.core.designsystem.component.button
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -145,7 +144,7 @@ private fun FloatingButtonSurface(
 private fun PushlogContextualFloatingButtonPreview() {
     PushlogPreviewTheme {
         Column(
-            Modifier.background(PushlogTheme.color.bg.layerDefault).padding(PushlogTheme.dimension.x4),
+            Modifier.padding(PushlogTheme.dimension.x4),
             verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x3),
         ) {
             val arrow = rememberVectorPainter(PreviewSampleIcons.ArrowUp)

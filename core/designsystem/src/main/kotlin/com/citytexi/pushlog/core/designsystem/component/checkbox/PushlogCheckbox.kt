@@ -24,7 +24,8 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
  * 눌리면 줄은 그대로고 마크만 눌림 색으로 바뀌고 줄어든다.
  *
  * 하위 항목 일부만 고른 부모의 [ToggleableState.Indeterminate]는 호출하는 쪽이 자식 상태로 계산해 넘긴다.
- * 라벨이 여러 줄이면 마크는 첫 줄 높이에 맞춘다.
+ * 마크 위쪽 여백은 `(rowMinHeight - markSize) / 2`로 고정이라 기본 글자 크기에서는 라벨 첫 줄 가운데에 맞고,
+ * 라벨이 여러 줄이어도 첫 줄 옆에 남는다. 글자가 커져 첫 줄이 `rowMinHeight`보다 높으면 첫 줄 가운데보다 조금 위에 놓인다.
  */
 @Composable
 fun PushlogCheckbox(
