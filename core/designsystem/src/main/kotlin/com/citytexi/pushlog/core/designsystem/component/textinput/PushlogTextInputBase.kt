@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.then
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,11 +20,13 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import com.citytexi.pushlog.core.designsystem.component.field.LocalPushlogFieldState
 import com.citytexi.pushlog.core.designsystem.component.field.ResetPushlogFieldState
-import com.citytexi.pushlog.core.designsystem.component.field.pushlogFieldSemantics
+import com.citytexi.pushlog.core.designsystem.component.field.pushlogFieldErrorSemantics
+import com.citytexi.pushlog.core.designsystem.component.field.spokenText
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 
 /**
  * 한 줄·여러 줄 입력이 같이 쓰는 본체. [LocalPushlogFieldState]는 안쪽을 비우기 전에 읽어 의미 정보에 쓴다.
+ * 입력 노드에는 오류만 붙이고, 라벨·보조 문구는 상자 안 의미 전용 자식으로 합친다(M3 라벨과 같은 길).
  * [multiline]이면 상자 크기와 앞뒤 요소 정렬이 여러 줄 모양이 된다.
  */
 @Composable
@@ -52,6 +55,8 @@ internal fun PushlogTextInputBase(
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val focused by source.collectIsFocusedAsState()
     val metrics = variant.metrics(multiline = multiline)
+    val spokenText = field.spokenText()
+    val showPlaceholder by remember(state) { derivedStateOf { state.text.isEmpty() } }
     val transformation =
         remember(inputTransformation, maxGraphemeCount) {
             val limit = maxGraphemeCount?.let { GraphemeLimitTransformation(it) }
@@ -60,7 +65,7 @@ internal fun PushlogTextInputBase(
     ResetPushlogFieldState {
         BasicTextField(
             state = state,
-            modifier = modifier.pushlogFieldSemantics(field, invalid),
+            modifier = modifier.pushlogFieldErrorSemantics(field, invalid),
             enabled = enabled,
             readOnly = readOnly,
             inputTransformation = transformation,
@@ -79,8 +84,9 @@ internal fun PushlogTextInputBase(
                     invalid = invalid,
                     enabled = enabled,
                     readOnly = readOnly,
-                    showPlaceholder = state.text.isEmpty(),
+                    showPlaceholder = showPlaceholder,
                     placeholder = placeholder,
+                    spokenText = spokenText,
                     prefixIcon = prefixIcon,
                     prefixText = prefixText,
                     suffixText = suffixText,

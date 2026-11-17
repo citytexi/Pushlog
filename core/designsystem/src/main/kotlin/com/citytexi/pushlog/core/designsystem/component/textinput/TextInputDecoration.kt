@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.field.PushlogFieldSpokenText
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 
 // SEED text-input 테두리 두께와 강조선 전환 시간. 토큰이 없다.
@@ -99,6 +100,7 @@ internal fun TextInputDecoration(
     readOnly: Boolean,
     showPlaceholder: Boolean,
     placeholder: String?,
+    spokenText: String?,
     prefixIcon: Painter?,
     prefixText: String?,
     suffixText: String?,
@@ -110,33 +112,38 @@ internal fun TextInputDecoration(
     val fg = PushlogTheme.color.fg
     val affixColor = if (enabled) fg.neutralSubtle else fg.disabled
     val iconColor = if (enabled) fg.neutralMuted else fg.disabled
-    Row(
-        modifier =
-            modifier
-                .heightIn(min = metrics.minHeight)
-                .clip(RoundedCornerShape(metrics.cornerRadius))
-                .background(variant.containerColor(enabled, readOnly))
-                .textInputStroke(variant, metrics.cornerRadius, focused, invalid)
-                .padding(horizontal = metrics.paddingX, vertical = metrics.paddingY),
-        horizontalArrangement = Arrangement.spacedBy(metrics.gap),
-        verticalAlignment = if (multiline) Alignment.Top else Alignment.CenterVertically,
-    ) {
-        prefixIcon?.let { DecorationIcon(it, metrics, iconColor) }
-        prefixText?.let { DecorationText(it, metrics, affixColor) }
-        Box(Modifier.weight(1f)) {
-            if (showPlaceholder && placeholder != null) {
-                Text(
-                    text = placeholder,
-                    style = metrics.textStyle,
-                    color = variant.placeholderColor(enabled, readOnly),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+    // 최소 크기를 넘겨 상자가 바깥 modifier 크기를 그대로 채우게 한다.
+    Box(modifier, propagateMinConstraints = true) {
+        // 다른 자식보다 먼저 그려 위에 덮이지 않게 한다. 덮인 노드는 접근성 트리에서 빠진다.
+        spokenText?.let { PushlogFieldSpokenText(it, Modifier.matchParentSize()) }
+        Row(
+            modifier =
+                Modifier
+                    .heightIn(min = metrics.minHeight)
+                    .clip(RoundedCornerShape(metrics.cornerRadius))
+                    .background(variant.containerColor(enabled, readOnly))
+                    .textInputStroke(variant, metrics.cornerRadius, focused, invalid)
+                    .padding(horizontal = metrics.paddingX, vertical = metrics.paddingY),
+            horizontalArrangement = Arrangement.spacedBy(metrics.gap),
+            verticalAlignment = if (multiline) Alignment.Top else Alignment.CenterVertically,
+        ) {
+            prefixIcon?.let { DecorationIcon(it, metrics, iconColor) }
+            prefixText?.let { DecorationText(it, metrics, affixColor) }
+            Box(Modifier.weight(1f)) {
+                if (showPlaceholder && placeholder != null) {
+                    Text(
+                        text = placeholder,
+                        style = metrics.textStyle,
+                        color = variant.placeholderColor(enabled, readOnly),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                innerTextField()
             }
-            innerTextField()
+            suffixText?.let { DecorationText(it, metrics, affixColor) }
+            suffixIcon?.let { DecorationIcon(it, metrics, iconColor) }
         }
-        suffixText?.let { DecorationText(it, metrics, affixColor) }
-        suffixIcon?.let { DecorationIcon(it, metrics, iconColor) }
     }
 }
 

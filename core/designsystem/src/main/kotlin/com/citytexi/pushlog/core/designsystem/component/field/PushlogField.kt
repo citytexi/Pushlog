@@ -32,7 +32,7 @@ private const val INDICATOR_TEXT_START_SP = 4
 /**
  * 입력 위아래에 라벨, 설명, 오류, 글자 수를 붙이는 wrapper.
  * 안쪽 입력에는 상태와 문구를 [LocalPushlogFieldState]로 내려준다.
- * 머리와 꼬리는 화면에만 그린다. 읽기 문구는 안쪽 입력의 semantics가 맡아 두 번 읽히지 않는다.
+ * 머리와 꼬리는 화면에만 그린다. 라벨, 필수 표시, 보조 글자, 설명, 글자 수는 안쪽 입력이 읽어 두 번 읽히지 않는다.
  * 오류 문구는 [invalid]일 때만 보이고, 그때 설명은 화면에서 숨지만 입력 semantics에는 남는다.
  */
 @Composable
@@ -52,7 +52,19 @@ fun PushlogField(
     readOnly: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val state = PushlogFieldState(invalid, enabled, readOnly, label, description, errorMessage)
+    val state =
+        PushlogFieldState(
+            invalid = invalid,
+            enabled = enabled,
+            readOnly = readOnly,
+            label = label,
+            description = description,
+            errorMessage = errorMessage,
+            required = showRequiredIndicator,
+            indicatorText = indicatorText,
+            characterCount = characterCount,
+            maxCharacterCount = maxCharacterCount,
+        )
     val showError = invalid && errorMessage != null
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
         if (label != null || indicatorText != null) {

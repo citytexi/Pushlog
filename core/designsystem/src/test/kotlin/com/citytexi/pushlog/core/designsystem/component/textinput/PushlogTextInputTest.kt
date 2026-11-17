@@ -10,6 +10,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
@@ -21,14 +22,13 @@ import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performKeyInput
-import androidx.compose.ui.test.pressKey
-import androidx.compose.ui.test.requestFocus
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.requestFocus
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.field.PushlogField
@@ -111,7 +111,8 @@ class PushlogTextInputTest {
         input.assertIsNotEnabled()
         val config = input.fetchSemanticsNode().config
         assertEquals("오류", config[SemanticsProperties.Error])
-        assertEquals(listOf("이름"), config[SemanticsProperties.ContentDescription])
+        assertEquals(listOf("이름"), config[SemanticsProperties.Text].map { it.text })
+        assertNull(config.getOrNull(SemanticsProperties.ContentDescription))
     }
 
     @Test

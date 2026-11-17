@@ -118,7 +118,7 @@ A를 고른 이유: 상태를 IME와 같은 쪽에서 들고 있어 조합 중 �
 - `PushlogFieldLabel`은 라벨 글자만 그린다. 굵기 `REGULAR`(SEED base), `MEDIUM`, `BOLD`. 공개 기본값은 recipe의 `MEDIUM`이다.
 - `LocalPushlogFieldState`: `invalid`, `enabled`, `readOnly`, 접근성용 라벨·설명·오류 문구. field 밖 기본값은 `invalid=false, enabled=true, readOnly=false`, 문구 없음.
 - 상태를 받는 쪽(text-input·textarea·input-button·segmented 입력, §6.7 그룹)은 받은 뒤 자기 아래로 기본값을 다시 내려준다. 그래서 select-box footer 안의 입력이나 field 안의 field는 바깥 라벨·오류·`enabled`를 물려받지 않는다(설계자 판단).
-- 접근성: 라벨·설명·오류 문구는 상태를 받는 노드(입력 또는 그룹) 하나에만 들어간다. 이름은 라벨, `invalid`면 오류 문구를 `error`로, 설명은 상태 설명으로 넣는다. field 머리·꼬리 글자 노드는 접근성 트리에서 숨긴다. 그래서 같은 글이 두 번 읽히지 않는다(설계자 판단). 오류일 때 화면에서 감춘 설명도 이 노드에 남아 있어 읽힌다. 정확한 읽기 순서는 빌더가 TalkBack 트리로 확인해 `docs`에 남긴다.
+- 접근성: 라벨·설명·오류 문구는 상태를 받는 노드(입력 또는 그룹) 하나에만 들어간다. `invalid`면 오류 문구를 `error`로 넣는다. 글자 입력은 라벨·필수 표시·보조 글자·설명·글자 수를 이은 문구를 상자 안 그리지 않는 의미 전용 자식의 `text`로 두어 입력 노드에 합친다(M3 라벨과 같은 길). 글자 입력 노드에 `contentDescription`·`stateDescription`을 두지 않는 이유는, Compose가 편집 글자가 있는 노드의 상태 설명을 덮어쓰고 자식이 있는 합침 노드의 `contentDescription`을 내보내지 않으며, `contentDescription`이 있으면 TalkBack 글자·단어 탐색이 꺼지기 때문이다. 편집 글자가 없는 그룹은 이름을 `contentDescription`, 나머지 문구를 상태 설명으로 넣는다. field 머리·꼬리 글자 노드는 접근성 트리에서 숨긴다. 그래서 같은 글이 두 번 읽히지 않는다(설계자 판단). 오류일 때 화면에서 감춘 설명도 이 노드에 남아 있어 읽힌다. 정확한 읽기 순서는 빌더가 TalkBack 트리로 확인해 `docs`에 남긴다.
 
 ### 6.3 `PushlogTextInput`, `PushlogTextArea`
 

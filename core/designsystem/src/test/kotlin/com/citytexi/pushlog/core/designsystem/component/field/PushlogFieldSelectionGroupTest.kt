@@ -22,6 +22,7 @@ import com.citytexi.pushlog.core.designsystem.component.selectbox.PushlogSelectB
 import com.citytexi.pushlog.core.designsystem.component.textinput.PushlogTextInput
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -120,6 +121,19 @@ class PushlogFieldSelectionGroupTest {
     }
 
     @Test
+    fun groupCarriesRequiredIndicatorAndDescription() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogField(label = "관심사", showRequiredIndicator = true, indicatorText = "선택", description = "하나만") {
+                    PushlogCheckboxGroup(Modifier.testTag(GROUP)) { Checkbox() }
+                }
+            }
+        }
+        val state = composeRule.onNodeWithTag(GROUP).fetchSemanticsNode().config[SemanticsProperties.StateDescription]
+        listOf("필수", "선택", "하나만").forEach { assertTrue("$it missing", state.contains(it)) }
+    }
+
+    @Test
     fun bareCheckboxInFieldIgnoresFieldState() {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
@@ -152,6 +166,7 @@ class PushlogFieldSelectionGroupTest {
         val config = composeRule.onNodeWithTag(ETC).fetchSemanticsNode().config
         assertEquals(null, config.getOrNull(SemanticsProperties.Error))
         assertEquals(null, config.getOrNull(SemanticsProperties.ContentDescription))
+        assertEquals(null, config.getOrNull(SemanticsProperties.Text))
     }
 
     @Test
