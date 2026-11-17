@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -36,8 +37,9 @@ private val EMPHASIS_STROKE_WIDTH = 2.dp
 private const val EMPHASIS_DURATION_MILLIS = 100
 
 /**
- * 기본선을 늘 그리고 그 위에 2dp 포커스 층(emphasized)과 오류 층(invalid)을 겹친다. 두 층은 따로 100ms 투명도 전환한다.
- * 오류 층이 위라서 포커스 중 오류가 생기거나 걷혀도 색이 튀거나 강조선이 비지 않는다.
+ * 기본선을 늘 그리고 그 위에 2dp 강조선을 겹친다. 포커스(emphasized)와 오류(invalid)는 각자 100ms로 전환하는 정도다.
+ * 강조선 투명도는 둘 중 큰 값, 색은 그 안에서 오류가 차지하는 비율만큼 포커스 색에서 오류 색으로 옮겨 간다.
+ * 그래서 포커스 중 오류가 생기거나 걷혀도 색이 튀거나 강조선이 비지 않는다. 두 선을 따로 겹치면 모서리에 아래 선이 비친다.
  */
 @Composable
 internal fun Modifier.textInputStroke(
@@ -55,8 +57,13 @@ internal fun Modifier.textInputStroke(
     val errorAlpha = animateFloatAsState(if (invalid) 1f else 0f, spec, label = "textInputErrorStroke")
     return drawBehind {
         drawStroke(variant, STROKE_WIDTH, cornerRadius, baseColor, 1f)
-        drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, focusColor, focusAlpha.value)
-        drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, errorColor, errorAlpha.value)
+        val focus = focusAlpha.value
+        val error = errorAlpha.value
+        val alpha = maxOf(focus, error)
+        if (alpha > 0f) {
+            val color = lerp(focusColor, errorColor, error / alpha)
+            drawStroke(variant, EMPHASIS_STROKE_WIDTH, cornerRadius, color, alpha)
+        }
     }
 }
 
