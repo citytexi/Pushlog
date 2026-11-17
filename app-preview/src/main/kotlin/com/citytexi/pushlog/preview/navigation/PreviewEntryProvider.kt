@@ -5,8 +5,14 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import com.citytexi.pushlog.preview.component.loadingContentPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogActionButtonPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogCheckboxGroupPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogCheckboxPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogCheckmarkPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogChipPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogContextualFloatingButtonPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogRadioGroupPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogRadioPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogRadiomarkPreviewEntry
 import com.citytexi.pushlog.preview.foundation.colorPreviewEntry
 import com.citytexi.pushlog.preview.foundation.materialPreviewEntry
 import com.citytexi.pushlog.preview.foundation.shapePreviewEntry
@@ -29,6 +35,12 @@ fun previewEntryProvider(
         materialPreviewEntry(onBack)
         pushlogActionButtonPreviewEntry(onBack)
         pushlogChipPreviewEntry(onBack)
+        pushlogCheckmarkPreviewEntry(onBack)
+        pushlogCheckboxPreviewEntry(onBack)
+        pushlogCheckboxGroupPreviewEntry(onBack)
+        pushlogRadiomarkPreviewEntry(onBack)
+        pushlogRadioPreviewEntry(onBack)
+        pushlogRadioGroupPreviewEntry(onBack)
         pushlogContextualFloatingButtonPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }

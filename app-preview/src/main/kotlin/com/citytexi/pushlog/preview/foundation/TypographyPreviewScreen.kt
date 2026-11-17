@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
@@ -34,7 +35,7 @@ fun TypographyPreviewContent(styles: List<Pair<String, TextStyle>>) {
 @PushlogPreview
 @Composable
 private fun TypographyPreviewContentPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         TypographyPreviewContent(styles = allTypographyStyles())
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
@@ -172,7 +173,7 @@ private fun strokeSwatches(): List<Pair<String, Color>> {
 @PushlogPreview
 @Composable
 private fun ColorPreviewContentPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         ColorPreviewContent()
     }
 }

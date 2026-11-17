@@ -22,6 +22,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -141,7 +142,7 @@ private fun ActionButtonSurface(
 @PushlogPreview
 @Composable
 private fun PushlogActionButtonPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         Column(Modifier.padding(PushlogTheme.dimension.x4), verticalArrangement = Arrangement.spacedBy(PushlogTheme.dimension.x2)) {
             val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
             PushlogActionButtonVariant.entries.forEach { variant ->

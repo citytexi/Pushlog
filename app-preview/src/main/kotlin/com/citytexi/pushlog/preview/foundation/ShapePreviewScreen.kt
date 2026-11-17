@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.designsystem.theme.shadow.PushlogShadowToken
 import com.citytexi.pushlog.core.designsystem.theme.shadow.pushlogShadow
@@ -150,7 +151,7 @@ private fun ShadowCard(
 @PushlogPreview
 @Composable
 private fun ShapePreviewContentPreview() {
-    PushlogTheme {
+    PushlogPreviewTheme {
         ShapePreviewContent()
     }
 }
