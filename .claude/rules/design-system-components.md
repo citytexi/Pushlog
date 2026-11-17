@@ -18,3 +18,5 @@ paths:
 - 공개 `@Composable`을 추가하면 `app-preview`에 `<함수>PreviewKey`·`<함수>PreviewScreen.kt`를 만든다(Konsist가 막는다).
 - 레이아웃을 옮기는 리팩터링은 바꾸기 전 커밋에서 `recordRoborazziDebug`, 바꾼 뒤 `verifyRoborazziDebug`로 픽셀 차이가 없는지 확인한다. 새 파일이 있으면 `git stash -u`로 되돌린다.
 - 주석은 [`docs/code-conventions.md`](../../docs/code-conventions.md)를 따른다. 코드가 이미 말하는 것은 쓰지 않는다.
+- 그룹이 자식 기본값을 줄 때는 `internal` `CompositionLocal`로 주고 자식 인자가 덮어쓴다.
+- 주석·KDoc에서 탭 콜백 이름 뒤에 괄호를 붙이지 않는다(`onClick()`이 아니라 `onClick`·[onClick]).
