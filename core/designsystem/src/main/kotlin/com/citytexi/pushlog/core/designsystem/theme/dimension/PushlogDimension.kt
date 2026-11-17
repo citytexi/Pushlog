@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** 간격 토큰. `xNHalf`는 SEED의 `xN_5`. 값은 `docs/architecture/design-system.md`. */
+/** 간격 토큰. `xNHalf`는 SEED의 `xN_5`. 값은 `docs/architecture/design-system/foundation.md`. */
 @Immutable
 data class PushlogDimension(
     val x0Half: Dp,

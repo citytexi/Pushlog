@@ -6,7 +6,7 @@ paths:
 
 # 디자인 시스템 컴포넌트 규칙
 
-`core:designsystem` 컴포넌트를 추가·수정하기 전에 [`docs/architecture/design-system.md`](../../docs/architecture/design-system.md)의 "동작 컴포넌트"와 "미리보기 앱" 절을 읽는다. 규칙의 정본은 그 문서다. 여기에는 놓치기 쉬운 것만 적는다.
+`core:designsystem` 컴포넌트를 추가·수정하기 전에 [`docs/architecture/design-system/`](../../docs/architecture/design-system/README.md)의 작업별 표에서 맞는 문서를 읽는다. 새 컴포넌트면 [`pressable.md`](../../docs/architecture/design-system/pressable.md)와 [`preview.md`](../../docs/architecture/design-system/preview.md)다. 규칙의 정본은 그 문서들이다. 여기에는 놓치기 쉬운 것만 적는다.
 
 - 컴포넌트는 `component.<종류>` 하위 패키지(`button`, `chip`, `loading`, `pressable` …)에 둔다. `component` 바로 아래는 Konsist가 막는다.
 - 눌리는 컴포넌트는 `PushlogPressableSurface`에 내용을 채운다. 줄 전체가 탭이고 마크만 줄어드는 컨트롤은 `pressable`의 탭 영역 modifier + 눌림 표시 modifier를 같은 `interactionSource`로 쓴다. `pressable` 밖에서 `clickable`·`toggleable`·`pointerInput`·ripple, 눌리는 Material 3 컴포넌트를 쓰지 않는다(Konsist가 막는다).

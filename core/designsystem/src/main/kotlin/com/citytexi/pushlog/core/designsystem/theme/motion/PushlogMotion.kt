@@ -3,7 +3,7 @@ package com.citytexi.pushlog.core.designsystem.theme.motion
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.runtime.Immutable
 
-/** 모션 토큰. 시간은 밀리초. 값은 `docs/architecture/design-system.md`. */
+/** 모션 토큰. 시간은 밀리초. 값은 `docs/architecture/design-system/foundation.md`. */
 @Immutable
 data class PushlogMotion(
     val duration: PushlogDuration,
