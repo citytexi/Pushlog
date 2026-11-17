@@ -105,11 +105,13 @@ SEED 매핑과 다른 곳은 이 둘뿐이다.
 - select-box 체크 마크는 `PushlogCheckmark`가 아니라 SEED `select-box-checkmark`를 옮긴 `internal SelectBoxCheckmark`다. 크기·색 규칙이 달라서 공개 API를 늘리지 않으려고 체크 그리기 함수만 같이 쓴다. `SelectionControlRow`도 쓰지 않는다. 카드 전체가 탭이고 마크 위치 보정 규칙이 줄과 달라서다.
 - `type`(`SINGLE`/`MULTIPLE`)과 `showControl`로 SEED 컨트롤 세 가지(Checkmark, Radiomark, None)를 나타낸다. 마크를 숨겨도 접근성 역할은 `type`을 따른다.
 - select-box는 눌림 색과 함께 내용을 줄인다(`PressScaleScope.CONTENT`, 배율은 카드 크기 기준). 마크는 `scaleOnPress = false`로 색만 바꾼다. SEED도 `--seed-radiomark-feedback-scale: 1`로 이중 축소를 막는다.
-- 선택 테두리 2dp는 표면 바깥 `border`로 그려 기본 1dp를 덮는다(SEED `::after`). 페이드 100ms는 `duration.d2` 토큰이다.
+- 선택 테두리 2dp는 표면 바깥 modifier가 `border`와 같은 모양·위치로 그려 기본 1dp를 덮는다(SEED `::after`). 페이드 100ms는 `duration.d2` 토큰이다. 색은 그리기 단계에서만 읽는다. `Modifier.border`는 색을 컴포지션에서 넘겨야 해서 페이드 동안 카드가 프레임마다 다시 구성된다.
 - `suffix`는 마크 바로 앞이다. SEED React는 `suffix` 자리에 마크를 넣지만 Pushlog는 마크를 `type`으로 그리므로 둘을 나란히 둔다.
 - 단일 선택에서 이미 선택된 박스를 다시 눌러도 `onClick`이 불린다. 세그먼트는 부르지 않는다. 세그먼트는 `onSelectedIndexChange`라 같은 값 재전달이 의미 없지만, select-box는 `onClick` 하나라 호출하는 쪽이 판단한다.
 - footer는 `PushlogSelectBoxFooterVisibility` 세 가지로 보인다. 열 때 높이 400ms(상수 `FOOTER_SLOW_DURATION_MILLIS`, 같은 값의 토큰이 없다)·투명도 `duration.d6`(300ms), 닫을 때 반대다. 다 닫히면 컴포지션에서 빼서 스크린 리더가 숨은 내용을 읽지 않는다. `suffix`와 `footer`에는 intrinsic을 지원하지 않는 레이아웃(`LazyColumn`, `BoxWithConstraints`, `SubcomposeLayout`)을 넣지 않는다. 여러 열 그룹이 intrinsic 높이로 줄을 맞춘다.
-- 그룹은 상태가 없고 1~3열이다. 열이 2 이상이면 박스 기본 layout이 세로이고(`LocalSelectBoxLayout`) 박스 인자가 덮어쓴다. 여러 열의 줄 높이는 `maxIntrinsicHeight`로 먼저 정하고 그 고정 높이로 잰다. Compose는 자식을 한 번만 잴 수 있어서다. 한 열은 줄 높이를 맞추지 않는다(SEED `data-columns != 1`)이고, 높이 제한이 없으므로 박스 내용에 `weight`를 쓰지 않는다.
+- 그룹은 상태가 없고 1~3열이다. 열이 2 이상이면 박스 기본 layout이 세로이고(`LocalSelectBoxLayout`) 박스 인자가 덮어쓴다. 여러 열의 줄 높이는 `maxIntrinsicHeight`로 먼저 정하고 그 고정 높이로 잰다. Compose는 자식을 한 번만 잴 수 있어서다. 한 열은 줄 높이를 맞추지 않는다(SEED `data-columns != 1`). 줄 높이는 높이 제한 없이 정해지므로 박스 내용에 세로 `weight`를 쓰지 않는다.
+- 그룹 칸 너비는 세그먼트처럼 나머지 픽셀을 칸마다 나눠 마지막 칸이 오른쪽 끝에 닿는다. 칸끼리 1px 다를 수 있다.
+- 그룹은 intrinsic 측정을 직접 계산한다(너비는 열 수 × 가장 넓은 자식 + 간격, 높이는 측정과 같은 줄 계산). 기본 구현은 너비 제한 없이 측정을 불러 `IntrinsicSize` 부모나 `DropdownMenu` 안에서 실패한다. 측정 자체는 여전히 너비 제한이 있어야 한다.
 - 열이 2 이상일 때만 박스가 줄 높이를 채운다(`internal LocalSelectBoxFillsRow`를 그룹이 켠다). 단독 박스가 채우면 높이가 정해진 부모를 따라 늘어나서 끈다. `CompositionLocal`은 셀 안 모든 것에 닿으므로 박스는 그룹의 직계 자식이어야 한다. 형제가 있는 래퍼로 감싸면 박스가 눌린다.
 
 ### `pressable` 부품
