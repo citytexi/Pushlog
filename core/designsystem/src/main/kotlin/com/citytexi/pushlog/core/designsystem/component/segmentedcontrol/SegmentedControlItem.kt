@@ -1,0 +1,85 @@
+package com.citytexi.pushlog.core.designsystem.component.segmentedcontrol
+
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.button.pushlogThemedColor
+import com.citytexi.pushlog.core.designsystem.component.pressable.PressScaleScope
+import com.citytexi.pushlog.core.designsystem.component.pressable.PressableSelectionMode
+import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
+import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
+import com.citytexi.pushlog.core.designsystem.theme.color.DarkPalette
+import com.citytexi.pushlog.core.designsystem.theme.color.LightPalette
+
+// SEED segmented-control-item.yaml: minHeight 34px. 같은 크기의 토큰이 없다.
+private val ItemMinHeight = 34.dp
+
+/**
+ * 세그먼트 칸 하나. 칸 크기는 [PushlogSegmentedControl]이 고정 제약으로 정하므로 표면이 칸을 다 채운다.
+ * 라벨은 줄 수 제한 없이 가운데 정렬로 줄바꿈된다.
+ */
+@Composable
+internal fun SegmentedControlItem(
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val theme = PushlogTheme.color
+    val motion = PushlogTheme.motion
+    val labelColor =
+        animateColorAsState(
+            targetValue =
+                when {
+                    !enabled -> theme.fg.disabled
+                    selected -> theme.fg.neutral
+                    else -> theme.fg.neutralSubtle
+                },
+            animationSpec = tween(motion.duration.colorTransition, easing = motion.timingFunction.easing),
+            label = "segmentedControlLabel",
+        )
+    // 투명은 눌림 색과 같은 색조의 alpha 0으로 둔다. Color.Transparent(검정 alpha 0)에서 번지면 중간에 어두운 회색이 지나간다.
+    val rest =
+        if (selected) {
+            pushlogThemedColor(LightPalette.gray100, DarkPalette.gray100).copy(alpha = 0f)
+        } else {
+            theme.bg.neutralWeakPressed.copy(alpha = 0f)
+        }
+    PushlogPressableSurface(
+        color = rest,
+        pressedColor = rest,
+        shape = PushlogTheme.radius.full,
+        enabled = enabled,
+        onClick = onClick,
+        modifier = modifier,
+        selected = selected,
+        selectionMode = PressableSelectionMode.SINGLE,
+        scaleScope = PressScaleScope.CONTENT,
+        interactionSource = interactionSource,
+    ) {
+        Box(
+            Modifier
+                .heightIn(min = ItemMinHeight)
+                .padding(horizontal = PushlogTheme.dimension.x6, vertical = PushlogTheme.dimension.x1Half),
+            contentAlignment = Alignment.Center,
+        ) {
+            // 색을 그리기 단계에서 읽어 색이 바뀌는 동안 다시 구성하지 않는다.
+            BasicText(
+                text = label,
+                style = PushlogTheme.typography.t5Bold.copy(textAlign = TextAlign.Center),
+                color = { labelColor.value },
+            )
+        }
+    }
+}
