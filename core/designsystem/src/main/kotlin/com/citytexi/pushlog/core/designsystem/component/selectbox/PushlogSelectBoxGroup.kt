@@ -12,12 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.MeasurePolicy
-import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.constrainHeight
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
@@ -44,7 +39,7 @@ fun PushlogSelectBoxGroup(
     val dimension = PushlogTheme.dimension
     val gapXPx = with(density) { dimension.x3.roundToPx() }
     val gapYPx = with(density) { dimension.spacingY.componentDefault.roundToPx() }
-    val policy = remember(columns, gapXPx, gapYPx) { selectBoxGridPolicy(columns, gapXPx, gapYPx) }
+    val policy = remember(columns, gapXPx, gapYPx) { SelectBoxGridMeasurePolicy(columns, gapXPx, gapYPx) }
     val multiColumn = columns >= 2
     CompositionLocalProvider(
         LocalSelectBoxLayout provides if (multiColumn) PushlogSelectBoxLayout.VERTICAL else PushlogSelectBoxLayout.HORIZONTAL,
@@ -52,37 +47,6 @@ fun PushlogSelectBoxGroup(
     ) {
         Layout(content = content, modifier = modifier.fillMaxWidth().selectableGroup(), measurePolicy = policy)
     }
-}
-
-// 줄 높이를 맞추려면 재기 전에 높이를 알아야 하는데 자식은 한 번만 잴 수 있어 intrinsic 높이로 먼저 정한다.
-private fun selectBoxGridPolicy(
-    columns: Int,
-    gapX: Int,
-    gapY: Int,
-) = MeasurePolicy { measurables, constraints ->
-    require(constraints.hasBoundedWidth) { "PushlogSelectBoxGroup needs a bounded width" }
-    val width = constraints.maxWidth
-    val cellWidth = ((width - gapX * (columns - 1)) / columns).coerceAtLeast(0)
-    val rows = measurables.chunked(columns).map { row -> measureRow(row, columns, cellWidth) }
-    val rowHeights = rows.map { row -> row.maxOf { it.height } }
-    val height = rowHeights.sum() + gapY * (rows.size - 1).coerceAtLeast(0)
-    layout(width, constraints.constrainHeight(height)) {
-        var y = 0
-        rows.forEachIndexed { r, row ->
-            row.forEachIndexed { c, placeable -> placeable.placeRelative(c * (cellWidth + gapX), y) }
-            y += rowHeights[r] + gapY
-        }
-    }
-}
-
-private fun measureRow(
-    row: List<Measurable>,
-    columns: Int,
-    cellWidth: Int,
-): List<Placeable> {
-    if (columns == 1) return row.map { it.measure(Constraints.fixedWidth(cellWidth)) }
-    val rowHeight = row.maxOf { it.maxIntrinsicHeight(cellWidth) }
-    return row.map { it.measure(Constraints.fixed(cellWidth, rowHeight)) }
 }
 
 @PushlogPreview

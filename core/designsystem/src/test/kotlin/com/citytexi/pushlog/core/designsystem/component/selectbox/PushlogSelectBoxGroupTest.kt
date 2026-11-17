@@ -1,6 +1,9 @@
 package com.citytexi.pushlog.core.designsystem.component.selectbox
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -154,6 +157,38 @@ class PushlogSelectBoxGroupTest {
         assertTrue("box ${bounds(0).height} should wrap its content", bounds(0).height < 200.dp)
     }
 
+    @Test
+    fun intrinsicWidthParentSizesGroupToCells() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                Column(Modifier.width(IntrinsicSize.Max)) {
+                    PushlogSelectBoxGroup(modifier = Modifier.testTag(GROUP), columns = 2) { repeat(3) { Cell(it) } }
+                }
+            }
+        }
+        val group = composeRule.onNodeWithTag(GROUP).getBoundsInRoot()
+        assertTrue("group ${group.width} should take its intrinsic width, not the screen", group.width in 1.dp..<SCREEN_WIDTH)
+        assertDp(bounds(0).width, bounds(1).width)
+        assertDp(group.right, bounds(1).right)
+    }
+
+    @Test
+    fun intrinsicHeightMatchesLaidOutHeight() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                Box(Modifier.width(GROUP_WIDTH).height(IntrinsicSize.Max)) {
+                    PushlogSelectBoxGroup(columns = 2) {
+                        Cell(0, description = THREE_LINES)
+                        repeat(2) { Cell(it + 1) }
+                    }
+                    Box(Modifier.fillMaxHeight().width(1.dp).testTag(SIDE))
+                }
+            }
+        }
+        val side = composeRule.onNodeWithTag(SIDE).getBoundsInRoot()
+        assertDp(bounds(2).bottom - bounds(0).top, side.height)
+    }
+
     /** [columns]가 null이면 [columnsState]를 읽어 그룹 열 수를 바꿀 수 있다. */
     private fun setGroup(
         columns: Int?,
@@ -216,9 +251,11 @@ class PushlogSelectBoxGroupTest {
 
     private companion object {
         const val GROUP = "group"
+        const val SIDE = "side"
         const val LABEL = "Box"
         const val LONG_LABEL = "아주 긴 선택지 이름"
         const val THREE_LINES = "first line of the description\nsecond line\nthird line"
         val GROUP_WIDTH = 360.dp
+        val SCREEN_WIDTH = 400.dp
     }
 }
