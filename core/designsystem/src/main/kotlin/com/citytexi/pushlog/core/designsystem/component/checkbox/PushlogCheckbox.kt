@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.state.ToggleableState
 import com.citytexi.pushlog.core.designsystem.component.pressable.pushlogTriStateToggleArea
+import com.citytexi.pushlog.core.designsystem.component.selection.LocalSelectionGroupEnabled
 import com.citytexi.pushlog.core.designsystem.component.selection.SelectionControlRow
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -31,7 +32,7 @@ fun PushlogCheckbox(
     tone: PushlogCheckmarkTone = PushlogCheckmarkTone.NEUTRAL,
     size: PushlogCheckmarkSize = PushlogCheckmarkSize.MEDIUM,
     weight: PushlogCheckboxWeight = PushlogCheckboxWeight.REGULAR,
-    enabled: Boolean = true,
+    enabled: Boolean = LocalSelectionGroupEnabled.current,
     interactionSource: MutableInteractionSource? = null,
 ) {
     // 줄의 탭 영역과 마크가 같은 소스를 봐야 라벨을 눌러도 마크가 줄어든다.
@@ -70,7 +71,7 @@ fun PushlogCheckbox(
     tone: PushlogCheckmarkTone = PushlogCheckmarkTone.NEUTRAL,
     size: PushlogCheckmarkSize = PushlogCheckmarkSize.MEDIUM,
     weight: PushlogCheckboxWeight = PushlogCheckboxWeight.REGULAR,
-    enabled: Boolean = true,
+    enabled: Boolean = LocalSelectionGroupEnabled.current,
     interactionSource: MutableInteractionSource? = null,
 ) {
     PushlogCheckbox(

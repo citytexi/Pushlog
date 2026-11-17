@@ -35,6 +35,7 @@ import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressab
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomark
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkSize
 import com.citytexi.pushlog.core.designsystem.component.radio.PushlogRadiomarkTone
+import com.citytexi.pushlog.core.designsystem.component.selection.LocalSelectionGroupEnabled
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
@@ -74,7 +75,7 @@ fun PushlogSelectBox(
     prefixIcon: Painter? = null,
     layout: PushlogSelectBoxLayout? = null,
     showControl: Boolean = true,
-    enabled: Boolean = true,
+    enabled: Boolean = LocalSelectionGroupEnabled.current,
     interactionSource: MutableInteractionSource? = null,
     suffix: (@Composable () -> Unit)? = null,
     footerVisibility: PushlogSelectBoxFooterVisibility = PushlogSelectBoxFooterVisibility.WHEN_SELECTED,
