@@ -113,7 +113,7 @@ internal fun SelectBoxPrefixSuffixSection() {
             selected = selected,
             onClick = { selected = !selected },
             type = PushlogSelectBoxType.MULTIPLE,
-            label = "Extra topping",
+            label = "Add egg",
             description = DESCRIPTION,
             prefixIcon = plus,
             suffix = { Text("+1,000원", style = PushlogTheme.typography.t4Medium, color = PushlogTheme.color.fg.neutral) },
@@ -127,7 +127,7 @@ internal fun SelectBoxVerticalSection() {
     val plus = rememberVectorPainter(PreviewSampleIcons.Plus)
     var selected by remember { mutableIntStateOf(0) }
     PreviewSectionTitle("vertical")
-    listOf("Morning", "Evening").forEachIndexed { index, label ->
+    listOf("Day", "Night").forEachIndexed { index, label ->
         PushlogSelectBox(
             selected = selected == index,
             onClick = { selected = index },
