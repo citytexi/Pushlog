@@ -262,6 +262,16 @@ class PushlogTextInputTest {
     }
 
     @Test
+    fun replacingSelectionOverLimitKeepsReplacedLength() {
+        val state = TextFieldState("abcdef", TextRange(1, 2))
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), maxGraphemeCount = 3) }
+        }
+        input.performTextInput("xy")
+        assertEquals("axcdef", state.text.toString())
+    }
+
+    @Test
     fun replacingSelectionAtLimitTrimsInsertedPart() {
         val state = TextFieldState("abc", TextRange(1, 2))
         composeRule.setContent {
