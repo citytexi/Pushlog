@@ -23,7 +23,7 @@ import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
 
 private val OptionLabels = listOf("First", "Second", "Third")
 
-private const val LONG_LABEL = "A much longer radio label that wraps onto several lines while the mark stays on the first line."
+private const val LONG_LABEL = "A longer label that wraps onto a second line."
 
 /** Registers the PushlogRadio screen for [PushlogRadioPreviewKey]. */
 fun EntryProviderScope<NavKey>.pushlogRadioPreviewEntry(onBack: () -> Unit) {

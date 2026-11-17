@@ -21,6 +21,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
@@ -228,7 +229,9 @@ class PushlogSwitchTest {
         composeRule.waitForIdle()
         val height = row().fetchSemanticsNode().size.height
         assertTrue("row height $height should exceed 24dp", height > 24 * density)
-        assertTrue("mark stays inside the row", firstTrackY() >= 0)
+        // 마크 위쪽 여백은 rowMinHeight 기준이라 글자가 커져도 4dp에 머문다.
+        assertNear("SMALL mark top at 2x font", 4f * density, firstTrackY().toFloat())
+        label().assertIsDisplayed()
     }
 
     private fun setSwitch(

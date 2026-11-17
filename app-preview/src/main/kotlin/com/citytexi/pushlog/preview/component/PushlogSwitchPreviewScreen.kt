@@ -17,7 +17,7 @@ import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
 import com.citytexi.pushlog.preview.scaffold.PreviewScaffold
 
-private const val LONG_LABEL = "A much longer switch label that wraps onto several lines while the mark stays on the first line."
+private const val LONG_LABEL = "A longer label that wraps onto a second line."
 
 /** Registers the PushlogSwitch screen for [PushlogSwitchPreviewKey]. */
 fun EntryProviderScope<NavKey>.pushlogSwitchPreviewEntry(onBack: () -> Unit) {
