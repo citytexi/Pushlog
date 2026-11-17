@@ -82,15 +82,13 @@ fun PushlogSegmentedControl(
         val natural = maxOf(items.maxOf { it.maxIntrinsicWidth(Constraints.Infinity) }, ItemMinWidth.roundToPx())
         val width = (natural * count).coerceIn(constraints.minWidth, constraints.maxWidth)
 
-        // 나머지 픽셀을 칸마다 고루 나눈다.
-        fun cellStart(index: Int) = width * index / count
         val cell = width / count
         val height =
             maxOf(items.maxOf { it.maxIntrinsicHeight(cell) }, ItemMinHeight.roundToPx())
                 .coerceIn(constraints.minHeight, constraints.maxHeight)
         val itemPlaceables =
             items.mapIndexed { index, item ->
-                item.measure(Constraints.fixed(cellStart(index + 1) - cellStart(index), height))
+                item.measure(Constraints.fixed(cellStart(width, count, index + 1) - cellStart(width, count, index), height))
             }
         layout(width, height) {
             // 위치를 배치 단계에서만 읽어 이동 중에는 다시 구성하지 않고 다시 배치만 한다.
@@ -99,15 +97,22 @@ fun PushlogSegmentedControl(
             val from = floor(slot).toInt()
             val to = minOf(from + 1, count - 1)
             val fraction = slot - from
-            val start = lerp(cellStart(from), cellStart(to), fraction)
-            val end = lerp(cellStart(from + 1), cellStart(to + 1), fraction)
+            val start = lerp(cellStart(width, count, from), cellStart(width, count, to), fraction)
+            val end = lerp(cellStart(width, count, from + 1), cellStart(width, count, to + 1), fraction)
             val indicatorPlaceable = indicator.measure(Constraints.fixed(end - start, height))
             // placeRelative라 RTL에서는 칸과 indicator가 함께 뒤집힌다.
             indicatorPlaceable.placeRelative(start, 0)
-            itemPlaceables.forEachIndexed { index, placeable -> placeable.placeRelative(cellStart(index), 0) }
+            itemPlaceables.forEachIndexed { index, placeable -> placeable.placeRelative(cellStart(width, count, index), 0) }
         }
     }
 }
+
+/** [index]번째 칸의 시작 x. 나머지 픽셀을 칸마다 고루 나눈다. */
+private fun cellStart(
+    width: Int,
+    count: Int,
+    index: Int,
+): Int = width * index / count
 
 @PushlogPreview
 @Composable
