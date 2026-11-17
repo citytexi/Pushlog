@@ -21,7 +21,11 @@ import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.requestFocus
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
@@ -192,6 +196,27 @@ class PushlogTextInputTest {
         }
         input.performTextInput("XYZ")
         assertEquals("aXYb", state.text.toString())
+    }
+
+    @Test
+    fun backspaceShrinksTextAlreadyOverLimit() {
+        val state = TextFieldState("abcdef")
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), maxGraphemeCount = 3) }
+        }
+        input.requestFocus()
+        input.performKeyInput { pressKey(Key.Backspace) }
+        assertEquals("abcde", state.text.toString())
+    }
+
+    @Test
+    fun replacingSelectionAtLimitTrimsInsertedPart() {
+        val state = TextFieldState("abc", TextRange(1, 2))
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) { PushlogTextInput(state, modifier = Modifier.testTag(INPUT), maxGraphemeCount = 3) }
+        }
+        input.performTextInput("xy")
+        assertEquals("axc", state.text.toString())
     }
 
     private companion object {
