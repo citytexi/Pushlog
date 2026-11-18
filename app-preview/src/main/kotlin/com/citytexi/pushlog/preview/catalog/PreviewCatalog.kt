@@ -9,6 +9,7 @@ import com.citytexi.pushlog.preview.component.PushlogChipPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogContextualFloatingButtonPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogFieldLabelPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogFieldPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogInputButtonPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadiomarkPreviewKey
@@ -51,5 +52,6 @@ val previewCatalog: List<PreviewCatalogItem> =
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogTextInput", PushlogTextInputPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogTextArea", PushlogTextAreaPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogSearchInput", PushlogSearchInputPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogInputButton", PushlogInputButtonPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "LoadingContent", LoadingContentPreviewKey),
     )
