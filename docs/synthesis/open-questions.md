@@ -36,3 +36,8 @@
 
 - 현재: footer 안 text-input은 field 상태를 끊어 활성으로 남고, footer에 바로 둔 체크박스·라디오는 그룹의 `LocalSelectionGroupEnabled`를 물려받는다. 설계: [`design-system/components/input.md`](../architecture/design-system/components/input.md)
 - 남은 것: footer 전체가 select-box의 `enabled`를 따를지 정한다.
+
+### [2026-11-18] 읽기 전용 input-button의 TalkBack 안내
+
+- 현재: `PushlogInputButton`은 읽기 전용이면 `PushlogPressableSurface`에 `enabled = false`를 넘겨 TalkBack이 "사용 중지됨"으로 읽을 가능성이 크다. 스펙은 읽기 전용이 눌리지 않는다고만 적었다. 설계: [`design-system/components/input.md`](../architecture/design-system/components/input.md)
+- 남은 것: 다른 안내가 필요하면 `PushlogPressableSurface` API를 바꿔야 한다. 실기기 TalkBack에서 확인한 뒤 정한다.
