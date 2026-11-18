@@ -20,4 +20,5 @@ Copyright 2025 주식회사 당근마켓
 [당근마켓 브랜드 리소스 가이드라인]: https://app.notion.com/p/daangn/6fdd92981e4a42d8b29c89cbbba7a8b7
 
 체크 마크의 체크·대시 경로는 @karrotmarket/react-monochrome-icon 1.35.0(Apache-2.0)의 IconCheckmarkFatFill, IconMinusFatFill에서 옮겼습니다.
+field 오류 문구의 느낌표 원 경로는 @karrotmarket/react-monochrome-icon 1.35.0(Apache-2.0)의 IconExclamationmarkCircleFill에서 옮겼습니다.
 Copyright 주식회사 당근마켓, Apache License 2.0.

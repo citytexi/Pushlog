@@ -7,6 +7,8 @@ import com.citytexi.pushlog.preview.component.PushlogCheckboxPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogCheckmarkPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogChipPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogContextualFloatingButtonPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogFieldLabelPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogFieldPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadiomarkPreviewKey
@@ -15,6 +17,8 @@ import com.citytexi.pushlog.preview.component.PushlogSelectBoxGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSelectBoxPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSwitchPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSwitchmarkPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogTextAreaPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogTextInputPreviewKey
 import com.citytexi.pushlog.preview.foundation.ColorPreviewKey
 import com.citytexi.pushlog.preview.foundation.MaterialPreviewKey
 import com.citytexi.pushlog.preview.foundation.ShapePreviewKey
@@ -41,5 +45,9 @@ val previewCatalog: List<PreviewCatalogItem> =
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogSelectBox", PushlogSelectBoxPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogSelectBoxGroup", PushlogSelectBoxGroupPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogContextualFloatingButton", PushlogContextualFloatingButtonPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogFieldLabel", PushlogFieldLabelPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogField", PushlogFieldPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogTextInput", PushlogTextInputPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogTextArea", PushlogTextAreaPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "LoadingContent", LoadingContentPreviewKey),
     )

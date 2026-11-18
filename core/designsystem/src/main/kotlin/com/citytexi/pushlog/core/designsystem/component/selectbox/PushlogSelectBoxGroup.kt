@@ -13,6 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
+import com.citytexi.pushlog.core.designsystem.component.field.LocalPushlogFieldState
+import com.citytexi.pushlog.core.designsystem.component.field.ResetPushlogFieldState
+import com.citytexi.pushlog.core.designsystem.component.field.pushlogFieldSemantics
+import com.citytexi.pushlog.core.designsystem.component.selection.LocalSelectionGroupEnabled
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PreviewSampleIcons
@@ -36,6 +40,7 @@ fun PushlogSelectBoxGroup(
     content: @Composable () -> Unit,
 ) {
     require(columns in ColumnCountRange) { "PushlogSelectBoxGroup needs 1 to 3 columns, got $columns" }
+    val field = LocalPushlogFieldState.current
     val density = LocalDensity.current
     val dimension = PushlogTheme.dimension
     val gapXPx = with(density) { dimension.x3.roundToPx() }
@@ -45,8 +50,13 @@ fun PushlogSelectBoxGroup(
     CompositionLocalProvider(
         LocalSelectBoxLayout provides if (multiColumn) PushlogSelectBoxLayout.VERTICAL else PushlogSelectBoxLayout.HORIZONTAL,
         LocalSelectBoxFillsRow provides multiColumn,
+        LocalSelectionGroupEnabled provides field.enabled,
     ) {
-        Layout(content = content, modifier = modifier.fillMaxWidth().selectableGroup(), measurePolicy = policy)
+        Layout(
+            content = { ResetPushlogFieldState(content) },
+            modifier = modifier.fillMaxWidth().selectableGroup().pushlogFieldSemantics(field, field.invalid),
+            measurePolicy = policy,
+        )
     }
 }
 

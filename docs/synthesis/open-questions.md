@@ -26,3 +26,13 @@
 
 - `secondaryContainer`(`bg.neutralWeak`, gray200 `#F3F4F5`)와 NavigationBar 컨테이너 `surfaceContainer`(`bg.neutralMuted`, gray100 `#F7F8F9`)가 거의 구분되지 않는다. 설계: [`design-system/foundation.md`](../architecture/design-system/foundation.md#m3-연결)
 - 남은 것: 내비게이션 컴포넌트(#22)를 만들 때 정한다.
+
+### [2026-11-17] 글자 입력 상태를 화면 어디에 둘지
+
+- `PushlogTextInput`은 `TextFieldState`, segmented 입력은 상태 클래스를 받는다. 둘 다 변경 가능한 객체라 불변 `UiState`에 넣기 어렵다. 설계: [`2026-11-17-design-system-text-inputs-design.md`](../superpowers/specs/2026-11-17-design-system-text-inputs-design.md) §4.1
+- 남은 것: 첫 입력 화면에서 Route가 상태를 들고 `snapshotFlow`로 `UiIntent`를 보낼지, ViewModel이 들지 정하고 `state-management.md`에 적는다.
+
+### [2026-11-18] select-box footer가 박스·그룹 enabled를 따라야 하는가
+
+- 현재: footer 안 text-input은 field 상태를 끊어 활성으로 남고, footer에 바로 둔 체크박스·라디오는 그룹의 `LocalSelectionGroupEnabled`를 물려받는다. 설계: [`design-system/components/input.md`](../architecture/design-system/components/input.md)
+- 남은 것: footer 전체가 select-box의 `enabled`를 따를지 정한다.
