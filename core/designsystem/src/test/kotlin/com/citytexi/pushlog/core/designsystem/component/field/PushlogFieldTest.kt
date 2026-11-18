@@ -9,10 +9,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
@@ -23,6 +27,8 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performSemanticsAction
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -41,6 +47,7 @@ class PushlogFieldTest {
     val composeRule = createComposeRule()
 
     private var critical = 0
+    private var subtle = 0
 
     // 안쪽 입력(Task 4 전)을 흉내 내는 노드.
     @Composable
@@ -150,6 +157,62 @@ class PushlogFieldTest {
         assertTrue("dot left $dotLeft should not be before label right $labelRight", dotLeft >= labelRight)
     }
 
+    @Test
+    fun errorIconCenteredOnFirstTextLine() {
+        var scale by mutableFloatStateOf(1f)
+        setField(invalid = true, errorMessage = ERROR, fontScale = { scale })
+        assertIconOnFirstLine(ERROR, critical, scale)
+        scale = 2f
+        composeRule.waitForIdle()
+        assertIconOnFirstLine(ERROR, critical, scale)
+    }
+
+    @Test
+    fun errorIconStaysOnFirstLineWhenMessageWraps() {
+        setField(invalid = true, errorMessage = LONG_ERROR)
+        assertIconOnFirstLine(LONG_ERROR, critical, 1f, minLines = 2)
+    }
+
+    @Test
+    fun descriptionIconCenteredOnFirstTextLine() {
+        var scale by mutableFloatStateOf(1f)
+        setField(description = DESCRIPTION, descriptionIcon = ColorPainter(Color.Black), fontScale = { scale })
+        assertIconOnFirstLine(DESCRIPTION, subtle, scale)
+        scale = 2f
+        composeRule.waitForIdle()
+        assertIconOnFirstLine(DESCRIPTION, subtle, scale)
+    }
+
+    /** 글자 왼쪽에서 [color] 픽셀이 차지하는 세로 범위의 가운데가 첫 줄 가운데와 1px 안에 있어야 한다. */
+    private fun assertIconOnFirstLine(
+        text: String,
+        color: Int,
+        scale: Float,
+        minLines: Int = 1,
+    ) {
+        val node = composeRule.onNodeWithText(text, useUnmergedTree = true)
+        val bounds = node.fetchSemanticsNode().boundsInRoot
+        val layouts = mutableListOf<TextLayoutResult>()
+        node.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+        val layout = layouts.single()
+        assertTrue("expected at least $minLines lines", layout.lineCount >= minLines)
+        val lineCenter = bounds.top + (layout.getLineTop(0) + layout.getLineBottom(0)) / 2
+        val image = composeRule.onRoot().captureToImage().toPixelMap()
+        var top = Int.MAX_VALUE
+        var bottom = -1
+        for (x in 0 until bounds.left.toInt()) {
+            for (y in 0 until image.height) {
+                if (image[x, y].toArgb() == color) {
+                    top = minOf(top, y)
+                    bottom = maxOf(bottom, y)
+                }
+            }
+        }
+        assertTrue("icon should be drawn at scale $scale", bottom >= 0)
+        val iconCenter = (top + bottom + 1) / 2f
+        assertEquals("icon center at scale $scale", lineCenter, iconCenter, 1f)
+    }
+
     private fun indicatorWidth(): Int {
         val (left, right) = criticalBounds()
         return (right - left).toInt() + 1
@@ -184,6 +247,7 @@ class PushlogFieldTest {
         label: String? = null,
         showRequiredIndicator: Boolean = false,
         description: String? = null,
+        descriptionIcon: Painter? = null,
         errorMessage: String? = null,
         characterCount: Int? = null,
         maxCharacterCount: Int? = null,
@@ -195,6 +259,9 @@ class PushlogFieldTest {
                 critical =
                     PushlogTheme.color.fg.critical
                         .toArgb()
+                subtle =
+                    PushlogTheme.color.fg.neutralSubtle
+                        .toArgb()
                 CompositionLocalProvider(
                     LocalDensity provides Density(LocalDensity.current.density, fontScale()),
                 ) {
@@ -202,6 +269,7 @@ class PushlogFieldTest {
                         label = label,
                         showRequiredIndicator = showRequiredIndicator,
                         description = description,
+                        descriptionIcon = descriptionIcon,
                         errorMessage = errorMessage,
                         characterCount = characterCount,
                         maxCharacterCount = maxCharacterCount,
@@ -218,5 +286,6 @@ class PushlogFieldTest {
         const val ERROR = "필수 항목"
         const val DESCRIPTION = "숫자만"
         const val LABEL = "이름"
+        const val LONG_ERROR = "필수 항목입니다. 이름을 입력하지 않으면 다음 단계로 넘어갈 수 없으니 꼭 입력해 주세요. 입력한 이름은 기기 안에만 저장됩니다."
     }
 }

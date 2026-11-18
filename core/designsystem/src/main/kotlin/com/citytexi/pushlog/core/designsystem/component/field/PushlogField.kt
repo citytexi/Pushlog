@@ -2,9 +2,11 @@ package com.citytexi.pushlog.core.designsystem.component.field
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.sp
 import com.citytexi.pushlog.core.designsystem.component.textinput.PushlogTextInput
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
@@ -28,6 +31,9 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
 // SEED field 머리 보조 글자 왼쪽 간격. 토큰이 없어 글자 크기를 따라가는 sp로 둔다.
 private const val INDICATOR_TEXT_START_SP = 4
+
+// 꼬리 글자 한 줄 높이를 잴 때 쓰는 글자.
+private const val LINE_PROBE = "가"
 
 /**
  * 입력 위아래에 라벨, 설명, 오류, 글자 수를 붙이는 wrapper.
@@ -151,11 +157,25 @@ private fun FieldMessage(
     color: Color,
     icon: (@Composable () -> Unit)?,
 ) {
+    val style = PushlogTheme.typography.t4Regular
     if (icon != null) {
-        icon()
+        // 아이콘을 글자 첫 줄 높이 상자 가운데에 둔다. 여러 줄이어도 첫 줄에 맞는다.
+        // 큰 글꼴 배율은 비선형이라 줄 높이 sp를 dp로 바꾸면 실제 줄과 어긋난다. 한 줄을 재서 쓴다.
+        val measurer = rememberTextMeasurer()
+        val density = LocalDensity.current
+        val lineHeight =
+            remember(measurer, style, density) {
+                with(density) {
+                    measurer
+                        .measure(LINE_PROBE, style)
+                        .size.height
+                        .toDp()
+                }
+            }
+        Box(Modifier.height(lineHeight), contentAlignment = Alignment.Center) { icon() }
         Spacer(Modifier.width(PushlogTheme.dimension.x1Half))
     }
-    Text(text = text, style = PushlogTheme.typography.t4Regular, color = color)
+    Text(text = text, style = style, color = color)
 }
 
 @Composable
