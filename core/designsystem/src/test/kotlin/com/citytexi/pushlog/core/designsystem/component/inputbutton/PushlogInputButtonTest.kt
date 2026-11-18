@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PixelMap
@@ -20,7 +21,10 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.SemanticsNodeInteractionCollection
+import androidx.compose.ui.test.assertHeightIsEqualTo
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.down
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -127,6 +131,28 @@ class PushlogInputButtonTest {
         clear.performClick()
         assertEquals(1, clears)
         assertEquals(0, clicks)
+    }
+
+    @Test
+    fun clearTouchTargetIs44dpAndEdgeTapClears() {
+        var clicks = 0
+        var clears = 0
+        showButton(onClick = { clicks++ }, onClear = { clears++ })
+        clear.assertWidthIsEqualTo(44.dp).assertHeightIsEqualTo(44.dp)
+        val edge = with(composeRule.density) { 2.dp.toPx() }
+        clear.performTouchInput { click(Offset(edge, edge)) }
+        assertEquals(1, clears)
+        assertEquals(0, clicks)
+    }
+
+    @Test
+    fun clearTouchPaddingKeepsIconGap() {
+        showButton(onClear = {})
+        val value = hiddenTexts[0].fetchSemanticsNode().boundsInRoot
+        val target = clear.fetchSemanticsNode().boundsInRoot
+        // 아이콘은 값에서 x2Half(10dp) 떨어지고, 탭 영역은 아이콘보다 11dp 넓다.
+        val expected = with(composeRule.density) { value.right + (10.dp - 11.dp).toPx() }
+        assertEquals(expected, target.left, 1f)
     }
 
     @Test

@@ -19,6 +19,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
@@ -37,7 +38,7 @@ class ClearButtonTest {
 
     private var clicks = 0
 
-    private fun setButton(touchPadding: androidx.compose.ui.unit.Dp = 0.dp) {
+    private fun setButton(touchPadding: Dp = 0.dp) {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
                 ClearButton(

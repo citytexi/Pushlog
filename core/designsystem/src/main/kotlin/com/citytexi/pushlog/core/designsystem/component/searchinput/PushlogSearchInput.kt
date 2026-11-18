@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -23,13 +23,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.R
 import com.citytexi.pushlog.core.designsystem.component.clearbutton.ClearButton
+import com.citytexi.pushlog.core.designsystem.component.field.PushlogFieldSpokenText
 import com.citytexi.pushlog.core.designsystem.component.field.ResetPushlogFieldState
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
@@ -39,7 +38,7 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 private val SearchInputHeight = 44.dp
 
 /**
- * 검색어 입력. 테두리와 포커스 표시가 없고, 값이 있으면 지우기 버튼이 보인다.
+ * 검색어 입력. 테두리와 포커스 표시가 없고, 활성이고 값이 있을 때 지우기 버튼이 보인다.
  * `PushlogField` 안에 놓아도 field 상태를 따르지 않는다. 비활성은 [enabled]로만 준다.
  * 검색 키를 누르면 [onSubmit]에 현재 값을 넘기고, [clearFocusOnSubmit]이면 포커스를 풀어 키보드를 내린다.
  * 값이 비어 있어도 [onSubmit]을 부른다. 지우기는 값만 비우고 포커스는 건드리지 않는다.
@@ -66,7 +65,7 @@ fun PushlogSearchInput(
         Row(
             modifier =
                 modifier
-                    .height(SearchInputHeight)
+                    .heightIn(min = SearchInputHeight)
                     .clip(RoundedCornerShape(PushlogTheme.radius.r2Half))
                     .background(color.bg.neutralWeak)
                     .padding(start = PushlogTheme.dimension.x4, end = PushlogTheme.dimension.x1),
@@ -74,7 +73,7 @@ fun PushlogSearchInput(
         ) {
             BasicTextField(
                 state = state,
-                modifier = Modifier.weight(1f).semantics { this.contentDescription = contentDescription },
+                modifier = Modifier.weight(1f),
                 enabled = enabled,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 textStyle = typography.t6Regular.copy(color = valueColor),
@@ -87,6 +86,8 @@ fun PushlogSearchInput(
                 cursorBrush = SolidColor(color.fg.neutral),
                 decorator = { innerTextField ->
                     Box(contentAlignment = Alignment.CenterStart) {
+                        // 이름은 contentDescription이 아니라 자식 글자로 합친다. 다른 자식보다 먼저 그려 덮이지 않게 한다.
+                        PushlogFieldSpokenText(contentDescription, Modifier.matchParentSize())
                         if (!hasValue && placeholder != null) {
                             Text(
                                 text = placeholder,

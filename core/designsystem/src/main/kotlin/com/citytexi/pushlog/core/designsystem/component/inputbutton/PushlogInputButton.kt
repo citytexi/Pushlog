@@ -20,10 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import com.citytexi.pushlog.core.designsystem.R
 import com.citytexi.pushlog.core.designsystem.component.clearbutton.ClearButton
 import com.citytexi.pushlog.core.designsystem.component.field.LocalPushlogFieldState
@@ -41,6 +44,9 @@ import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 
 // SEED input-button.yaml 지우기 아이콘 22px. 토큰이 없다.
 private val ClearIconSize = 22.dp
+
+// 지우기 탭 영역을 search-input과 같은 44dp로 넓힌다(22 + 11 * 2). 높이 x13(52dp) 안에 들어간다.
+private val ClearTouchPadding = 11.dp
 
 // 접근성 이름 조각을 잇는 구분자. field 읽기 문구와 같다.
 private const val NAME_SEPARATOR = ", "
@@ -155,11 +161,24 @@ private fun RowScope.InputButtonContent(
             contentDescription = stringResource(R.string.designsystem_clear),
             iconSize = ClearIconSize,
             color = fg.neutralSubtle,
+            modifier = Modifier.overhangHorizontally(ClearTouchPadding),
+            touchPadding = ClearTouchPadding,
         )
     }
     suffixText?.let { AffixText(it, affixColor) }
     suffixIcon?.let { AffixIcon(it, iconColor) }
 }
+
+/**
+ * 가로로 [overhang]만큼 양옆에 걸치게 놓는다. Row에는 그만큼 좁게 알려 아이콘 위치와 이웃 간격은 넓히기 전과 같고,
+ * 넓어진 탭 영역만 간격 위로 겹친다. 음수 padding은 쓸 수 없고 spacedBy는 항목마다 줄일 수 없어서 크기를 직접 알린다.
+ */
+private fun Modifier.overhangHorizontally(overhang: Dp): Modifier =
+    layout { measurable, constraints ->
+        val extra = overhang.roundToPx()
+        val placeable = measurable.measure(constraints.offset(horizontal = extra * 2))
+        layout((placeable.width - extra * 2).coerceAtLeast(0), placeable.height) { placeable.place(-extra, 0) }
+    }
 
 @Composable
 private fun AffixIcon(
