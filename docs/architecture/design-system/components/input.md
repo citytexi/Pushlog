@@ -34,7 +34,7 @@ tags: [architecture, design-system]
 - segmented 입력은 주민등록번호·카드번호 두 형식만 공개하고 칸 엔진(`SegmentedTextInput` 등)은 `internal`로 둔다. 칸 수·자리 수·가림 위치가 형식마다 정해진 값이라 일반 칸 입력으로 열면 가린 칸 규칙을 호출하는 쪽이 어길 수 있고, 한 번 공개한 엔진 API는 바꾸기 어렵다.
 - 칸은 `BasicSecureTextField`가 아니라 `BasicTextField`에 `OutputTransformation`(점)과 `password()` 의미 정보를 써서 가린다. `BasicSecureTextField`는 `ContentType.Password`를 붙여 자동완성·저장 제안 대상이 된다.
 - 가린 칸 키보드는 `KeyboardType.NumberPassword`(자동 수정 끔), 보이는 칸은 `Number`다(사용자 결정 2026-11-19). `NumberPassword`는 키보드에 민감한 값임을 알려 입력을 학습·제안하지 않게 한다. Compose foundation 1.12.0은 `NumberPassword`에 `ContentType.Password`를 붙이지만, 가린 칸 바깥 의미 정보의 `contentDataType = ContentDataType.None`이 텍스트 필드의 값을 덮고 `AndroidAutofillManager`는 None인 노드를 자동완성 대상에서 뺀다. 한 노드 안에서는 바깥 modifier의 의미 정보가 이기므로, 텍스트 필드가 변환 전 숫자를 넣는 `inputText`도 같은 자리에서 점으로 덮는다.
-- 가린 칸은 자동완성에서 뺀다. `contentDataType = ContentDataType.None`을 주고 `ContentType`은 붙이지 않으며, 가린 칸에 자동완성 종류가 NONE이 아닌 값이 들어오면 `require`로 막는다. 자동완성 서비스가 가린 값을 읽거나 저장 제안에 담지 않게 하려는 것이다. 보이는 칸(생년월일, 카드번호 첫 칸)만 자동완성을 받는다.
+- 가린 칸은 자동완성에서 뺀다. `contentDataType = ContentDataType.None`을 준다. 자동완성 종류(`ContentType`)는 따로 붙이지 않지만 `NumberPassword`가 붙이는 `ContentType.Password` 힌트는 남는다. 제외는 `contentDataType = None`만으로 한다. 가린 칸에 자동완성 종류가 NONE이 아닌 값이 들어오면 `require`로 막는다. 자동완성 서비스가 가린 값을 읽거나 저장 제안에 담지 않게 하려는 것이다. 보이는 칸(생년월일, 카드번호 첫 칸)만 자동완성을 받는다.
 - 저장 상태(savedInstanceState)에는 가린 값까지 남긴다. 회전·프로세스 종료 뒤에도 입력이 유지되는 대신 민감한 값이 Bundle에 들어간다는 것을 알고 사용자가 정했다([스펙 §5](../../../superpowers/specs/2026-11-17-design-system-text-inputs-design.md)). 상태 홀더 `toString`은 값을 내지 않는다.
 - 칸 줄은 `LayoutDirection.Ltr`로 고정한다. 숫자 칸의 순서가 RTL 로케일에서 뒤집히면 주민등록번호·카드번호의 자리 순서가 달라 보인다.
 - `clear()`는 상태 홀더에 있고 부르는 책임은 쓰는 화면에 있다. 입력이 사라질 때 지울지는 화면의 수집 목적에 달려 있어 컴포넌트가 알 수 없다.

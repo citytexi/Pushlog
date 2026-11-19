@@ -181,8 +181,8 @@ private fun SegmentField(
         readOnly = readOnly,
         inputTransformation = transformation,
         textStyle = style.copy(color = colors.value, textAlign = if (slot.centered) TextAlign.Center else TextAlign.Start),
-        // 가린 칸은 NumberPassword로 키보드에 민감한 값임을 알린다. 이때 BasicTextField가 붙이는 ContentType.Password는
-        // segmentSemantics의 바깥 의미 정보(contentDataType = None)가 덮어 자동완성 대상에서 빠진다.
+        // 가린 칸은 NumberPassword로 키보드에 민감한 값임을 알린다. 이때 BasicTextField가 붙이는 ContentType.Password 힌트는
+        // 남지만, segmentSemantics의 contentDataType = None 때문에 Compose 자동완성이 이 노드를 건너뛴다.
         keyboardOptions =
             KeyboardOptions(
                 keyboardType = if (slot.masked) KeyboardType.NumberPassword else KeyboardType.Number,
@@ -198,8 +198,9 @@ private fun SegmentField(
 
 /**
  * 가린 칸은 비밀번호처럼 읽히고 자동완성 대상에서 빠진다. 보이는 칸은 [SegmentAutofill]대로 자동완성 종류를 붙인다.
- * 한 노드 안에서는 바깥 modifier의 의미 정보가 이기므로, 텍스트 필드가 붙이는 ContentType.Password와
- * 변환 전 값(inputText)을 여기서 덮는다.
+ * 한 노드 안에서는 바깥 modifier의 의미 정보가 이기므로, 텍스트 필드가 붙이는 contentDataType과 변환 전 값(inputText)을
+ * 여기서 덮는다. 텍스트 필드가 붙이는 ContentType.Password 힌트는 남고, contentDataType = None 때문에 Compose 자동완성이
+ * 이 노드를 건너뛴다.
  */
 private fun Modifier.segmentSemantics(
     slot: SegmentSlot.Input,
