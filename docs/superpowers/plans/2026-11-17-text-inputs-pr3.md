@@ -41,7 +41,7 @@
 1. 가운데 칸(카드 둘째 칸)에 16자리를 붙여넣으면 그 칸부터 채우고 가린 칸 앞에서 멈춘다. 앞 칸은 건드리지 않는다. → Task 2 `pasteIntoMiddleSegmentFillsFromThere`.
 2. 가린 칸에 붙여넣기·자동완성이 들어오면 무시된다(값이 그대로). → Task 4 `pasteIntoMaskedSegmentIsIgnored`.
 3. 앱이 RTL이어도 칸 순서와 Backspace·←·→ 방향은 LTR 그대로다. → Task 4 `rtlKeepsSegmentOrder`.
-4. 회전(상태 복원) 뒤 포커스가 있던 칸과 값이 복원되고, 가린 칸은 계속 점으로 보인다. → Task 3 `restoresAllValuesIncludingMasked`, Task 4 `maskedStaysMaskedAfterRestore`.
+4. 회전(상태 복원) 뒤 값이 복원되고, 가린 칸은 계속 점으로 보인다. 포커스가 있던 칸의 복원은 사용자 결정으로 뺐다(2026-11-19). → Task 3 `restoresAllValuesIncludingMasked`, Task 4 `maskedStaysMaskedAfterRestore`.
 5. 숫자가 아닌 글자(한글, 공백, 하이픈)를 치면 칸에 들어가지 않는다. 한글 조합 중에는 칸 이동이 없다. → Task 2 `nonDigitsAreDropped`, Task 4 `compositionDoesNotAdvance`.
 
 ---

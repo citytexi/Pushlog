@@ -157,8 +157,8 @@ A를 고른 이유: 상태를 IME와 같은 쪽에서 들고 있어 조합 중 �
   - 주민등록번호: `digits` = `SIX`(생년월일 6 + 점 7개 고정), `SEVEN`(기본, 생년월일 6 + 뒷자리 첫 1 + 점 6개), `THIRTEEN`(생년월일 6 + 뒷자리 7 가림). 구분자 " - ".
   - 카드번호: 4자리 칸 넷, 구분자 " - ". 뒤에서 `maskedDigits`(`FOUR`, 기본 `EIGHT`)만큼 가린다. 끝에 `suffix` 슬롯(카드사 로고).
   - 칸별 접근성 이름과 placeholder 문구도 registry 그대로다.
-- 상태: 형식마다 공개 상태 홀더 클래스(`PushlogResidentNumberState`, `PushlogCardNumberState`)와 그 `companion`의 `Saver`를 둔다. 호출하는 쪽은 `rememberSaveable(saver = PushlogResidentNumberState.Saver) { PushlogResidentNumberState() }`로 만든다. 공개 `remember…` 함수는 두지 않는다. `component` 패키지의 공개 `@Composable`은 미리보기 화면이 있어야 해서(`PreviewCoverageRulesTest`)다(설계자 판단). 값은 칸 순서대로 `List<String>`로 읽는다. 안에서는 칸마다 `TextFieldState`를 갖는다. `Saver`는 가린 칸까지 전부 저장한다(사용자 결정 §5).
-- 인자: 상태, 형식 인자(`digits`/`maskedDigits`), `invalid`·`enabled`·`readOnly`(기본값은 field 상태), `modifier`(카드번호는 `suffix`).
+- 상태: 형식마다 공개 상태 홀더 클래스(`PushlogResidentNumberState`, `PushlogCardNumberState`)와 그 `companion`의 `Saver`를 둔다. 호출하는 쪽은 `rememberSaveable(saver = PushlogResidentNumberState.Saver) { PushlogResidentNumberState() }`로 만든다. 공개 `remember…` 함수는 두지 않는다. `component` 패키지의 공개 `@Composable`은 미리보기 화면이 있어야 해서(`PreviewCoverageRulesTest`)다(설계자 판단). 값은 칸 순서대로 `List<String>`로 읽는다. 안에서는 칸마다 `TextFieldState`를 갖는다. `Saver`는 가린 칸까지 전부 저장한다(사용자 결정 §5). 복원하는 것은 값뿐이고, 포커스가 있던 칸은 복원하지 않는다(사용자 결정 2026-11-19).
+- 인자: 상태, `invalid`·`enabled`·`readOnly`(기본값은 field 상태), `modifier`(카드번호는 `suffix`). 형식(`digits`/`maskedDigits`)은 컴포저블 인자가 아니라 상태 생성자 인자다(`PushlogResidentNumberState(digits)`, `PushlogCardNumberState(maskedDigits)`).
 - 상태 홀더에 모든 칸을 비우는 `clear()`를 둔다. 저장 상태에서 값이 언제 사라질지(제출 성공, 화면 종료)는 쓰는 화면이 정하고 `clear()`를 부른다.
 - 비활성·읽기 전용: 배경 `bg.disabled`, 비활성이면 값·placeholder·점·구분자·고정 글자를 `fg.disabled`로(정의 파일). 둘 다 입력, 붙여넣기, Backspace로 앞 칸 지우기, 칸 자동 이동을 막는다. 읽기 전용은 포커스는 받는다. 오류는 6.3과 같은 2px `criticalSolid` 테두리.
 - 동작(SEED 문서 `segmented-text-input.mdx` 전부):
@@ -172,7 +172,7 @@ A를 고른 이유: 상태를 IME와 같은 쪽에서 들고 있어 조합 중 �
   - 마지막 칸이 차면 포커스는 그 칸에 그대로 두고 더 들어오는 입력은 버린다. 완료 콜백은 두지 않는다. 호출하는 쪽이 상태 값을 보고 판단한다(설계자 판단).
 - 모양: 크기 `large`만. 최소 높이 52, `r3`, 여백 `x4`, 간격 `x2Half`, 글자 `t5`. 테두리는 6.3과 같고, 칸 중 하나라도 포커스면 포커스 테두리를 그린다. 구분자·점·placeholder 색은 정의 파일대로.
 - 가린 값은 접근성 트리에 글자로 나오지 않는다(비밀번호 입력처럼 자리 수만). `toString()`이나 로그로 새지 않게 상태 홀더의 `toString`을 값 없이 둔다. 저장 상태에는 들어간다(§5).
-- 키보드는 모든 칸이 `KeyboardType.Number`다. Compose foundation 1.12.0에서 `NumberPassword`를 주면 텍스트 필드가 `ContentType.Password`를 붙이는데(TextFieldDecoratorModifier), 가린 칸을 자동완성에서 뺀다는 위 규칙과 어긋난다. 가리기는 `OutputTransformation` 점과 `password()` 의미 정보로, 자동완성 제외는 `contentDataType = ContentDataType.None`으로 한다.
+- 키보드는 가린 칸이 `KeyboardType.NumberPassword`(자동 수정 끔), 나머지 칸이 `KeyboardType.Number`다. 가린 칸은 키보드에 민감한 값임을 알려 키보드가 입력을 학습·제안하지 않게 한다(사용자 결정 2026-11-19). Compose foundation 1.12.0에서 `NumberPassword`를 주면 텍스트 필드가 `ContentType.Password`를 붙이지만(TextFieldDecoratorModifier), 가린 칸 바깥 의미 정보의 `contentDataType = ContentDataType.None`이 텍스트 필드의 값을 덮고, 자동완성(`AndroidAutofillManager`)은 None인 노드를 자동완성 대상에서 뺀다. 그래서 자동완성 제외 규칙은 그대로다. 가리기는 `OutputTransformation` 점과 `password()` 의미 정보로 하고, 변환 전 값이 담기는 `inputText`도 바깥 의미 정보에서 점으로 덮는다.
 - 칸 엔진은 `internal`이다. 값 분배 규칙(자리 수, 붙여넣기, 날짜 변환, 가린 칸 멈춤)은 엔진 단위 테스트로, 칸 사이 포커스 이동과 키 입력은 Compose UI 테스트로 덮는다(§7).
 
 ### 6.7 #35 선택 컨트롤 그룹과 `field`
@@ -210,7 +210,7 @@ SEED는 체크박스·라디오·select-box 그룹을 Fieldset(라벨·설명·�
 - search-input: 값이 있을 때만 지우기 버튼. 지우면 값이 빈다. 포커스 유지 규칙. 검색 키로 `onSubmit`이 값과 함께 한 번 불린다. 빈 값에서도 `onSubmit("")`이 불린다. `clearFocusOnSubmit = true`면 제출 뒤 포커스가 풀리고 `false`면 남는다.
 - input-button: 지우기를 눌러도 `onClick`이 불리지 않고, 바깥 표면 배경과 내용 크기가 그대로다(눌림 주입 뒤 픽셀 측정). 비활성·읽기 전용이면 `onClick`이 안 불리고 지우기 버튼이 없다. `contentDescription`이 field 라벨보다 우선한다.
 - segmented 엔진(JVM 단위): 자리 수 초과 버림, 붙여넣기 분배와 가린 칸 앞 멈춤, `yyyy-MM-dd` 등 날짜 → 6자리, 마지막 칸이 찬 뒤 입력 버림, `clear()`.
-- segmented UI(Robolectric, `performTextInput`·`performKeyInput`): 칸을 채우면 다음 칸으로 포커스, 빈 칸 Backspace가 앞 칸 마지막 글자를 지움, 끝에서 →·처음에서 ← 이동, 가린 칸은 끝에서만 입력·삭제. 비활성·읽기 전용이면 입력·이동이 막힌다. 가린 칸 값이 의미 정보에 없다.
+- segmented UI(Robolectric, `performTextInput`·`performKeyInput`): 칸을 채우면 다음 칸으로 포커스, 빈 칸 Backspace가 앞 칸 마지막 글자를 지움, 끝에서 →·처음에서 ← 이동, 가린 칸은 끝에서만 입력·삭제. 비활성·읽기 전용이면 입력, 빈 칸 Backspace, 칸 자동 이동이 막힌다(읽기 전용의 ←·→는 엔진이 처리하지 않고 Compose 기본 방향 포커스 이동을 따른다). 숫자가 아닌 글자(한글, 하이픈, 공백)는 보이는 칸·가린 칸 모두 들어가지 않는다. 가린 칸 값이 의미 정보(`EditableText`, `InputText`, `Text`)에 없다.
 - segmented 상태 `toString()`: `PushlogResidentNumberState`·`PushlogCardNumberState`에 숫자를 넣은 뒤 `toString()`에 그 숫자가 없다.
 - field 상태 경계: field로 감싼 select-box 그룹의 footer 안 입력은 바깥 `invalid`·라벨·`enabled`를 물려받지 않는다. field 안의 field도 같다.
 - segmented `Saver`: 저장·복원 뒤 모든 칸 값이 같다.
@@ -221,7 +221,7 @@ SEED는 체크박스·라디오·select-box 그룹을 Fieldset(라벨·설명·�
 - 한글 조합: Gboard와 삼성 키보드에서 text-input에 "한글"을 천천히 친다. 조합 중 글자가 되돌아가거나 커서가 튀지 않는다. search-input에서 조합 중 검색 키를 누르면 조합만 확정되고 `onSubmit`은 확정 뒤 한 번만 불린다. segmented 칸에서 조합 중에는 다음 칸으로 넘어가지 않는다.
 - 자동완성: Google 자동완성이 켜진 기기에서 생년월일·카드번호 제안이 보이는 칸에만 뜬다. 가린 칸 값은 저장 제안에 들어가지 않는다.
 - 접근성 포커스: TalkBack을 켜고 search-input 지우기 버튼을 누르면 접근성 포커스가 입력으로 간다. field 라벨·설명·오류가 한 번씩만 읽힌다.
-- 키보드 종류: 가린 칸은 숫자 비밀번호, 나머지는 숫자 키보드가 뜬다.
+- 키보드 종류: 가린 칸은 `NumberPassword`(숫자 비밀번호 키패드), 나머지는 `Number`(숫자 키패드)가 뜬다. 가린 칸에 `ContentType.Password`가 붙어도 자동완성 저장 제안이 뜨지 않는다.
 
 ## 8. PR 나누기
 

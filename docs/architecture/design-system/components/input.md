@@ -32,14 +32,15 @@ tags: [architecture, design-system]
 - 지우기 버튼(`ClearButton`)은 눌리면 자기만 줄어든다(SEED `clearButton`의 `scaleScope: self`). 입력 전체나 바깥 표면을 줄이면 지우기를 누를 때마다 입력 상자가 같이 흔들린다. input-button의 지우기 탭 영역도 search-input처럼 44dp로 넓히되, 아이콘 위치와 이웃 간격이 그대로이도록 넓힌 만큼 양옆 간격 위로 겹친다.
 - `medium`·`responsive` 크기는 만들지 않았다. SEED가 데스크톱 전용이라고 적었다.
 - segmented 입력은 주민등록번호·카드번호 두 형식만 공개하고 칸 엔진(`SegmentedTextInput` 등)은 `internal`로 둔다. 칸 수·자리 수·가림 위치가 형식마다 정해진 값이라 일반 칸 입력으로 열면 가린 칸 규칙을 호출하는 쪽이 어길 수 있고, 한 번 공개한 엔진 API는 바꾸기 어렵다.
-- 칸은 `BasicSecureTextField`가 아니라 `BasicTextField`에 `OutputTransformation`(점)과 `password()` 의미 정보를 써서 가린다. `BasicSecureTextField`는 `ContentType.Password`를 붙여 자동완성·저장 제안 대상이 된다. 같은 이유로 가린 칸 키보드도 `KeyboardType.NumberPassword`가 아니라 `Number`다. Compose foundation 1.12.0은 `NumberPassword`에도 `ContentType.Password`를 붙인다.
+- 칸은 `BasicSecureTextField`가 아니라 `BasicTextField`에 `OutputTransformation`(점)과 `password()` 의미 정보를 써서 가린다. `BasicSecureTextField`는 `ContentType.Password`를 붙여 자동완성·저장 제안 대상이 된다.
+- 가린 칸 키보드는 `KeyboardType.NumberPassword`(자동 수정 끔), 보이는 칸은 `Number`다(사용자 결정 2026-11-19). `NumberPassword`는 키보드에 민감한 값임을 알려 입력을 학습·제안하지 않게 한다. Compose foundation 1.12.0은 `NumberPassword`에 `ContentType.Password`를 붙이지만, 가린 칸 바깥 의미 정보의 `contentDataType = ContentDataType.None`이 텍스트 필드의 값을 덮고 `AndroidAutofillManager`는 None인 노드를 자동완성 대상에서 뺀다. 한 노드 안에서는 바깥 modifier의 의미 정보가 이기므로, 텍스트 필드가 변환 전 숫자를 넣는 `inputText`도 같은 자리에서 점으로 덮는다.
 - 가린 칸은 자동완성에서 뺀다. `contentDataType = ContentDataType.None`을 주고 `ContentType`은 붙이지 않으며, 가린 칸에 자동완성 종류가 NONE이 아닌 값이 들어오면 `require`로 막는다. 자동완성 서비스가 가린 값을 읽거나 저장 제안에 담지 않게 하려는 것이다. 보이는 칸(생년월일, 카드번호 첫 칸)만 자동완성을 받는다.
 - 저장 상태(savedInstanceState)에는 가린 값까지 남긴다. 회전·프로세스 종료 뒤에도 입력이 유지되는 대신 민감한 값이 Bundle에 들어간다는 것을 알고 사용자가 정했다([스펙 §5](../../../superpowers/specs/2026-11-17-design-system-text-inputs-design.md)). 상태 홀더 `toString`은 값을 내지 않는다.
 - 칸 줄은 `LayoutDirection.Ltr`로 고정한다. 숫자 칸의 순서가 RTL 로케일에서 뒤집히면 주민등록번호·카드번호의 자리 순서가 달라 보인다.
 - `clear()`는 상태 홀더에 있고 부르는 책임은 쓰는 화면에 있다. 입력이 사라질 때 지울지는 화면의 수집 목적에 달려 있어 컴포넌트가 알 수 없다.
 - 칸 전체를 바꾸는 편집(자동완성, 접근성 `SetText`)은 앞뒤 공통부분 비교가 아니라 `TextFieldBuffer.changes`로 알아본다. 비교로 하면 새 값이 현재 칸 내용으로 시작할 때 이어 붙인 입력으로 읽혀 값이 깨진다.
 - 빈 칸의 접근성 이름은 합쳐진 의미 전용 자식에서 "라벨, placeholder"로 읽히고, placeholder `Text`는 의미 정보에서 지운다. placeholder가 의미 전용 자식을 완전히 덮으면 자식이 트리에서 빠지기 때문이다(실기기에서 확인).
-- 자리 수를 넘친 입력을 다음 칸으로 넘기는 일은 상태 값과 `LaunchedEffect` 키가 아니라 `Channel`로 한다. 상태 방식은 효과가 다시 돌지 않았고 원인은 찾지 못했다.
+- 자리 수를 넘친 입력을 다음 칸으로 넘기는 일은 `Channel`로 한다. 입력 변환 도중에 오는 값을 놓치지 않고 차례로 처리하기 때문이다. 상태 값 방식을 쓰지 않은 사정은 [미결 항목](../../../synthesis/open-questions.md)의 "segmented 넘친 입력"에 있다.
 - 접미사가 있는 카드번호는 폭이 대략 330dp 아래에서 빠듯하다. SEED 값(칸 크기·간격·여백)에서 그대로 나온다.
 - 실기기 확인(Samsung SM-A356N, 삼성 패스 자동완성, 삼성 키보드, `app-preview`): 가린 칸은 "••••"로 나오고 password=true이며 숫자 키패드가 뜬다. 카드번호 네 칸을 다 채우고 화면을 나가도 자동완성 저장 UI가 뜨지 않았다(`dumpsys autofill`의 showsSaveUi=false). 빈 둘째 칸에서 소프트 키보드 Backspace는 첫 칸의 마지막 숫자를 지우고 포커스를 그리로 옮긴다. 입력하면 칸이 자동으로 넘어간다. 빈 칸은 "카드번호 1-4번째 자리, 0000"으로 읽힌다. 기기가 삼성 패스를 써서 구글 자동완성은 확인하지 못했다. 숫자 키패드에 언어 전환이 없어 한글 조합 중 칸 이동은 재현하지 못했다.
 - 주민등록번호·카드번호 입력을 쓰는 화면은 수집 목적, 보존 기간, 동의를 자기 스펙에 적는다.
