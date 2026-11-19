@@ -4,4 +4,6 @@
     <string name="designsystem_field_required">필수</string>
     <string name="designsystem_field_character_count">%1$d/%2$d자</string>
     <string name="designsystem_field_character_count_unbounded">%1$d자</string>
+    <string name="designsystem_search">검색</string>
+    <string name="designsystem_clear">지우기</string>
 </resources>
