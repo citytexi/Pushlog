@@ -27,4 +27,12 @@ internal class SegmentedTextFieldStates(
         require(values.size == fields.size) { "values size does not match fields size" }
         fields.forEachIndexed { index, field -> field.setTextAndPlaceCursorAtEnd(values[index]) }
     }
+
+    /** 값이 바뀐 칸만 쓴다. 그대로인 칸은 선택 구간과 되돌리기 기록이 남는다. */
+    fun setChanged(values: List<String>) {
+        require(values.size == fields.size) { "values size does not match fields size" }
+        fields.forEachIndexed { index, field ->
+            if (field.text.toString() != values[index]) field.setTextAndPlaceCursorAtEnd(values[index])
+        }
+    }
 }

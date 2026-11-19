@@ -45,8 +45,10 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDataType
 import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.inputText
 import androidx.compose.ui.semantics.password
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -174,15 +176,17 @@ private fun SegmentField(
                     onFocusChange(it.isFocused)
                 }.onPreviewKeyEvent { event ->
                     event.type == KeyEventType.KeyDown && editable && position.handleKey(event.key)
-                }.segmentSemantics(slot),
+                }.segmentSemantics(slot, state),
         enabled = enabled,
         readOnly = readOnly,
         inputTransformation = transformation,
         textStyle = style.copy(color = colors.value, textAlign = if (slot.centered) TextAlign.Center else TextAlign.Start),
-        // NumberPassword를 쓰면 BasicTextField가 ContentType.Password를 붙여 자동완성이 비밀번호로 본다. 가림은 출력 변환이 맡는다.
+        // 가린 칸은 NumberPassword로 키보드에 민감한 값임을 알린다. 이때 BasicTextField가 붙이는 ContentType.Password는
+        // segmentSemantics의 바깥 의미 정보(contentDataType = None)가 덮어 자동완성 대상에서 빠진다.
         keyboardOptions =
             KeyboardOptions(
-                keyboardType = KeyboardType.Number,
+                keyboardType = if (slot.masked) KeyboardType.NumberPassword else KeyboardType.Number,
+                autoCorrectEnabled = if (slot.masked) false else null,
                 imeAction = if (position.isLast) ImeAction.Done else ImeAction.Next,
             ),
         lineLimits = TextFieldLineLimits.SingleLine,
@@ -192,12 +196,20 @@ private fun SegmentField(
     )
 }
 
-/** 가린 칸은 비밀번호처럼 읽히고 자동완성 대상에서 빠진다. 보이는 칸은 [SegmentAutofill]대로 자동완성 종류를 붙인다. */
-private fun Modifier.segmentSemantics(slot: SegmentSlot.Input): Modifier =
+/**
+ * 가린 칸은 비밀번호처럼 읽히고 자동완성 대상에서 빠진다. 보이는 칸은 [SegmentAutofill]대로 자동완성 종류를 붙인다.
+ * 한 노드 안에서는 바깥 modifier의 의미 정보가 이기므로, 텍스트 필드가 붙이는 ContentType.Password와
+ * 변환 전 값(inputText)을 여기서 덮는다.
+ */
+private fun Modifier.segmentSemantics(
+    slot: SegmentSlot.Input,
+    state: TextFieldState,
+): Modifier =
     semantics {
         if (slot.masked) {
             password()
             contentDataType = ContentDataType.None
+            inputText = AnnotatedString(DOT.repeat(state.text.length))
         } else {
             slot.autofill.contentType?.let { contentType = it }
         }
@@ -333,7 +345,7 @@ private fun applyOverflow(
     val digits = digitsOnly(rest)
     val current = states.values
     val next = distribute(digits, index + 1, current, lengths, masked)
-    if (next != current) states.setAll(next)
+    states.setChanged(next)
     val last = lastDistributedIndex(digits.length, index + 1, lengths, masked) ?: index
     val target =
         if (next[last].length < lengths[last]) {

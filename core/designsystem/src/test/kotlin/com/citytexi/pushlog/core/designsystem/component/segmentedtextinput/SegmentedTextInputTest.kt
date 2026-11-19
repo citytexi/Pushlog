@@ -223,16 +223,40 @@ class SegmentedTextInputTest {
     }
 
     @Test
-    fun readOnlyBlocksInputAndMovesButTakesFocus() {
+    fun readOnlyBlocksEditsButTakesFocus() {
         val state = PushlogCardNumberState()
-        state.fields.setAll(listOf("1234", "", "", ""))
+        state.fields.setAll(listOf("1234", "567", "", ""))
         card(state, readOnly = true)
-        runCatching { cardSegment(1).performTextInput("5") }
+        runCatching { cardSegment(1).performTextInput("8") }
         cardSegment(1).requestFocus()
         cardSegment(1).assertIsFocused()
-        cardSegment(1).performKeyInput { pressKey(Key.Backspace) }
-        assertEquals(listOf("1234", "", "", ""), state.values)
+        // 넷째 자리를 쳐도 값이 그대로이고 다음 칸으로 넘어가지 않는다.
+        runCatching { cardSegment(1).performTextInput("8") }
+        assertEquals("567", state.values[1])
         cardSegment(1).assertIsFocused()
+        // ←·→는 엔진이 처리하지 않는다. 경계에서 남은 키는 Compose 기본 방향 포커스 이동이 받아 옆 칸으로 간다.
+        cardSegment(1).performTextInputSelection(TextRange(0))
+        cardSegment(1).performKeyInput { pressKey(Key.DirectionLeft) }
+        cardSegment(0).assertIsFocused()
+        cardSegment(0).performTextInputSelection(TextRange(4))
+        cardSegment(0).performKeyInput { pressKey(Key.DirectionRight) }
+        cardSegment(1).assertIsFocused()
+        cardSegment(2).requestFocus()
+        cardSegment(2).performKeyInput { pressKey(Key.Backspace) }
+        assertEquals(listOf("1234", "567", "", ""), state.values)
+        cardSegment(2).assertIsFocused()
+    }
+
+    @Test
+    fun nonDigitInputIsRejected() {
+        val state = PushlogResidentNumberState(PushlogResidentNumberDigits.THIRTEEN)
+        state.fields.setAll(listOf("90", "12"))
+        resident(state)
+        listOf(BIRTH_LABEL, RESIDENT_BACK_LABEL).forEach { label ->
+            segment(label).requestFocus()
+            NON_DIGITS.forEach { segment(label).performTextInput(it) }
+        }
+        assertEquals(listOf("90", "12"), state.values)
     }
 
     @Test
@@ -280,8 +304,9 @@ class SegmentedTextInputTest {
         assertEquals(ContentType.BirthDateFull, contentTypeOf(segment(BIRTH_LABEL)))
         assertEquals(ContentType.CreditCardNumber, contentTypeOf(cardSegment(0)))
         assertNull(contentTypeOf(cardSegment(1)))
+        // 가린 칸은 NumberPassword라 텍스트 필드가 ContentType.Password를 붙인다. 자동완성은 contentDataType = None을 보고 건너뛴다.
         listOf(segment(RESIDENT_BACK_LABEL), cardSegment(2), cardSegment(3)).forEach { masked ->
-            assertNull(contentTypeOf(masked))
+            assertEquals(ContentType.Password, contentTypeOf(masked))
             assertEquals(ContentDataType.None, masked.fetchSemanticsNode().config[SemanticsProperties.ContentDataType])
         }
     }
@@ -315,6 +340,12 @@ class SegmentedTextInputTest {
         val first = cardSegment(0).fetchSemanticsNode().boundsInRoot.left
         val second = cardSegment(1).fetchSemanticsNode().boundsInRoot.left
         assertTrue("$first < $second", first < second)
+        cardSegment(0).requestFocus()
+        cardSegment(0).performTextInputSelection(TextRange(4))
+        cardSegment(0).performKeyInput { pressKey(Key.DirectionRight) }
+        cardSegment(1).assertIsFocused()
+        cardSegment(1).performKeyInput { pressKey(Key.DirectionLeft) }
+        cardSegment(0).assertIsFocused()
         cardSegment(1).requestFocus()
         cardSegment(1).performKeyInput { pressKey(Key.Backspace) }
         assertEquals("123", state.values[0])
@@ -358,7 +389,7 @@ class SegmentedTextInputTest {
     private fun rememberResident(): PushlogResidentNumberState =
         rememberSaveable(saver = PushlogResidentNumberState.Saver) { PushlogResidentNumberState(PushlogResidentNumberDigits.THIRTEEN) }
 
-    /** 가린 칸 값의 어떤 조각도 편집 글자·글자에 없고, 가린 칸에는 Password가 있다. */
+    /** 가린 칸 값의 어떤 조각도 편집 글자·입력 글자·글자에 없고, 가린 칸에는 Password가 있다. */
     private fun assertMaskedHidden() {
         val nodes = composeRule.onAllNodes(SemanticsMatcher("any") { true }, useUnmergedTree = true).fetchSemanticsNodes()
         val texts =
@@ -367,7 +398,10 @@ class SegmentedTextInputTest {
                     .getOrNull(SemanticsProperties.Text)
                     .orEmpty()
                     .map { it.text } +
-                    listOfNotNull(node.config.getOrNull(SemanticsProperties.EditableText)?.text) +
+                    listOfNotNull(
+                        node.config.getOrNull(SemanticsProperties.EditableText)?.text,
+                        node.config.getOrNull(SemanticsProperties.InputText)?.text,
+                    ) +
                     node.config.getOrNull(SemanticsProperties.ContentDescription).orEmpty()
             }
         MASKED_FRAGMENTS.forEach { fragment -> assertFalse("$fragment in $texts", texts.any { it.contains(fragment) }) }
@@ -376,6 +410,7 @@ class SegmentedTextInputTest {
         backs.forEach { back ->
             assertNotNull(back.config.getOrNull(SemanticsProperties.Password))
             assertEquals("•••••••", back.config[SemanticsProperties.EditableText].text)
+            assertEquals("•••••••", back.config[SemanticsProperties.InputText].text)
         }
     }
 
@@ -388,6 +423,7 @@ class SegmentedTextInputTest {
         const val BIRTH_LABEL = "생년월일 6자리"
         const val RESIDENT_BACK_LABEL = "주민등록번호 뒷자리 7자리"
         val MASKED_FRAGMENTS = listOf("1234567", "1234", "9876543", "9876")
+        val NON_DIGITS = listOf("가", "-", " ")
         const val FRAME_MILLIS = 16L
     }
 }

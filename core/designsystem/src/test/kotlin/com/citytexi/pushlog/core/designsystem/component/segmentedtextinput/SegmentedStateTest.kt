@@ -3,6 +3,7 @@ package com.citytexi.pushlog.core.designsystem.component.segmentedtextinput
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.text.TextRange
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -63,6 +64,16 @@ class SegmentedStateTest {
             assertNull(restore(emptyList<Any>()))
         }
         assertNull(PushlogResidentNumberState.Saver.restore(listOf("SIX", "1", "2")))
+    }
+
+    @Test
+    fun setChangedKeepsUnchangedFieldSelection() {
+        val states = SegmentedTextFieldStates(listOf(4, 4), listOf("1234", "56"))
+        states.fields[0].edit { selection = TextRange(1) }
+        states.setChanged(listOf("1234", "5678"))
+        assertEquals(listOf("1234", "5678"), states.values)
+        assertEquals(TextRange(1), states.fields[0].selection)
+        assertEquals(TextRange(4), states.fields[1].selection)
     }
 
     @Test
