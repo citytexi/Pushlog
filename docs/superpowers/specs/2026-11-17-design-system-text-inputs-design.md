@@ -172,7 +172,7 @@ A를 고른 이유: 상태를 IME와 같은 쪽에서 들고 있어 조합 중 �
   - 마지막 칸이 차면 포커스는 그 칸에 그대로 두고 더 들어오는 입력은 버린다. 완료 콜백은 두지 않는다. 호출하는 쪽이 상태 값을 보고 판단한다(설계자 판단).
 - 모양: 크기 `large`만. 최소 높이 52, `r3`, 여백 `x4`, 간격 `x2Half`, 글자 `t5`. 테두리는 6.3과 같고, 칸 중 하나라도 포커스면 포커스 테두리를 그린다. 구분자·점·placeholder 색은 정의 파일대로.
 - 가린 값은 접근성 트리에 글자로 나오지 않는다(비밀번호 입력처럼 자리 수만). `toString()`이나 로그로 새지 않게 상태 홀더의 `toString`을 값 없이 둔다. 저장 상태에는 들어간다(§5).
-- 키보드는 숫자(`KeyboardType.NumberPassword`는 가린 칸, `Number`는 나머지). 빌더가 기기에서 확인한다.
+- 키보드는 모든 칸이 `KeyboardType.Number`다. Compose foundation 1.12.0에서 `NumberPassword`를 주면 텍스트 필드가 `ContentType.Password`를 붙이는데(TextFieldDecoratorModifier), 가린 칸을 자동완성에서 뺀다는 위 규칙과 어긋난다. 가리기는 `OutputTransformation` 점과 `password()` 의미 정보로, 자동완성 제외는 `contentDataType = ContentDataType.None`으로 한다.
 - 칸 엔진은 `internal`이다. 값 분배 규칙(자리 수, 붙여넣기, 날짜 변환, 가린 칸 멈춤)은 엔진 단위 테스트로, 칸 사이 포커스 이동과 키 입력은 Compose UI 테스트로 덮는다(§7).
 
 ### 6.7 #35 선택 컨트롤 그룹과 `field`
