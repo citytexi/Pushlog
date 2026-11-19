@@ -67,6 +67,9 @@ import kotlinx.coroutines.channels.Channel
 
 private const val DOT = "•"
 
+// field 읽기 문구와 같은 구분자. TalkBack이 쉼표에서 잠깐 멈춘다.
+private const val SPOKEN_SEPARATOR = ", "
+
 /**
  * 칸 여러 개로 나눈 숫자 입력. 칸 사이 이동, 붙여넣기 분배, 가린 칸 규칙을 맡는다.
  * 숫자는 왼쪽부터 읽으므로 RTL에서도 칸 순서를 뒤집지 않는다.
@@ -209,8 +212,11 @@ private fun SegmentDecoration(
     innerTextField: @Composable () -> Unit,
 ) {
     Box(contentAlignment = Alignment.CenterStart) {
-        // 이름은 contentDescription이 아니라 자식 글자로 합친다. 다른 자식보다 먼저 그려 덮이지 않게 한다.
-        PushlogFieldSpokenText(slot.label, Modifier.matchParentSize())
+        // 이름은 contentDescription이 아니라 자식 글자로 합친다. 칸 너비가 placeholder 너비와 같아 placeholder 글자 노드가
+        // 이 자식을 다 덮으면 이 자식이 접근성 트리에서 빠지므로, placeholder는 의미 정보에서 빼고 그 글을 여기에 잇는다.
+        // 생년월일 칸처럼 이름과 같은 placeholder는 두 번 읽히지 않게 뺀다.
+        val placeholder = slot.placeholder?.takeIf { state.text.isEmpty() && it != slot.label }
+        PushlogFieldSpokenText(listOfNotNull(slot.label, placeholder).joinToString(SPOKEN_SEPARATOR), Modifier.matchParentSize())
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = if (slot.centered) Arrangement.Center else Arrangement.Start,
@@ -235,7 +241,14 @@ private fun SegmentPlaceholder(
 ) {
     when {
         slot.placeholder != null ->
-            Text(slot.placeholder, style = style, color = colors.decor, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                slot.placeholder,
+                Modifier.clearAndSetSemantics {},
+                style = style,
+                color = colors.decor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         slot.placeholderDots > 0 -> DecorText(DOT.repeat(slot.placeholderDots), colors.decor)
     }
 }

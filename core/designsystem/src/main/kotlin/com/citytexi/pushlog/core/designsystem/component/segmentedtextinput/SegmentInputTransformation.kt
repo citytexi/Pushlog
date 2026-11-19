@@ -1,5 +1,6 @@
 package com.citytexi.pushlog.core.designsystem.component.segmentedtextinput
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldBuffer
 import androidx.compose.ui.text.TextRange
@@ -50,14 +51,19 @@ internal class SegmentInputTransformation(
         selection = TextRange(result.length)
     }
 
-    /** 바뀌기 전과 같은 앞뒤를 뺀 가운데. 같은 글자를 겹쳐 넣으면 실제보다 짧게 잡힐 수 있지만 두 글자 이상인지 가르는 데는 충분하다. */
-    private fun TextFieldBuffer.insertedText(): String {
-        val before = originalText
-        val after = asCharSequence()
-        val prefix = before.commonPrefixWith(after).length
-        val suffix = before.drop(prefix).commonSuffixWith(after.drop(prefix)).length
-        return after.subSequence(prefix, after.length - suffix).toString()
-    }
+    /**
+     * 이번 편집으로 들어온 글자. 앞뒤 공통부분 비교로 구하면 전체 교체(자동완성 replaceAll, 접근성 SetText)에서
+     * 새 값이 기존 값으로 시작할 때 앞부분을 놓친다("4" → "4111…"이 "111…"로 잡힘). 그래서 기록된 변경 구간을 쓴다.
+     */
+    @OptIn(ExperimentalFoundationApi::class)
+    private fun TextFieldBuffer.insertedText(): String =
+        buildString {
+            val text = asCharSequence()
+            for (change in 0 until changes.changeCount) {
+                val range = changes.getRange(change)
+                append(text, range.min, range.max)
+            }
+        }
 }
 
 private fun isDigit(char: Char): Boolean = char in '0'..'9'

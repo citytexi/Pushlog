@@ -75,8 +75,11 @@ class SegmentedTextInputTest {
         }
     }
 
-    /** 칸 노드는 이름이 자식 글자로 합쳐지므로 그 글자와 편집 글자 유무로 찾는다(읽기 전용·비활성은 SetText가 없다). */
-    private fun segment(label: String): SemanticsNodeInteraction = composeRule.onNode(hasText(label) and editable)
+    /**
+     * 칸 노드는 이름이 자식 글자로 합쳐지므로 그 글자와 편집 글자 유무로 찾는다(읽기 전용·비활성은 SetText가 없다).
+     * 빈 칸은 이름 뒤에 placeholder가 붙으므로 부분 일치로 찾는다.
+     */
+    private fun segment(label: String): SemanticsNodeInteraction = composeRule.onNode(hasText(label, substring = true) and editable)
 
     private fun cardSegment(index: Int) = segment(CARD_LABELS[index])
 
@@ -151,6 +154,36 @@ class SegmentedTextInputTest {
     }
 
     @Test
+    fun replaceAllStartingWithCurrentValueUsesWholeValue() {
+        val state = PushlogCardNumberState()
+        state.fields.setAll(listOf("4", "", "", ""))
+        card(state)
+        cardSegment(0).performTextReplacement("4111111111111111")
+        composeRule.waitForIdle()
+        assertEquals(listOf("4111", "1111", "", ""), state.values)
+    }
+
+    @Test
+    fun birthDateReplaceAllStartingWithCurrentValueIsNormalized() {
+        val state = PushlogResidentNumberState(PushlogResidentNumberDigits.THIRTEEN)
+        state.fields.setAll(listOf("1", ""))
+        resident(state)
+        segment(BIRTH_LABEL).performTextReplacement("1990-01-01")
+        composeRule.waitForIdle()
+        assertEquals("900101", state.values[0])
+    }
+
+    @Test
+    fun maskedRejectsReplaceAllStartingWithCurrentValue() {
+        val state = PushlogCardNumberState()
+        state.fields.setAll(listOf("", "", "9", ""))
+        card(state)
+        cardSegment(2).performTextReplacement("9012")
+        composeRule.waitForIdle()
+        assertEquals("9", state.values[2])
+    }
+
+    @Test
     fun pasteIntoMaskedSegmentIsIgnored() {
         val state = PushlogCardNumberState()
         card(state)
@@ -201,6 +234,28 @@ class SegmentedTextInputTest {
         assertEquals(listOf("1234", "", "", ""), state.values)
         cardSegment(1).assertIsFocused()
     }
+
+    @Test
+    fun emptyCellReadsLabelThenPlaceholderOnce() {
+        val resident = PushlogResidentNumberState(PushlogResidentNumberDigits.SEVEN)
+        val card = PushlogCardNumberState()
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                Column {
+                    PushlogResidentNumberInput(resident, Modifier.width(400.dp))
+                    PushlogCardNumberInput(card, Modifier.width(400.dp))
+                }
+            }
+        }
+        assertEquals(listOf("카드번호 1-4번째 자리, 0000"), textsOf(cardSegment(0)))
+        assertEquals(listOf(BIRTH_LABEL), textsOf(segment(BIRTH_LABEL)))
+        assertEquals(listOf(CARD_LABELS[2]), textsOf(cardSegment(2)))
+        composeRule.runOnIdle { card.fields.setAll(listOf("12", "", "", "")) }
+        assertEquals(listOf(CARD_LABELS[0]), textsOf(cardSegment(0)))
+    }
+
+    private fun textsOf(node: SemanticsNodeInteraction): List<String> =
+        node.fetchSemanticsNode().config[SemanticsProperties.Text].map { it.text }
 
     @Test
     fun maskedValueNotInSemantics() {
