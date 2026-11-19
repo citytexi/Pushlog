@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import com.citytexi.pushlog.preview.component.loadingContentPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogActionButtonPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogCardNumberInputPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogCheckboxGroupPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogCheckboxPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogCheckmarkPreviewEntry
@@ -16,6 +17,7 @@ import com.citytexi.pushlog.preview.component.pushlogInputButtonPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadioGroupPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadioPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogRadiomarkPreviewEntry
+import com.citytexi.pushlog.preview.component.pushlogResidentNumberInputPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSearchInputPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSegmentedControlPreviewEntry
 import com.citytexi.pushlog.preview.component.pushlogSelectBoxGroupPreviewEntry
@@ -63,6 +65,8 @@ fun previewEntryProvider(
         pushlogTextInputPreviewEntry(onBack)
         pushlogSearchInputPreviewEntry(onBack)
         pushlogInputButtonPreviewEntry(onBack)
+        pushlogResidentNumberInputPreviewEntry(onBack)
+        pushlogCardNumberInputPreviewEntry(onBack)
         pushlogTextAreaPreviewEntry(onBack)
         loadingContentPreviewEntry(onBack)
     }

@@ -100,4 +100,22 @@ class SegmentRulesTest {
         assertEquals(false, error.message.orEmpty().contains("55"))
         assertEquals(false, error.message.orEmpty().contains("1234"))
     }
+
+    @Test
+    fun lastDistributedIndexMatchesDistribute() {
+        assertEquals(1, lastDistributedIndex(16, 0, lengths, masked))
+        assertEquals(1, lastDistributedIndex(6, 0, lengths, masked))
+        assertEquals(0, lastDistributedIndex(4, 0, lengths, masked))
+        assertEquals(1, lastDistributedIndex(3, 1, lengths, masked))
+        assertNull(lastDistributedIndex(4, 2, lengths, masked))
+        assertNull(lastDistributedIndex(0, 0, lengths, masked))
+        assertNull(lastDistributedIndex(4, 4, lengths, masked))
+    }
+
+    @Test
+    fun maskedSlotCannotBeAutofilled() {
+        assertThrows(IllegalArgumentException::class.java) {
+            SegmentSlot.Input(length = 4, label = "x", masked = true, autofill = SegmentAutofill.CREDIT_CARD_NUMBER)
+        }
+    }
 }

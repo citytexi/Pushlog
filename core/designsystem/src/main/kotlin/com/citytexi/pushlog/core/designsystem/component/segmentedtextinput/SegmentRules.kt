@@ -47,3 +47,25 @@ internal fun distribute(
     }
     return result
 }
+
+/**
+ * [distribute]가 같은 인자로 마지막으로 채우는 입력 칸. 아무 칸도 채우지 않으면 null.
+ * 포커스를 어디로 옮길지 정할 때 쓴다. 숫자 자체는 받지 않고 개수만 받는다.
+ */
+internal fun lastDistributedIndex(
+    digitCount: Int,
+    startIndex: Int,
+    lengths: List<Int>,
+    masked: List<Boolean>,
+): Int? {
+    require(lengths.size == masked.size) { "칸 목록 크기가 다르다" }
+    if (startIndex !in lengths.indices || masked[startIndex] || digitCount <= 0) return null
+    var remaining = digitCount
+    var last = startIndex
+    for (index in startIndex until lengths.size) {
+        if (remaining <= 0 || (index > startIndex && masked[index])) break
+        last = index
+        remaining -= lengths[index]
+    }
+    return last
+}

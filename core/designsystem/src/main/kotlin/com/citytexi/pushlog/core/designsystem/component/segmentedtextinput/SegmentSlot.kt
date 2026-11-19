@@ -15,7 +15,12 @@ internal sealed interface SegmentSlot {
         val fill: Boolean = false,
         /** SEED align="center". */
         val centered: Boolean = false,
-    ) : SegmentSlot
+    ) : SegmentSlot {
+        init {
+            // 가린 칸이 자동완성 대상이 되면 서비스가 가린 값을 읽거나 저장 제안에 담는다.
+            require(!masked || autofill == SegmentAutofill.NONE) { "masked segment must not be autofilled" }
+        }
+    }
 
     data class StaticDots(
         val count: Int,
