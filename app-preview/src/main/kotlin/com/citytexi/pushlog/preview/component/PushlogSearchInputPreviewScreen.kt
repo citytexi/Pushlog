@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.citytexi.pushlog.core.designsystem.component.searchinput.PushlogSearchInput
 import com.citytexi.pushlog.core.designsystem.theme.PushlogPreviewTheme
+import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import com.citytexi.pushlog.core.ui.preview.PushlogPreview
 import com.citytexi.pushlog.preview.foundation.PreviewBody
 import com.citytexi.pushlog.preview.foundation.PreviewSectionTitle
@@ -47,7 +48,11 @@ private fun SubmitSection() {
     PreviewSectionTitle("submit")
     var submitted by remember { mutableStateOf<String?>(null) }
     PushlogSearchInput(remember { TextFieldState() }, onSubmit = { submitted = it }, placeholder = "Type and press search")
-    Text(submitted?.let { "Submitted: \"$it\"" } ?: "Nothing submitted yet")
+    Text(
+        submitted?.let { "Submitted: \"$it\"" } ?: "Nothing submitted yet",
+        style = PushlogTheme.typography.t4Medium,
+        color = PushlogTheme.color.fg.neutralMuted,
+    )
 }
 
 @PushlogPreview

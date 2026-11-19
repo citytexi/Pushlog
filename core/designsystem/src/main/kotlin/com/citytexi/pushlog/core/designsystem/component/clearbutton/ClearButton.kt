@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.citytexi.pushlog.core.designsystem.component.pressable.PushlogPressableSurface
+import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 
 /** 투명 표면에 지우기 아이콘을 그린다. 눌리면 자기만 줄어든다(SEED clearButton scaleScope: self). */
 @Composable
@@ -25,8 +26,8 @@ internal fun ClearButton(
     touchPadding: Dp = 0.dp,
 ) {
     PushlogPressableSurface(
-        color = Color.Transparent,
-        pressedColor = Color.Transparent,
+        color = PushlogTheme.color.bg.transparent,
+        pressedColor = PushlogTheme.color.bg.transparent,
         shape = CircleShape,
         enabled = true,
         onClick = onClick,

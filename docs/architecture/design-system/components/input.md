@@ -28,6 +28,7 @@ tags: [architecture, design-system]
 - 검색 키는 값이 비어 있어도 `onSubmit("")`을 부른다. SEED가 그렇게 동작하고, 화면은 빈 값 제출을 "검색 조건 해제"로 쓸 수 있어야 하기 때문이다. 막는 일은 호출하는 쪽이 정한다.
 - `PushlogInputButton`은 두 층을 겹친다. 아래층은 탭·눌림 색을 맡는 표면, 위층은 내용만 담은 `Row`로 탭 modifier가 없다. 한 층으로 하면 지우기 버튼 탭이 바깥 표면의 눌림까지 일으키고, 표면 전체가 줄어들어 SEED의 `scaleScope: content`(표면은 그대로, 내용만 줄어듦)도 맞출 수 없다. 두 층이면 지우기 버튼이 자기 탭을 먼저 받고, 빈 곳 터치만 아래 표면으로 간다.
 - `PushlogInputButton`의 테두리는 두 층 사이의 형제 레이어에 그린다. `PushlogPressableSurface`가 호출하는 쪽 modifier보다 뒤에 배경을 그리므로, 표면 modifier에 테두리를 넣으면 `bg.disabled`나 눌림 색에 덮인다. 이 레이어에는 탭·의미 정보가 없어 터치는 아래로 간다.
+- `PushlogInputButton`의 접근성 이름은 값이 있으면 앞뒤 글자를 보이는 순서(`prefixText 값 suffixText`)로 값에 붙인다. 앞뒤 글자는 화면에서 값의 단위·통화라 빼면 "1,000"만 읽혀 뜻이 달라진다. placeholder일 때는 붙이지 않는다. 힌트 옆 단위는 소음이고, 값이 없는데 "₩ 금액 원"으로 읽히면 값이 있는 것처럼 들린다.
 - 지우기 버튼(`ClearButton`)은 눌리면 자기만 줄어든다(SEED `clearButton`의 `scaleScope: self`). 입력 전체나 바깥 표면을 줄이면 지우기를 누를 때마다 입력 상자가 같이 흔들린다. input-button의 지우기 탭 영역도 search-input처럼 44dp로 넓히되, 아이콘 위치와 이웃 간격이 그대로이도록 넓힌 만큼 양옆 간격 위로 겹친다.
 - `medium`·`responsive` 크기는 만들지 않았다. SEED가 데스크톱 전용이라고 적었다.
 - 주민등록번호·카드번호 입력을 쓰는 화면은 수집 목적, 보존 기간, 동의를 자기 스펙에 적는다.

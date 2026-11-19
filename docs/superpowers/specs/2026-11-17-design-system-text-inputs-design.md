@@ -149,7 +149,7 @@ A를 고른 이유: 상태를 IME와 같은 쪽에서 들고 있어 조합 중 �
 - 테두리는 6.3과 같다. 기본 1px 위에 오류 2px가 100ms로 겹친다. 포커스 테두리는 없다.
 - 지우기 버튼은 바깥 표면 안에 넣지 않고 형제로 겹친다. 지우기를 눌러도 바깥이 눌리거나 줄지 않아야 한다. 지우기 버튼은 자기만 줄어든다(SEED `clearButton.scaleScope: self`). 비활성·읽기 전용이면 보이지 않는다.
 - 읽기 전용이면 배경 `bg.disabled`이고 눌리지 않는다. 값 색은 그대로 `fg.neutral`이다.
-- 접근성: 역할 Button. 이름은 field 라벨 + 값(없으면 placeholder)이다. `contentDescription`을 주면 field 라벨 대신 그 값이 이름의 앞부분이 된다(인자가 이긴다). field 밖에서 쓰면 `contentDescription`을 줘야 한다. 값 글자와 placeholder 글자는 따로 읽히지 않는다(SEED 문서).
+- 접근성: 역할 Button. 이름은 field 라벨 + 값(없으면 placeholder)이다. `contentDescription`을 주면 field 라벨 대신 그 값이 이름의 앞부분이 된다(인자가 이긴다). field 밖에서 쓰면 `contentDescription`을 줘야 한다. 값이 있으면 앞뒤 글자를 보이는 순서대로 값에 붙인다. placeholder일 때는 붙이지 않는다. 값 글자와 placeholder 글자는 따로 읽히지 않는다(SEED 문서).
 
 ### 6.6 segmented: `PushlogResidentNumberInput`, `PushlogCardNumberInput`
 

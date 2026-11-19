@@ -55,7 +55,8 @@ private const val NAME_SEPARATOR = ", "
  * 피커·시트를 여는 버튼. 글자 입력이 아니어서 값은 [value]로 받아 보여 주기만 하고, 누르면 [onClick]을 부른다.
  * [value]가 null이거나 비어 있으면 [placeholder]가 보인다. [onClear]를 주면 값이 있을 때 지우기 버튼이 보인다.
  * 읽기 전용이면 배경만 비활성 색이고 값 색은 그대로이며 눌리지 않는다.
- * 접근성 이름은 field 라벨(또는 [contentDescription]) + 값(없으면 placeholder)이다. field 밖에서는 [contentDescription]을 준다.
+ * 접근성 이름은 field 라벨(또는 [contentDescription]) + 값(없으면 placeholder)이다.
+ * 값이 있으면 [prefixText] 값 [suffixText] 순서로 붙이고, placeholder일 때는 붙이지 않는다. field 밖에서는 [contentDescription]을 준다.
  */
 @Composable
 fun PushlogInputButton(
@@ -81,10 +82,14 @@ fun PushlogInputButton(
     val color = PushlogTheme.color
     val pressable = enabled && !readOnly
     val shown = value?.takeIf { it.isNotEmpty() }
+    // 값이 있으면 보이는 순서대로 앞뒤 글자를 붙인다. placeholder 옆 단위는 소음이라 붙이지 않는다.
+    val spoken =
+        shown?.let { listOfNotNull(prefixText, it, suffixText).filter(String::isNotEmpty).joinToString(" ") }
+            ?: placeholder
     val name =
         listOfNotNull(
             contentDescription ?: field.label,
-            shown ?: placeholder,
+            spoken,
         ).joinToString(NAME_SEPARATOR).takeIf { it.isNotEmpty() }
     val semantics = Modifier.pushlogFieldSemantics(field, invalid, contentDescription = name)
     ResetPushlogFieldState {
@@ -124,7 +129,7 @@ fun PushlogInputButton(
     }
 }
 
-// 글자·아이콘은 이름에 이미 들어가 따로 읽히지 않게 숨긴다. 지우기 버튼만 의미 정보를 남긴다.
+// 값·placeholder·앞뒤 글자는 이름에 합쳐 읽히므로 따로 읽히지 않게 숨긴다(placeholder일 때 앞뒤 글자는 이름에서 빠진다). 아이콘은 장식이다. 지우기 버튼만 의미 정보를 남긴다.
 @Composable
 private fun RowScope.InputButtonContent(
     value: String?,

@@ -261,6 +261,33 @@ class PushlogInputButtonTest {
     }
 
     @Test
+    fun nameIncludesPrefixValueSuffixInVisibleOrder() {
+        show { PushlogInputButton(value = "1,000", onClick = {}, contentDescription = "가격", prefixText = "₩", suffixText = "원") }
+        assertEquals(listOf("가격, ₩ 1,000 원"), surfaceName())
+    }
+
+    @Test
+    fun nameIncludesOnlySuffix() {
+        show { PushlogInputButton(value = "1,000", onClick = {}, contentDescription = "가격", suffixText = "원") }
+        assertEquals(listOf("가격, 1,000 원"), surfaceName())
+    }
+
+    @Test
+    fun nameOmitsAffixesWhenPlaceholderShown() {
+        show {
+            PushlogInputButton(
+                value = null,
+                onClick = {},
+                placeholder = "금액",
+                contentDescription = "가격",
+                prefixText = "₩",
+                suffixText = "원",
+            )
+        }
+        assertEquals(listOf("가격, 금액"), surfaceName())
+    }
+
+    @Test
     fun inheritsFieldState() {
         var clicks = 0
         show {
