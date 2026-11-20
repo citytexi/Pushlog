@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsMatcher
@@ -23,6 +24,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
@@ -318,14 +320,21 @@ class SegmentedTextInputTest {
         composeRule.setContent {
             PushlogTheme(darkTheme = false) {
                 critical = PushlogTheme.color.stroke.criticalSolid
-                PushlogField(invalid = true, errorMessage = "확인") {
-                    PushlogCardNumberInput(PushlogCardNumberState(), Modifier.width(400.dp))
+                PushlogField(label = FIELD_LABEL, invalid = true, errorMessage = "확인") {
+                    PushlogCardNumberInput(PushlogCardNumberState(), Modifier.testTag(GROUP).width(400.dp))
                 }
             }
         }
         composeRule.mainClock.advanceTimeBy(200)
-        val group = composeRule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.Error))
-        assertEquals("확인", group.fetchSemanticsNode().config[SemanticsProperties.Error])
+        // 포커스는 칸이 받으므로 오류는 칸마다, field 라벨은 첫 칸에만 있다. 줄에는 없다.
+        CARD_LABELS.indices.forEach { index ->
+            assertEquals("확인", cardSegment(index).fetchSemanticsNode().config.getOrNull(SemanticsProperties.Error))
+        }
+        assertEquals(1, composeRule.onAllNodes(hasText(FIELD_LABEL, substring = true)).fetchSemanticsNodes().size)
+        composeRule.onNode(hasText(FIELD_LABEL, substring = true) and editable).assertExists()
+        val group = composeRule.onNodeWithTag(GROUP)
+        assertNull(group.fetchSemanticsNode().config.getOrNull(SemanticsProperties.Error))
+        assertNull(group.fetchSemanticsNode().config.getOrNull(SemanticsProperties.ContentDescription))
         composeRule.onRoot().captureToImage()
         composeRule.mainClock.advanceTimeBy(FRAME_MILLIS)
         val image = group.captureToImage().toPixelMap()
@@ -425,5 +434,7 @@ class SegmentedTextInputTest {
         val MASKED_FRAGMENTS = listOf("1234567", "1234", "9876543", "9876")
         val NON_DIGITS = listOf("가", "-", " ")
         const val FRAME_MILLIS = 16L
+        const val FIELD_LABEL = "결제 카드"
+        const val GROUP = "group"
     }
 }

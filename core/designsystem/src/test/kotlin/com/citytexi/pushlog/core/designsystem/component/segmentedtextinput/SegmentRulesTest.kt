@@ -29,6 +29,16 @@ class SegmentRulesTest {
     }
 
     @Test
+    fun birthDateLooseSeparatedFormats() {
+        assertEquals("900101", normalizeBirthDate("1990. 01. 01."))
+        assertEquals("900101", normalizeBirthDate("1990-1-1"))
+        assertEquals("901231", normalizeBirthDate("1990 / 12 / 31"))
+        assertNull(normalizeBirthDate("1990-01.01"))
+        assertNull(normalizeBirthDate("1990-001-01"))
+        assertNull(normalizeBirthDate("199011"))
+    }
+
+    @Test
     fun pasteFillsFromStartAndStopsBeforeMasked() {
         assertEquals(
             listOf("1234", "5678", "", ""),

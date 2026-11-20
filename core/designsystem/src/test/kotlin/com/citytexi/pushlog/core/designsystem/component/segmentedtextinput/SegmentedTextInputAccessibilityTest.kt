@@ -12,8 +12,10 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
+import com.citytexi.pushlog.core.designsystem.component.field.PushlogField
 import com.citytexi.pushlog.core.designsystem.theme.PushlogTheme
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -55,6 +57,27 @@ class SegmentedTextInputAccessibilityTest {
         cells.zip(labels).forEach { (cell, label) ->
             val texts = spokenTexts(cell)
             assertTrue("$label not in $texts", texts.any { it.contains(label) })
+        }
+    }
+
+    @Test
+    fun fieldLabelOnFirstCellAndErrorOnEveryCell() {
+        composeRule.setContent {
+            PushlogTheme(darkTheme = false) {
+                PushlogField(label = "결제 카드", invalid = true, errorMessage = "확인") {
+                    PushlogCardNumberInput(PushlogCardNumberState(), Modifier.width(400.dp))
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        val cells = inputNodes()
+        assertEquals(4, cells.size)
+        assertTrue(spokenTexts(cells[0]).any { it.startsWith("결제 카드") })
+        cells.drop(1).forEach { cell -> assertFalse(spokenTexts(cell).any { it.contains("결제 카드") }) }
+        cells.forEach { cell ->
+            val info = info(cell.id)
+            assertTrue(info?.isContentInvalid == true)
+            assertEquals("확인", info?.error?.toString())
         }
     }
 

@@ -1,7 +1,10 @@
 package com.citytexi.pushlog.core.designsystem.component.segmentedtextinput
 
 private val BIRTH_DATE =
-    Regex("""\d{2}(?<year>\d{2})(?:(?<sep>[-./])(?<month>\d{2})\k<sep>|(?<compactMonth>\d{2}))(?<day>\d{2})""")
+    Regex(
+        """\d{2}(?<year>\d{2})(?:\s*(?<sep>[-./])\s*(?<month>\d{1,2})\s*\k<sep>\s*(?<day>\d{1,2})\.?""" +
+            """|(?<compactMonth>\d{2})(?<compactDay>\d{2}))""",
+    )
 private val MONTHS = 1..12
 private val DAYS = 1..31
 
@@ -9,13 +12,14 @@ internal fun digitsOnly(text: CharSequence): String = text.filter { it in '0'..'
 
 /**
  * yyyy-MM-dd, yyyy.MM.dd, yyyy/MM/dd, yyyyMMdd(앞뒤 공백 허용)를 yyMMdd로. 아니면 null.
+ * 구분자가 있으면 월·일은 한 자리여도 되고, 구분자 앞뒤 공백과 끝의 점(`1990. 1. 1.`)도 받는다.
  * 월 1..12, 일 1..31만 확인한다.
  */
 internal fun normalizeBirthDate(text: CharSequence): String? {
     val match = BIRTH_DATE.matchEntire(text.trim()) ?: return null
     val year = match.groups["year"]?.value.orEmpty()
-    val month = (match.groups["month"] ?: match.groups["compactMonth"])?.value.orEmpty()
-    val day = match.groups["day"]?.value.orEmpty()
+    val month = (match.groups["month"] ?: match.groups["compactMonth"])?.value.orEmpty().padStart(2, '0')
+    val day = (match.groups["day"] ?: match.groups["compactDay"])?.value.orEmpty().padStart(2, '0')
     return (year + month + day).takeIf { month.toInt() in MONTHS && day.toInt() in DAYS }
 }
 
