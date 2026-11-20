@@ -46,3 +46,8 @@
 
 - 현재: 스펙 §6.4는 지우기 버튼이 사라지며 접근성 포커스를 잃으면 입력으로 옮긴다(SEED 문서)고 적었지만 구현하지 않았다. Compose에는 접근성 포커스만 옮기는 API가 없고, `requestFocus`는 입력 포커스까지 줘서 "포커스가 없었으면 새로 주지 않는다"를 깬다. 설계: [`design-system/components/input.md`](../architecture/design-system/components/input.md)
 - 남은 것: 실기기 TalkBack에서 지운 뒤 포커스가 어디로 가는지 확인하고, 필요하면 방법을 정한다.
+
+### [2026-11-19] segmented 넘친 입력: 상태 값 전달이 다시 돌지 않은 원인
+
+- 현재: 칸 자리 수를 넘친 입력은 `Channel`로 다음 칸에 넘긴다. 상태 값과 `LaunchedEffect` 키로 넘기는 방식은 테스트에서 효과가 다시 돌지 않았고 원인은 찾지 못했다. 설계: [`design-system/components/input.md`](../architecture/design-system/components/input.md)
+- 남은 것: 원인을 찾아 상태 방식이 더 나은지 다시 본다. 찾지 못해도 `Channel` 방식은 그대로 쓴다.

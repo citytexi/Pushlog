@@ -2,6 +2,7 @@ package com.citytexi.pushlog.preview.catalog
 
 import com.citytexi.pushlog.preview.component.LoadingContentPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogActionButtonPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogCardNumberInputPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogCheckboxGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogCheckboxPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogCheckmarkPreviewKey
@@ -13,6 +14,7 @@ import com.citytexi.pushlog.preview.component.PushlogInputButtonPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioGroupPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadioPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogRadiomarkPreviewKey
+import com.citytexi.pushlog.preview.component.PushlogResidentNumberInputPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSearchInputPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSegmentedControlPreviewKey
 import com.citytexi.pushlog.preview.component.PushlogSelectBoxGroupPreviewKey
@@ -53,5 +55,7 @@ val previewCatalog: List<PreviewCatalogItem> =
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogTextArea", PushlogTextAreaPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogSearchInput", PushlogSearchInputPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogInputButton", PushlogInputButtonPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogResidentNumberInput", PushlogResidentNumberInputPreviewKey),
+        PreviewCatalogItem(PreviewCategory.COMPONENT, "PushlogCardNumberInput", PushlogCardNumberInputPreviewKey),
         PreviewCatalogItem(PreviewCategory.COMPONENT, "LoadingContent", LoadingContentPreviewKey),
     )
